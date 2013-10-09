@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition>
+        <h:form id="header" enctype="multipart/form-data">
+            <p:focus context="header"/>
+
+            <!-- head background -->
+            <h:panelGroup layout="block" styleClass="header_background"/>
+
+            <!-- head content -->
+            <h:panelGroup layout="block" styleClass="container_12">
+                <!-- View for none logged users -->
+                <h:panelGrid id="loginuser" rendered="#{!authenticationBean.loggedIn}"
+                             columns="3" styleClass="header">
+                    <h:column>
+                        <h:outputLabel value="#{msg.email}" for="username"/><br />
+                        <p:inputText id="username" styleClass="inputsfield" 
+                                     value="#{authenticationBean.account.username}"/>
+                    </h:column>
+
+                    <h:column>
+                        <h:outputLabel value="#{msg.password}" for="password"/><br />
+                        <p:password value="#{authenticationBean.account.password}"
+                                    id="password" styleClass="inputsfield" feedback="false"
+                                    />
+                    </h:column>
+
+                    <h:column>
+                        <br/>
+                        <p:commandButton id="login" value="#{msg.submit}" action="#{authenticationBean.login}"
+                                         ajax="false" update="errorOnLoginDialog"/>
+                    </h:column>
+
+                    <h:column>
+                        <p:selectBooleanCheckbox id="savelogin"
+                                                 value="#{authenticationBean.saveLogin}"/>
+                        <h:outputLabel value="#{msg.save_login}" for="savelogin"/>
+                    </h:column>
+
+                    <h:column>
+                        <p:commandLink onclick="forgotPasswordDialog.show();">
+                            <h:outputText value="#{msg.forget_password}"/>
+                        </p:commandLink>
+                    </h:column>
+                </h:panelGrid>
+
+                <!-- View for logged users -->
+                <h:panelGroup layout="block" id="logoutuser" styleClass="loggedInheader"
+                              rendered="#{authenticationBean.loggedIn}">
+                    <h:panelGroup layout="block" styleClass="grid_12">
+                        <h:panelGroup layout="block" styleClass="grid_4">
+                            <h:panelGrid columns="2">
+                                <h:column>
+                                    <h:outputLink value="#{constantsBean.NEWSCENTERCONTEXT}">
+                                        <h:graphicImage id="avatar" styleClass="ieRemoveBorder"
+                                                        value="/resource/images/#{authenticationBean.avatar.relativeimagepath}"
+                                                        rendered="#{authenticationBean.avatar != null}"
+                                                        width="#{imageScaleBean.width(authenticationBean.avatar, 65)}" 
+                                                        height="#{imageScaleBean.height(authenticationBean.avatar, 65)}"
+                                                        title="Avatar"/>
+                                        <h:graphicImage id="avatarna" styleClass="ieRemoveBorder"
+                                                        library="images" name="anonymus.png" 
+                                                        rendered="#{authenticationBean.avatar == null}"
+                                                        width="65" height="65"/>
+                                    </h:outputLink>
+                                </h:column>
+                                <h:column>
+                                    <h:panelGrid styleClass="panelGridStyle">
+                                        <h:outputLink value="#{constantsBean.NEWSCENTERCONTEXT}">
+                                            <h:outputText value="#{authenticationBean.returnName()}"/>
+                                        </h:outputLink>
+                                    </h:panelGrid>
+                                    <h:outputText value="#{msg.newmessages1} "/>
+                                    <h:outputText value="#{messagesCenterBean.returnNewMessagesCounted()}"
+                                                  style="color:red;"/>
+                                    <h:outputText value=" #{msg.newmessages2}"/>
+                                </h:column>
+                            </h:panelGrid>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <!-- Logo -->
+                <h:panelGroup layout="block" styleClass="head_logo">
+                    <h:outputLink value="#{msg.domain}">
+                        <h:graphicImage id="head_logo" library="images" styleClass="ieRemoveBorder"
+                                        name="head_logo.png" title="proudcase"/>
+                    </h:outputLink>
+                </h:panelGroup>
+
+                <!-- Menubar -->
+                <h:panelGroup layout="block" id="menubar" styleClass="menubar">
+                    <h:panelGroup layout="block" styleClass="grid_12">
+                        <p:megaMenu model="#{menuControllerBean.menuModel}" autoDisplay="false">
+                            <f:facet name="options">
+                                <p:selectOneMenu effect="fade" id="languageMenu" value="#{sessionBean.userLocale}"
+                                                 styleClass="selectOneMenu" converter="LanguageConverter" var="lang">
+                                    <f:selectItems value="#{sessionBean.languagesAsSelectItem}" var="language" 
+                                                   itemLabel="#{language.label}" itemValue="#{language.value}"/>
+                                    <p:ajax oncomplete="window.location.href=window.location.href;"/>
+
+                                    <p:column>
+                                        <h:graphicImage library="images" name="flag_#{lang.language}.png" 
+                                                        width="50" height="50"/>
+                                    </p:column>
+
+                                    <p:column>
+                                        <h:outputLabel value="#{sessionBean.localeAsString(lang)}"/>
+                                    </p:column>
+
+                                </p:selectOneMenu>
+                            </f:facet>
+                        </p:megaMenu>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <!-- error on login dialog -->
+                <p:dialog widgetVar="errorOnLoginDialog" modal="true" closable="false" 
+                          draggable="true" showEffect="explode" hideEffect="explode"
+                          resizable="true" styleClass="dialog" maximizable="true" minimizable="true"
+                          visible="#{authenticationBean.showErrorDialog}">
+                    <p:messages showDetail="false" autoUpdate="false" closable="true" redisplay="true"/>
+                    <p:commandButton value="#{msg.okay_button}" oncomplete="errorOnLoginDialog.hide();" 
+                                     ajax="true" actionListener="#{authenticationBean.hideErrorDialog}"/>
+                </p:dialog>
+
+                <!-- forgot password dialog -->
+                <p:dialog widgetVar="forgotPasswordDialog" modal="true" closable="true"
+                          draggable="true" showEffect="explode" resizable="true" 
+                          styleClass="dialog" maximizable="true" minimizable="true">
+                    <h:panelGrid columns="1" cellpadding="5">
+                        <h:outputText value="#{msg.enterusername}"/>
+                        <p:inputText value="#{forgotPasswordBean.forgotPasswordUsername}" styleClass="largeinputfield"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2" cellpadding="10">
+                        <p:commandButton value="#{msg.submit}" onclick="forgotPasswordDialog.hide();"
+                                         action="#{forgotPasswordBean.resetPassword()}"/>
+                        <p:commandButton value="#{msg.cancel_button}" onclick="forgotPasswordDialog.hide();"/>
+                    </h:panelGrid>
+                </p:dialog>
+
+            </h:panelGroup>
+        </h:form>
+    </ui:composition>
+</html>
+

@@ -1,0 +1,208 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:body>
+        <ui:composition template="/templates/commontemp.xhtml">
+            <ui:define name="title">
+                <f:metadata>
+                    <f:event listener="#{accountSettingsBean.loadSettings()}" type="preRenderView"/>
+                </f:metadata>
+
+                <title>
+                    <h:outputFormat value="#{msg.default_title}">
+                        <f:param value="#{msg.profilesettings_title}"/>
+                    </h:outputFormat>
+                </title>
+            </ui:define>
+
+            <ui:define name="content">
+                <h:form id="content" rendered="#{authenticationBean.loggedIn}"
+                        enctype="multipart/form-data">
+                    <h:panelGroup layout="block" styleClass="grid_9">
+                        <h:panelGroup layout="block" styleClass="content">
+
+                            <p:panel header="#{msg.profilesettings_title}">
+                                <p:messages autoUpdate="true" globalOnly="true" showDetail="true" closable="true"/>
+                                <p:fieldset>
+                                    <h:panelGrid columns="2" cellpadding="20" styleClass="settingsBorder" 
+                                                 columnClasses=",settingsInputPosition">
+                                        <h:column>
+                                            <p:fieldset>
+                                                <h:outputText value="#{msg.avatardesc}"/>
+                                            </p:fieldset>
+                                            <p:spacer height="5"/>
+                                            <p:fileUpload id="avatarUpload" 
+                                                          allowTypes="/(\.|\/)(gif|jpe?g|png)$/" 
+                                                          fileUploadListener="#{accountSettingsBean.handlePictureUpload}"  
+                                                          multiple="false" 
+                                                          mode="advanced"
+                                                          auto="true"
+                                                          dragDropSupport="true"
+                                                          update=":content:avatar,:header"
+                                                          sizeLimit="#{constantsBean.UPLOADSIZELIMIT}"
+                                                          />
+                                        </h:column>
+                                        <h:column>
+                                            <p:outputPanel id="avatar">
+                                                <h:graphicImage value="/resource/images/#{accountSettingsBean.singleUser.avatar.relativeimagepath}"
+                                                                rendered="#{accountSettingsBean.singleUser.avatar != null}"
+                                                                width="#{imageScaleBean.width(accountSettingsBean.singleUser.avatar, 120)}" 
+                                                                height="#{imageScaleBean.height(accountSettingsBean.singleUser.avatar, 120)}"/>
+                                                <h:graphicImage library="images" name="anonymus.png" width="120" height="120"
+                                                                rendered="#{accountSettingsBean.singleUser.avatar == null}"/>
+                                            </p:outputPanel>
+                                        </h:column>
+                                    </h:panelGrid>
+                                </p:fieldset>
+
+                                <p:separator styleClass="smallSeparator"/>
+
+                                <p:fieldset>
+                                    <h:panelGrid columns="2" cellpadding="20" styleClass="settingsBorder" 
+                                                 columnClasses=",settingsInputPosition">
+                                        <h:outputLabel value="#{msg.firstname}" for="firstname"/>
+                                        <p:inputText value="#{accountSettingsBean.singleUser.firstname}"
+                                                     id="firstname" maxlength="254"/>
+                                    </h:panelGrid>
+                                </p:fieldset>
+                                
+                                <p:separator styleClass="smallSeparator"/>
+
+                                <p:fieldset>
+                                    <h:panelGrid columns="2" cellpadding="20" styleClass="settingsBorder" 
+                                                 columnClasses=",settingsInputPosition">
+                                        <h:outputLabel value="#{msg.lastname}" for="lastname"/>
+                                        <p:inputText value="#{accountSettingsBean.singleUser.lastname}"
+                                                     id="lastname" maxlength="254"/>
+                                    </h:panelGrid>
+                                </p:fieldset>
+                                
+                                <p:separator styleClass="smallSeparator"/>
+
+                                <p:fieldset>
+                                    <h:panelGrid columns="2" cellpadding="20" styleClass="settingsBorder" 
+                                                 columnClasses=",settingsInputPosition">
+                                        <h:outputLabel value="#{msg.birthdate}" for="birthdate"/>
+                                        <p:calendar value="#{accountSettingsBean.singleUser.birthdate}"
+                                                    pattern="dd/MM/yyyy" id="birthdate" effect="explode"
+                                                    navigator="true" showButtonPanel="true" mindate="01/01/1930" yearRange="c-90:c"/>
+                                    </h:panelGrid>
+                                </p:fieldset>
+
+                                <p:separator styleClass="smallSeparator"/>
+
+                                <p:fieldset>
+                                    <h:panelGrid columns="2" cellpadding="20" styleClass="settingsBorder" 
+                                                 columnClasses=",settingsInputPosition">
+                                        <h:outputLabel value="#{msg.homepageurl}" for="homepageurl"/>
+                                        <p:inputText value="#{accountSettingsBean.singleUser.homepageurl}"
+                                                     id="homepageurl" maxlength="254"/>
+                                    </h:panelGrid>
+                                </p:fieldset>
+
+                                <p:separator styleClass="smallSeparator"/>
+
+                                <p:fieldset>
+                                    <h:panelGrid columns="2" cellpadding="20" styleClass="settingsBorder" 
+                                                 columnClasses=",settingsInputPosition">
+                                        <h:outputLabel value="#{msg.icqnumber}" for="icqnumber"/>
+                                        <p:inputText value="#{accountSettingsBean.singleUser.icqnumber}"
+                                                     id="icqnumber" maxlength="254"/>
+                                    </h:panelGrid>
+                                </p:fieldset>
+
+                                <p:separator styleClass="smallSeparator"/>
+
+                                <p:fieldset>
+                                    <h:panelGrid columns="2" cellpadding="20" styleClass="settingsBorder" 
+                                                 columnClasses=",settingsInputPosition">
+                                        <h:outputLabel value="#{msg.aimname}" for="aimname"/>
+                                        <p:inputText value="#{accountSettingsBean.singleUser.aimname}"
+                                                     id="aimname" maxlength="254"/>
+                                    </h:panelGrid>
+                                </p:fieldset>
+
+                                <p:separator styleClass="smallSeparator"/>
+
+                                <p:fieldset>
+                                    <h:panelGrid columns="2" cellpadding="20" styleClass="settingsBorder" 
+                                                 columnClasses=",settingsInputPosition">
+                                        <h:outputLabel value="#{msg.msnname}" for="msnname"/>
+                                        <p:inputText value="#{accountSettingsBean.singleUser.msnname}"
+                                                     id="msnname" maxlength="254"/>
+                                    </h:panelGrid>
+                                </p:fieldset>
+
+                                <p:separator styleClass="smallSeparator"/>
+
+                                <p:fieldset>
+                                    <h:panelGrid columns="2" cellpadding="20" styleClass="settingsBorder" 
+                                                 columnClasses=",settingsInputPosition">
+                                        <h:outputLabel value="#{msg.skypename}" for="skypename"/>
+                                        <p:inputText value="#{accountSettingsBean.singleUser.skypename}"
+                                                     id="skypename" maxlength="254"/>
+                                    </h:panelGrid>
+                                </p:fieldset>
+
+                                <p:separator styleClass="smallSeparator"/>
+
+                                <p:fieldset>
+                                    <h:panelGrid columns="2" cellpadding="20" styleClass="settingsBorder" 
+                                                 columnClasses=",settingsInputPosition">
+                                        <h:outputLabel value="#{msg.jobname}" for="jobname"/>
+                                        <p:inputText value="#{accountSettingsBean.singleUser.jobname}"
+                                                     id="jobname" maxlength="254"/>
+                                    </h:panelGrid>
+                                </p:fieldset>
+
+                                <p:separator styleClass="smallSeparator"/>
+
+                                <p:fieldset>
+                                    <h:panelGrid columns="2" cellpadding="20" styleClass="settingsBorder" 
+                                                 columnClasses=",settingsInputPosition">
+                                        <h:outputLabel value="#{msg.interestedin}" for="interestedin"/>
+                                        <p:inputText value="#{accountSettingsBean.singleUser.interestedin}"
+                                                     id="interestedin" maxlength="254"/>
+                                    </h:panelGrid>
+                                </p:fieldset>
+
+                                <p:separator styleClass="smallSeparator"/>
+
+                                <p:fieldset>
+                                    <h:panelGrid columns="2" cellpadding="20" styleClass="settingsBorder" 
+                                                 columnClasses=",settingsInputPosition">
+                                        <h:outputLabel value="#{msg.livingplace}" for="livingplace"/>
+                                        <p:inputText value="#{accountSettingsBean.singleUser.livingplace}"
+                                                     id="livingplace" maxlength="254"/>
+                                    </h:panelGrid>
+                                </p:fieldset>
+
+                                <p:separator styleClass="smallSeparator"/>
+
+                                <p:fieldset>
+                                    <h:panelGrid columns="2" cellpadding="20" styleClass="settingsBorder" 
+                                                 columnClasses=",settingsInputPosition">
+                                        <h:outputLabel value="#{msg.companyname}" for="companyname"/>
+                                        <p:inputText value="#{accountSettingsBean.singleUser.companyname}"
+                                                     id="companyname" maxlength="254"/>
+                                    </h:panelGrid>
+                                </p:fieldset>
+
+                                <p:separator styleClass="smallSeparator"/>
+                                <p:commandButton value="#{msg.save}" ajax="false" styleClass="autoScaledButton" 
+                                                 actionListener="#{accountSettingsBean.saveSettings()}"/>
+                            </p:panel>
+
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <f:view locale="#{sessionBean.userLocale}" contentType="text/html" beforePhase="#{authenticationBean.proudcaseCookieCheck}">
+        <h:head>
+            <h:outputStylesheet name="main.css" library="css"/>
+            <h:outputScript library="webanalytics" name="googlewebanalytics.js"/>
+            <h:outputScript library="js" name="menu.js"/>
+            <h:outputScript library="js" name="dock.js"/>
+            <f:loadBundle basename="com.proudcase.language.messages" var="msg"/>
+            <link rel="shortcut icon" type="image/x-icon" href="#{request.contextPath}/resources/images/proudcase_favicon.ico"/>
+            <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/images/proudcase_favicon.ico"/>
+            <ui:insert name="title">
+                <title>proudcase</title>
+            </ui:insert>
+        </h:head>
+
+        <h:body>
+            <h:panelGroup id="wrapper" layout="block" styleClass="wrapper">
+                <ui:insert name="security">
+                    <ui:include src="/templates/security.xhtml"/>
+                </ui:insert>
+
+                <ui:insert name="head">
+                    <ui:include src="/templates/headtemp.xhtml"/>
+                </ui:insert>
+
+                <h:panelGroup layout="block" styleClass="container_12">
+                    <ui:insert name="content">
+                        <ui:include src="/templates/contenttemp.xhtml"/>
+                    </ui:insert>
+
+                    <ui:insert name="contentnav">
+                        <ui:include src="/templates/contentnavtemp.xhtml"/>
+                    </ui:insert>
+
+                    <ui:insert name="foot">
+                        <ui:include src="/templates/foottemp.xhtml"/>
+                    </ui:insert>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <ui:insert name="dock">
+                <ui:include src="/templates/dock.xhtml"/>
+            </ui:insert>
+        </h:body>
+    </f:view>
+</html>
+

@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:body>
+        <ui:composition template="/templates/commontemp.xhtml">
+
+            <ui:define name="title">
+                <f:metadata>
+                    <f:event listener="#{juryBoardBean.init()}" type="preRenderView"/>
+                </f:metadata>
+
+                <title>
+                    <h:outputFormat value="#{msg.default_title}">
+                        <f:param value="#{msg.juryboard_title}"/>
+                    </h:outputFormat>
+                </title>
+            </ui:define>
+
+            <ui:define name="content">
+                <h:form id="content">
+                    <h:panelGroup layout="block" styleClass="grid_9">
+                        <h:panelGroup layout="block" styleClass="content" rendered="#{authenticationBean.loggedIn}">
+                            <p:panel header="#{msg.juryboard_title}" id="juryPanel">
+                                <p:dataGrid id="juryGrid" var="showcase" columns="1" rows="20" value="#{juryBoardBean.lazyJuryBoardModel}"
+                                            paginator="true" lazy="true" rowsPerPageTemplate="15,20,30"
+                                            paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} 
+                                            {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
+                                    <p:fieldset toggleable="true" legend="#{showcase.showcaseTitle}">
+                                        <h:outputLink value="#{constantsBean.DISPLAYSHOWCASE}#{showcase.showcaseID}">
+                                            <h:panelGrid columns="2" cellpadding="10">
+                                                <h:graphicImage value="/resource/images/#{showcase.frontImage.relativeimagepath}"
+                                                                width="#{imageScaleBean.width(showcase.frontImage, 150)}"
+                                                                height="#{imageScaleBean.height(showcase.frontImage, 150)}"
+                                                                title="#{showcase.frontImage.imageName}" styleClass="ieRemoveBorder"
+                                                                rendered="#{showcase.frontImage != null}"/>
+                                                <h:graphicImage library="images" name="proudcase_logo.png" width="150" height="150"
+                                                                rendered="#{showcase.frontImage == null}" styleClass="ieRemoveBorder"/>
+                                                <h:outputText value="#{showcase.showcaseText}"/>
+                                            </h:panelGrid>
+                                        </h:outputLink>
+                                    </p:fieldset>
+                                </p:dataGrid>
+                            </p:panel>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

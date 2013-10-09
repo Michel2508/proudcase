@@ -1,0 +1,182 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:body>
+        <ui:composition template="/templates/commontemp.xhtml">
+            <ui:define name="title">
+                <f:metadata>
+                    <f:viewParam name="showcaseid" value="#{displayShowcaseBean.showcaseID}"/>
+                    <f:event listener="#{displayShowcaseBean.loadShowcase()}" type="preRenderView"/>
+                </f:metadata>
+
+                <title>
+                    <h:outputFormat value="#{msg.default_title}">
+                        <f:param value="#{displayShowcaseBean.showcaseTitle}"/>
+                    </h:outputFormat>
+                </title>
+            </ui:define>
+
+            <ui:define name="content">
+                <h:form id="content" rendered="#{displayShowcaseBean.showcaseAvailable}">
+                    <h:panelGroup layout="block" styleClass="grid_9">
+                        <h:panelGroup layout="block" styleClass="content" rendered="#{displayShowcaseBean.hasPermission}">
+                            <p:tabView dynamic="true" cache="true" effect="drop" rendered="#{displayShowcaseBean.availableMedia}"
+                                       styleClass="tabViewMargin">
+                                <p:tab title="#{msg.images}" rendered="#{displayShowcaseBean.availablePic}">
+                                    <p:galleria effect="fade" value="#{displayShowcaseBean.imagesList}" effectSpeed="700"
+                                                var="image" panelWidth="660" panelHeight="440" showCaption="false" >
+                                        <h:graphicImage value="/resource/images/#{image.relativeimagepath}" styleClass="carouselStyle"
+                                                        rendered="#{image != null}"/>
+                                        <h:graphicImage library="images" name="proudcase_logo.png" width="660" height="440"
+                                                        rendered="#{image == null}"/>
+                                    </p:galleria>
+                                    <p:spacer height="10"/>
+                                </p:tab>
+
+                                <p:tab title="#{msg.videos}" rendered="#{displayShowcaseBean.availableVideo}">
+                                    <p:carousel numVisible="1" effect="easeInStrong" circular="true"
+                                                value="#{displayShowcaseBean.videoLinkList}" var="videoLink"
+                                                itemStyleClass="carouselStyle">
+                                        <p:media player="flash" styleClass="carouselStyle"
+                                                 value="#{videoLink.videolink}"/>
+                                    </p:carousel>
+                                </p:tab>
+                            </p:tabView>
+
+                            <p:tabView dynamic="true" cache="true" effect="drop" value="#{displayShowcaseBean.showcaseTextList}"
+                                       var="showcasetext" styleClass="tabViewMargin">
+
+                                <p:tab title="#{sessionBean.localeAsString(showcasetext.lang)}">
+                                    <h:panelGrid columns="2" columnClasses="alignTopAndCenter" cellpadding="5">
+                                        <h:column>
+                                            <h:outputLink value="#{navigationBean.navigateToProfileView()}?id=#{displayShowcaseBean.displayShowcase.userAccount.id.toString()}">
+                                                <h:panelGrid columns="1" cellpadding="2" columnClasses="centerPosition" style="margin: auto;">
+                                                    <h:outputText value="#{displayShowcaseBean.displayShowcase.userAccount.toString()}"/>
+                                                    <h:outputText value="#{sessionBean.privilegesText(displayShowcaseBean.displayShowcase.userAccount.userPrivs)}"
+                                                                  styleClass="privilegesText"/>
+                                                    <h:graphicImage value="/resource/images/#{displayShowcaseBean.displayShowcase.userAccount.avatar.relativeimagepath}" 
+                                                                    width="#{imageScaleBean.width(displayShowcaseBean.displayShowcase.userAccount.avatar, 100)}"
+                                                                    height="#{imageScaleBean.height(displayShowcaseBean.displayShowcase.userAccount.avatar, 100)}"
+                                                                    rendered="#{displayShowcaseBean.displayShowcase.userAccount.avatar != null}" styleClass="ieRemoveBorder"/>
+                                                    <h:graphicImage library="images" name="anonymus.png" styleClass="ieRemoveBorder"
+                                                                    rendered="#{displayShowcaseBean.displayShowcase.userAccount.avatar == null}"
+                                                                    width="100" height="100"/>
+                                                </h:panelGrid>
+                                            </h:outputLink>
+                                        </h:column>
+                                        <h:outputText value="#{showcasetext.explaintext}" escape="false"/>
+                                    </h:panelGrid>
+                                </p:tab>
+
+                            </p:tabView>
+
+                            <p:panel styleClass="tabViewMargin" header="#{msg.showcasestatus}" id="juryFeedbackStatusPanel">
+                                <h:panelGrid columns="2" cellpadding="5">
+                                    <h:outputLabel value="#{msg.showcasestatus}:"/>
+                                    <h:outputText value="#{msg.approved}"
+                                                  rendered="#{displayShowcaseBean.displayShowcase.approved}"/>
+                                    <h:outputText value="#{msg.unapproved}" 
+                                                  rendered="#{!displayShowcaseBean.displayShowcase.approved}"/>
+                                </h:panelGrid>
+                                <p:spacer height="10"/>
+                                <p:progressBar id="progressShowcase" value="#{(displayShowcaseBean.juryFeedbackList.size() / 3) * 100}"
+                                               displayOnly="false" style="width: 100%;" />
+                            </p:panel>
+
+                            <p:panel header="#{msg.juryboard_title}" styleClass="tabViewMargin">
+                                <p:dataGrid id="juryFeedbackGrid" var="feedback" columns="1" rows="5" 
+                                            value="#{displayShowcaseBean.juryFeedbackList}" 
+                                            paginator="false" lazy="false" emptyMessage="#{msg.nojuryfeedback}">
+                                    <p:panel id="onefeedback" header="#{feedback.feedbackOwner.toString()}" footer="#{constantsBean.performDateAsString(feedback.feedbackDate)}">
+                                        <h:panelGroup layout="block" styleClass="grid_2" style="height: 100%;width: 105px;"> 
+                                            <h:panelGrid columns="1" cellpadding="3" columnClasses="centerPosition">
+                                                <h:graphicImage value="/resource/images/#{feedback.feedbackOwner.avatar.relativeimagepath}"
+                                                                width="#{imageScaleBean.width(feedback.feedbackOwner.avatar, 100)}"
+                                                                height="#{imageScaleBean.height(feedback.feedbackOwner.avatar, 100)}"
+                                                                rendered="#{! empty feedback.feedbackOwner.avatar}"/>
+                                                <h:graphicImage library="images" name="anonymus.png" width="100" height="100"
+                                                                rendered="#{feedback.feedbackOwner.avatar == null}"/>
+                                                <h:outputText value="#{sessionBean.privilegesText(feedback.feedbackOwner.userPrivs)}"
+                                                              styleClass="privilegesText"/>
+                                            </h:panelGrid>
+                                        </h:panelGroup>
+                                        <h:panelGrid columns="1"> 
+                                            <h:outputText value="#{feedback.feedback}"/>
+                                            <p:fieldset>
+                                                <h:outputLabel for="feedbackRating" value="#{msg.currentrating}"/>
+                                                <p:rating stars="#{constantsBean.NUMBEROFSTARS}" id="feedbackRating" value="#{feedback.rating}"
+                                                          readonly="true"/>
+                                            </p:fieldset>
+                                        </h:panelGrid>
+                                        <p:spacer height="100"/>
+                                    </p:panel>
+                                </p:dataGrid>
+                            </p:panel>
+
+                            <p:panel id="ranking" header="#{msg.rankandrating}" rendered="#{authenticationBean.normalUser}">
+                                <h:panelGrid columns="1">
+                                    <h:outputText value="#{msg.numberofratings} #{displayShowcaseBean.numberOfRatings}"/>
+                                    <p:spacer height="10"/>
+                                    <h:outputText value="#{msg.currentrating}"/>
+                                    <p:rating id="currentRating" value="#{displayShowcaseBean.showcaseRanking}" 
+                                              disabled="false" stars="#{constantsBean.NUMBEROFSTARS}" readonly="true"/>
+                                    <p:separator styleClass="smallSeparator" rendered="#{authenticationBean.loggedIn}"/>
+                                    <p:fieldset legend="#{msg.giveyourrating}" rendered="#{authenticationBean.loggedIn}">
+                                        <h:panelGrid columns="1">
+                                            <h:outputText value="#{msg.giveyourrating}"/>
+                                            <p:rating id="giveYourRating" value="#{displayShowcaseBean.userRating}"
+                                                      stars="#{constantsBean.NUMBEROFSTARS}"/>
+                                            <p:spacer height="5"/>
+                                            <p:commandButton value="#{msg.rating}" styleClass="largebutton"
+                                                             update="ranking" actionListener="#{displayShowcaseBean.saveRating()}"/>
+                                        </h:panelGrid>
+                                    </p:fieldset>
+                                </h:panelGrid>
+                            </p:panel>
+
+                            <p:panel header="#{msg.juryboard_title}" rendered="#{authenticationBean.juryMember}" id="juryPanel">
+                                <h:panelGrid columns="1">
+                                    <h:outputText value="#{msg.giveyourrating}"/>
+                                    <p:rating id="giveYourRatingJury" value="#{displayShowcaseBean.juryFeedback.rating}"
+                                              stars="#{constantsBean.NUMBEROFSTARS}"/>
+                                    <p:spacer height="5"/>
+                                    <h:outputText value="#{msg.givejuryfeedback}"/>
+                                    <p:inputTextarea value="#{displayShowcaseBean.juryFeedback.feedback}" autoResize="true"
+                                                     styleClass="inputTextArea"/>
+                                    <p:spacer height="5"/>
+                                    <p:commandButton value="#{msg.sendfeedback}" styleClass="largebutton"
+                                                     actionListener="#{displayShowcaseBean.saveFeedback()}" oncomplete="giveFeedbackDialog.show()"/>
+                                </h:panelGrid>
+                            </p:panel>
+                        </h:panelGroup>
+
+                        <h:panelGroup layout="block" styleClass="content" rendered="#{!displayShowcaseBean.hasPermission}">
+                            <p:panel header="#{msg.error_permission_denied}">
+                                <h1><h:outputText value="#{msg.error_permission_denied}"/></h1>
+                            </p:panel>
+                        </h:panelGroup>
+                    </h:panelGroup>
+
+                    <!-- give feedback output -->
+                    <p:dialog widgetVar="giveFeedbackDialog" modal="true" closable="false" 
+                              draggable="true" showEffect="explode" hideEffect="explode"
+                              resizable="true" styleClass="dialog" maximizable="true" minimizable="true"
+                              visible="#{displayShowcaseBean.showFeedbackDialog}">
+                        <p:messages showDetail="false" autoUpdate="true" closable="true" redisplay="true"/>
+                        <p:commandButton value="#{msg.okay_button}" oncomplete="giveFeedbackDialog.hide();" update="juryFeedbackStatusPanel,juryFeedbackGrid"
+                                         ajax="true" actionListener="#{displayShowcaseBean.toggleFeedbackDialogOff()}"/>
+                    </p:dialog>
+                </h:form>
+            </ui:define>
+
+            <ui:define name="security"/>
+        </ui:composition>
+    </h:body>
+
+</html>
+

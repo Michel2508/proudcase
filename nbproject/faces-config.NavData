@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scene Scope="Project" version="2">
+    <Scope Scope="Faces Configuration Only"/>
+    <Scope Scope="Project">
+        <Node id="user/newscenter.xhtml" x="650" y="450" zoom="true"/>
+        <Node id="showcase/displayshowcase.xhtml" x="900" y="300" zoom="true"/>
+        <Node id="showcase/newshowcase.xhtml" x="650" y="300" zoom="true"/>
+        <Node id="templates/commontemp.xhtml" x="150" y="150" zoom="true"/>
+        <Node id="templates/foottemp.xhtml" x="650" y="150" zoom="true"/>
+        <Node id="index.xhtml" x="400" y="150" zoom="true"/>
+        <Node id="templates/security.xhtml" x="150" y="300" zoom="true"/>
+        <Node id="templates/contenttemp.xhtml" x="900" y="150" zoom="true"/>
+        <Node id="templates/contentnavtemp.xhtml" x="150" y="450" zoom="true"/>
+        <Node id="user/friends.xhtml" x="1150" y="150" zoom="true"/>
+        <Node id="templates/headtemp.xhtml" x="400" y="300" zoom="true"/>
+        <Node id="user/profilesettings.xhtml" x="400" y="450" zoom="true"/>
+        <Node id="templates/dock.xhtml" x="150" y="600" zoom="true"/>
+    </Scope>
+    <Scope Scope="All Faces Configurations"/>
+</Scene>

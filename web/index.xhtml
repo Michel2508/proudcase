@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="templates/commontemp.xhtml">
+
+        <ui:define name="title">
+            <f:metadata>
+                <f:event type="preRenderView" listener="#{authenticationBean.init()}"/>
+            </f:metadata>
+
+            <title><h:outputText value="#{msg.index_title}"/></title>
+        </ui:define>
+
+        <ui:define name="content">
+            <h:form id="content">
+                <h:panelGroup layout="block" styleClass="grid_9">
+                    <h:panelGroup layout="block" styleClass="content">
+                        <p:panel toggleable="false" header=" " styleClass="tabViewMargin highlightedPanel">
+                            <h:outputText value="#{msg.pageinfo_indextext}" escape="false"/>
+                        </p:panel>
+
+                        <p:panel header="#{msg.search}" id="search" styleClass="tabViewMargin">
+                            <p:inputText id="searchBar" value="#{indexBean.inputQuery}" 
+                                         styleClass="indexSearchBar"/>
+                            <p:watermark for="searchBar" value="#{msg.index_searchwatermark}"/>
+                            <p:commandButton value="#{msg.search}" icon="ui-icon-search" 
+                                             styleClass="indexSearchButton" ajax="false"
+                                             action="#{indexBean.searchWithKeywords()}"/>
+                        </p:panel>
+
+                        <p:panel header="#{msg.index_topten}" id="topten" rendered="#{indexBean.showcaseAvailable}"
+                                 styleClass="tabViewMargin">
+                            <p:galleria value="#{indexBean.topTenShowcases}" var="showcase" effect="fade"
+                                        panelWidth="670" panelHeight="450"  effectSpeed="700" 
+                                        showCaption="false" frameHeight="80" frameWidth="120" styleClass="ieRemoveBorder">
+                                <p:graphicImage value="/resource/images/#{showcase.frontImage.relativeimagepath}" 
+                                                width="670" height="450" title="#{showcase.showcaseTitle}" style="cursor: pointer;"
+                                                rendered="#{showcase.frontImage != null}" onclick="window.location.href = '#{navigationBean.navigateToDisplayShowcase()}#{showcase.showcaseID}';" />
+                                <h:graphicImage library="images" rendered="#{showcase.frontImage == null}"
+                                                width="670" height="450" style="cursor: pointer;"
+                                                onclick="window.location.href = '#{navigationBean.navigateToDisplayShowcase()}#{showcase.showcaseID}';"
+                                                name="proudcase_logo.png"/>
+                            </p:galleria>
+                        </p:panel>
+
+                        <p:panel header="#{msg.index_toptenvideos}" id="toptenvideo" rendered="#{indexBean.topTenVideoShowcases.size() > 0}">
+                            <p:carousel numVisible="1" effect="easeInStrong" circular="true" autoPlayInterval="4000"
+                                        value="#{indexBean.topTenVideoShowcases}" var="showcaseVideo"
+                                        itemStyleClass="carouselStyle">
+                                <p:media player="flash" styleClass="carouselStyle"
+                                         value="#{showcaseVideo.videoURL}"/>
+
+                                <p:fieldset legend="#{msg.showcase_creator}" toggleable="true" style="padding-top: 10px;">
+                                    <h:outputLink value="#{constantsBean.DISPLAYSHOWCASE}#{showcaseVideo.showcaseID}">
+                                        <h:panelGrid columns="2" cellpadding="10" columnClasses="alignTopAndCenter">
+                                            <h:graphicImage value="/resource/images/#{showcaseVideo.ownerAvatar.relativeimagepath}"
+                                                            width="#{imageScaleBean.width(showcaseVideo.ownerAvatar, 150)}"
+                                                            height="#{imageScaleBean.height(showcaseVideo.ownerAvatar, 150)}"
+                                                            styleClass="ieRemoveBorder"
+                                                            rendered="#{showcaseVideo.ownerAvatar != null}"/>
+                                            <h:graphicImage library="images" name="anonymus.png" width="150" height="150"
+                                                            rendered="#{showcaseVideo.ownerAvatar == null}" styleClass="ieRemoveBorder"/>
+                                            <h:column>
+                                                <p><h:outputText value="#{showcaseVideo.showcaseTitle}"/></p>
+                                                <h:outputText value="#{showcaseVideo.showcaseText}"/>
+                                            </h:column>
+                                        </h:panelGrid>
+                                    </h:outputLink>
+                                </p:fieldset>
+                            </p:carousel>
+                        </p:panel>
+
+                        <p:dataGrid id="topusers" columns="3" paginator="false" rows="6"
+                                    value="#{indexBean.topUsersList}" var="user">
+                            <p:panel header="#{user.toString()}" styleClass="centerPosition" style="min-height: 240px !important;max-height: 240px !important">
+                                <h:outputLink value="#{navigationBean.navigateToProfileView()}?id=#{user.id.toString()}">
+                                    <h:panelGrid columns="1" cellpadding="5" columnClasses="centerPosition">
+                                        <h:column>
+                                            <h:graphicImage value="/resource/images/#{user.avatar.relativeimagepath}"
+                                                            rendered="#{user.avatar != null}" styleClass="ieRemoveBorder"
+                                                            width="#{imageScaleBean.width(user.avatar, 120)}" 
+                                                            height="#{imageScaleBean.height(user.avatar, 120)}"
+                                                            title="#{user.toString()}"/>
+                                            <h:graphicImage library="images" name="anonymus.png" width="120" height="120"
+                                                            rendered="#{user.avatar == null}" styleClass="ieRemoveBorder"/><br/>
+                                            <p:spacer height="#{117-imageScaleBean.height(user.avatar, 120)}" 
+                                                      rendered="#{imageScaleBean.height(user.avatar, 120)!=120}" styleClass="ieRemoveBorder"/>
+                                            <p:spacer width="165" height="1" styleClass="ieRemoveBorder"/>
+                                        </h:column>
+                                        <h:outputText value="#{user.toString()}"/>
+                                    </h:panelGrid>
+                                </h:outputLink>
+                            </p:panel>
+                        </p:dataGrid>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <!--  permission denied dialog -->
+                <p:dialog widgetVar="permissionDeniedDialog" modal="true" closable="true" 
+                          draggable="true" showEffect="explode" hideEffect="explode"
+                          resizable="true" styleClass="dialog" maximizable="true" minimizable="true"
+                          visible="#{authenticationBean.showPermissionDeniedDialog}">
+                    <p:messages showDetail="true" autoUpdate="false" closable="true" redisplay="true" showSummary="false"/>
+                    <p:commandButton value="#{msg.okay_button}" oncomplete="permissionDeniedDialog.hide();" 
+                                     ajax="true" actionListener="#{authenticationBean.hidePermissionDeniedDialog()}"/>
+                </p:dialog>
+            </h:form>
+        </ui:define>
+
+        <ui:define name="security"/>
+
+    </ui:composition>
+</html>

@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!-- =========== FULL CONFIGURATION FILE ================================== -->
+
+<faces-config version="2.0"
+              xmlns="http://java.sun.com/xml/ns/javaee" 
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
+
+
+    <application>
+        <message-bundle>
+            com.proudcase.language.messages
+        </message-bundle>
+        <locale-config>
+            <default-locale>en</default-locale>
+            <supported-locale>en</supported-locale>
+            <supported-locale>de</supported-locale>
+        </locale-config>
+    </application>
+    
+    <converter>
+        <converter-id>UserConverter</converter-id>
+        <converter-class>com.proudcase.converter.UserConverter</converter-class>
+    </converter>
+    
+    <converter>
+        <converter-id>LanguageConverter</converter-id>
+        <converter-class>com.proudcase.converter.LanguageConverter</converter-class>
+    </converter>
+    
+    <factory>
+        <exception-handler-factory>
+            com.proudcase.exclogger.ProudcaseExceptionHandlerFactory
+        </exception-handler-factory>
+    </factory>
+    
+
+</faces-config>

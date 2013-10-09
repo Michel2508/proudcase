@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/templates/commontemp.xhtml">
+        <ui:define name="title">
+            <f:metadata>
+                <f:event listener="#{showcasemanagerBean.init()}" type="preRenderView"/>
+            </f:metadata>
+
+            <title>
+                <h:outputFormat value="#{msg.default_title}">
+                    <f:param value="#{msg.showcasemanager_title}"/>
+                </h:outputFormat>
+            </title>
+        </ui:define>
+
+        <ui:define name="content">
+            <h:form id="content">
+                <h:panelGroup layout="block" styleClass="grid_9">
+                    <h:panelGroup layout="block" styleClass="content">
+                        <p:dataGrid id="showcaseGrid" var="showcase" columns="1" rows="20" value="#{showcasemanagerBean.showcaseViewList}"
+                                    paginator="true" lazy="false" rowsPerPageTemplate="15,20,30" 
+                                    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} 
+                                    {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
+                            <p:fieldset legend="#{showcase.showcasetitle}" toggleable="true" collapsed="false">
+                                <h:panelGrid columns="2" cellspacing="5">
+                                    <h:column>
+                                        <h:outputLink value="#{navigationBean.navigateToDisplayShowcase()}#{showcase.showcaseId}">
+                                            <h:graphicImage value="/resource/images/#{showcase.frontImage.relativeimagepath}"
+                                                            width="#{imageScaleBean.width(showcase.frontImage, 120)}"
+                                                            height="#{imageScaleBean.height(showcase.frontImage, 120)}"
+                                                            title="#{showcase.frontImage.imageName}" styleClass="ieRemoveBorder"
+                                                            rendered="#{! empty showcase.frontImage}"/>
+                                        </h:outputLink>
+                                        <h:graphicImage library="images" name="proudcase_logo.png" width="120" height="120"
+                                                        rendered="#{showcase.frontImage == null}" styleClass="ieRemoveBorder"/>
+                                    </h:column>
+
+                                    <h:column>
+                                        <p:dataTable id="showcaseInfoTable" var="singleShowcase" resizableColumns="true" 
+                                                     style="max-width: 550px" liveResize="true"
+                                                     value="#{showcasemanagerBean.showcaseViewList.get(showcasemanagerBean.showcaseViewList.indexOf(showcase))}">
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msg.showcaseinformation}"/>
+                                            </f:facet>
+
+                                            <p:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msg.showcasetitle}"/>
+                                                </f:facet>
+
+                                                <h:outputText value="#{singleShowcase.showcasetitle}" id="showtitle"/>
+                                                <p:tooltip for="showtitle" value="#{singleShowcase.showcasetitle}" showEffect="fade"
+                                                           hideEffect="fade"/>
+                                            </p:column>
+
+                                            <p:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msg.showcasecreatedate}"/>
+                                                </f:facet>
+
+                                                <h:outputText value="#{constantsBean.getShortDateAsString(singleShowcase.createdate)}" id="createdateoutput"/>
+                                                <p:tooltip for="createdateoutput" value="#{singleShowcase.createdate}" showEffect="fade"
+                                                           hideEffect="fade"/>
+                                            </p:column>
+
+                                            <p:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msg.showcasevisibility}"/>
+                                                </f:facet>
+
+                                                <h:outputText value="#{singleShowcase.visibility}"/>
+                                            </p:column>
+
+                                            <p:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msg.showcaselangs}"/>
+                                                </f:facet>
+
+                                                <h:outputText value="#{singleShowcase.availableLangs}" id="showlangs"/>
+                                                <p:tooltip for="showlangs" value="#{singleShowcase.availableLangs}" showEffect="fade"
+                                                           hideEffect="fade"/>
+                                            </p:column>
+
+                                            <p:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msg.showcaserating}"/>
+                                                </f:facet>
+
+                                                <h:outputText value="#{singleShowcase.showcaseRating}"/>
+                                            </p:column>
+                                        </p:dataTable>
+
+                                        <h:panelGrid columns="2" cellpadding="3">
+                                            <p:commandButton value="#{msg.showcaseedit}" action="#{showcasemanagerBean.editShowcase()}"
+                                                             styleClass="autoScaledButton" id="editShowcase" icon="ui-icon-gear">
+                                                <f:setPropertyActionListener for="editShowcase" target="#{showcasemanagerBean.selectedViewObj}"
+                                                                             value="#{showcase}"/>
+                                            </p:commandButton>
+                                            <p:commandButton value="#{msg.showcasedelete}" oncomplete="confirmDeleteDialog.show()"
+                                                             styleClass="autoScaledButton" id="deleteShowcase" icon="ui-icon-closethick">
+                                                <f:setPropertyActionListener for="deleteShowcase" target="#{showcasemanagerBean.selectedViewObj}"
+                                                                             value="#{showcase}"/>
+                                            </p:commandButton>
+                                        </h:panelGrid>
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:fieldset>
+                        </p:dataGrid>
+
+                        <p:confirmDialog showEffect="explode" closable="true" closeOnEscape="true"
+                                         message="#{msg.confirmdelete}" widgetVar="confirmDeleteDialog">
+                            <h:panelGrid columns="2" cellpadding="5">
+                                <p:commandButton icon="ui-icon-check" value="#{msg.showcasedelete}" action="#{showcasemanagerBean.deleteShowcase()}"
+                                                 styleClass="autoScaledButton" onclick="confirmDeleteDialog.hide();" ajax="true" oncomplete="deleteShowcaseDialog.show();"
+                                                 update="content" process="@all"/>
+                                <p:commandButton icon="ui-icon-close" value="#{msg.cancel_button}" styleClass="autoScaledButton" onclick="confirmDeleteDialog.hide();"/>
+                            </h:panelGrid>
+                        </p:confirmDialog>
+
+                        <p:dialog widgetVar="deleteShowcaseDialog" modal="true" closable="false" 
+                                  draggable="true" showEffect="explode" resizable="true" 
+                                  styleClass="dialog" maximizable="true" minimizable="false">
+                            <p:messages showDetail="true" autoUpdate="true" closable="true" showSummary="false"/>
+                            <p:commandButton value="#{msg.okay_button}" onclick="deleteShowcaseDialog.hide();" 
+                                             ajax="false" icon="ui-icon-check"/>
+                        </p:dialog> 
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>
+

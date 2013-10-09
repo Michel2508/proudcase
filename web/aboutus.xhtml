@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:body>
+        <ui:composition template="templates/commontemp.xhtml">
+
+            <ui:define name="title">
+                <title>
+                    <h:outputFormat value="#{msg.default_title}">
+                        <f:param value="#{msg.aboutus_title}"/>
+                    </h:outputFormat>
+                </title>
+            </ui:define>
+
+            <ui:define name="content">
+                <h:form id="content" prependId="false">
+                    <h:panelGroup layout="block" styleClass="grid_9">
+                        <h:panelGroup layout="block" styleClass="content">
+                            <p:panel header="#{msg.aboutus_title}">
+                                <h:panelGrid columns="2" cellpadding="20" columnClasses="alignTopAndCenter">
+                                    <h:column>
+                                        <p:spacer height="5"/>
+                                        <h:graphicImage library="images" name="proudcase_logo.png" alt="Proudcase"
+                                                        title="Proudcase" width="250" height="170"/>
+                                    </h:column>
+
+                                    <h:column>
+                                        <h2>
+                                            <h:outputText value="#{msg.aboutproudcase_head}"/>
+                                        </h2>
+                                        <h:outputText value="#{msg.aboutproudcase_desc}"/>
+                                    </h:column>
+
+                                    <h:column>
+                                        <p:spacer height="10"/>
+                                        <p:graphicImage id="ceoimage" library="images" name="michel_vocks_1.jpg" title="Michel Vocks"
+                                                        alt="Michel Vocks" width="250" height="170"/>
+                                    </h:column>
+
+                                    <h:column>
+                                        <h2>
+                                            <h:outputText value="#{msg.aboutceoandcreator_head}"/>
+                                        </h2>
+                                        <h:outputText value="#{msg.aboutceoandcreator_desc}"/>
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:panel>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:form>
+            </ui:define>
+
+            <ui:define name="security"/>
+
+        </ui:composition>
+    </h:body>
+</html>

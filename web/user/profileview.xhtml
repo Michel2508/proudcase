@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:body>
+        <ui:composition template="/templates/commontemp.xhtml">
+            <ui:define name="title">
+                <f:metadata>
+                    <f:viewParam name="id" value="#{profileViewBean.userID}"/>
+                    <f:event type="preRenderView" listener="#{profileViewBean.init()}"/>
+                </f:metadata>
+
+                <title>
+                    <h:outputFormat value="#{msg.default_title}">
+                        <f:param value="#{msg.profil_title}"/>
+                    </h:outputFormat>
+                </title>
+            </ui:define>
+
+            <ui:define name="content">
+                <h:form id="content" prependId="false">
+                    <h:panelGroup layout="block" styleClass="grid_9">
+                        <h:panelGroup layout="block" styleClass="content">
+                            <p:panel header="#{msg.error}" rendered="#{!profileViewBean.rightsToLook}">
+                                <h2><h:outputLabel value="#{msg.norights}"/></h2>
+                            </p:panel>
+
+                            <h:panelGroup layout="block" rendered="#{authenticationBean.loggedIn}">
+                                <p:panel header="#{msg.profil_title} - #{profileViewBean.givenUser.toString()}"
+                                         rendered="#{profileViewBean.rightsToLook}">
+                                    <h:panelGrid columns="2" cellpadding="15" columnClasses="panelGridCol,settingsBorder">
+                                        <h:column>
+                                            <p:fieldset>
+                                                <h:graphicImage value="/resource/images/#{profileViewBean.givenUser.avatar.relativeimagepath}"
+                                                                rendered="#{profileViewBean.givenUser.avatar != null}"
+                                                                width="90" height="90" styleClass="ieRemoveBorder"/>
+                                                <h:graphicImage library="images" name="anonymus.png" width="90" height="90"
+                                                                rendered="#{profileViewBean.givenUser.avatar == null}" styleClass="ieRemoveBorder"/>
+                                            </p:fieldset>
+                                        </h:column>
+                                        <h:column>
+                                            <p:tabView>
+
+                                                <p:tab title="#{msg.informations}">
+                                                    <h:panelGrid columns="2" cellpadding="10">
+                                                        <h:outputLabel for="firstname" value="#{msg.firstname}:"/>
+                                                        <h:outputText id="firstname" value="#{profileViewBean.givenUser.firstname}"/>
+
+                                                        <h:outputLabel for="lastname" value="#{msg.lastname}:"/>
+                                                        <h:outputText id="lastname" value="#{profileViewBean.givenUser.lastname}"/>
+
+                                                        <h:outputLabel for="displayname" value="#{msg.nickname}:"
+                                                                       rendered="#{! empty profileViewBean.givenUser.displayname}"/>
+                                                        <h:outputText id="displayname" value="#{profileViewBean.givenUser.displayname}"
+                                                                      rendered="#{! empty profileViewBean.givenUser.displayname}"/>
+
+                                                        <h:outputLabel for="companyname" value="#{msg.companynick}:"
+                                                                       rendered="#{! empty profileViewBean.givenUser.companyname}"/>
+                                                        <h:outputText id="companyname" value="#{profileViewBean.givenUser.companyname}"
+                                                                      rendered="#{! empty profileViewBean.givenUser.companyname}"/>
+                                                        
+                                                        <h:outputLabel for="privileges" value="#{msg.privileges}:"/>
+                                                        <h:outputText id="privileges" styleClass="privilegesText"
+                                                                      value="#{sessionBean.privilegesText(profileViewBean.givenUser.userPrivs)}"/>
+
+                                                        <h:outputLabel for="birthdate" value="#{msg.birthname}:"
+                                                                       rendered="#{! empty profileViewBean.givenUser.birthdate}"/>
+                                                        <h:outputText id="birthdate" value="#{profileViewBean.givenUser.birthdate}"
+                                                                      rendered="#{! empty profileViewBean.givenUser.birthdate}">
+                                                            <f:convertDateTime dateStyle="full" type="date"
+                                                                               timeZone="#{constantsBean.TIMEZONE}"/>
+                                                        </h:outputText>
+
+                                                        <h:outputLabel for="livingplace" value="#{msg.residence}"
+                                                                       rendered="#{! empty profileViewBean.givenUser.livingplace}"/>
+                                                        <h:outputText id="livingplace" value="#{profileViewBean.givenUser.livingplace}"
+                                                                      rendered="#{! empty profileViewBean.givenUser.livingplace}"/>
+
+                                                        <h:outputLabel for="job" value="#{msg.jobnick}:" 
+                                                                       rendered="#{! empty profileViewBean.givenUser.jobname}"/>
+                                                        <h:outputText id="job" value="#{profileViewBean.givenUser.jobname}"
+                                                                      rendered="#{! empty profileViewBean.givenUser.jobname}"/>
+
+                                                        <h:outputLabel for="interests" value="#{msg.hobbynick}:"
+                                                                       rendered="#{! empty profileViewBean.givenUser.interestedin}"/>
+                                                        <h:outputText id="interests" value="#{profileViewBean.givenUser.interestedin}"
+                                                                      rendered="#{! empty profileViewBean.givenUser.interestedin}"/>
+                                                    </h:panelGrid>
+                                                </p:tab>
+
+                                                <p:tab title="#{msg.contact}">
+                                                    <h:panelGrid columns="2" cellpadding="10">
+                                                        <h:outputLabel for="homepage" value="#{msg.hpurlnick}:"
+                                                                       rendered="#{! empty profileViewBean.givenUser.homepageurl}"/>
+                                                        <h:outputLink id="homepage" value="#{profileViewBean.givenUser.homepageurl}"
+                                                                      rendered="#{! empty profileViewBean.givenUser.homepageurl}">
+                                                            <h:outputText value="#{profileViewBean.givenUser.homepageurl}"/>
+                                                        </h:outputLink>
+
+                                                        <h:outputLabel for="icq" value="#{msg.icqnick}:"
+                                                                       rendered="#{! empty profileViewBean.givenUser.icqnumber}"/>
+                                                        <h:column>
+                                                            <h:outputText id="icq" value="#{profileViewBean.givenUser.icqnumber}"
+                                                                          rendered="#{! empty profileViewBean.givenUser.icqnumber}"/>
+                                                            <p:spacer width="10"/>
+                                                            <h:graphicImage value="#{profileViewBean.icqurl}"
+                                                                            rendered="#{! empty profileViewBean.givenUser.icqnumber}"/>
+                                                        </h:column>
+
+                                                        <h:outputLabel for="aim" value="#{msg.aimnick}:"
+                                                                       rendered="#{! empty profileViewBean.givenUser.aimname}"/>
+                                                        <h:outputText id="aim" value="#{profileViewBean.givenUser.aimname}"
+                                                                      rendered="#{! empty profileViewBean.givenUser.aimname}"/>
+
+                                                        <h:outputLabel for="msn" value="#{msg.msnnick}:"
+                                                                       rendered="#{! empty profileViewBean.givenUser.msnname}"/>
+                                                        <h:outputText id="msn" value="#{profileViewBean.givenUser.msnname}"/>
+
+                                                        <h:outputLabel for="skype" value="#{msg.skypenick}:"
+                                                                       rendered="#{! empty profileViewBean.givenUser.skypename}"/>
+                                                        <h:outputText id="skype" value="#{profileViewBean.givenUser.skypename}"
+                                                                      rendered="#{! empty profileViewBean.givenUser.skypename}"/>
+                                                    </h:panelGrid>
+                                                </p:tab>
+
+                                            </p:tabView>
+                                        </h:column>
+                                    </h:panelGrid>
+                                </p:panel>
+                            </h:panelGroup>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:form>
+            </ui:define>
+
+            <ui:define name="security"/>
+        </ui:composition>
+    </h:body>
+</html>
+

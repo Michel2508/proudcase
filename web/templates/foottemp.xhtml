@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+        <h:panelGroup layout="block" styleClass="grid_12">
+            <h:panelGroup layout="block" styleClass="footer">
+                <p:panel header="">
+                    <h:panelGroup layout="block" styleClass="grid_8">
+                        <h:panelGrid columns="1" cellpadding="10">
+                            <h:outputText value="#{msg.copyright}"/>
+                        </h:panelGrid>
+                    </h:panelGroup>
+
+                    <h:panelGrid columns="3" cellpadding="5" columnClasses="rightAlign,rightAlign,rightAlign" > 
+                        <h:outputLink value="#{navigationBean.navigateToAboutUs()}">
+                            <h:outputText value="#{msg.aboutus_title}"/>
+                        </h:outputLink>
+                        <h:outputLink value="#{navigationBean.navigateToInfoPage()}">
+                            <h:outputText value="#{msg.submenu_0_2}"/>
+                        </h:outputLink>
+                        <h:outputLink value="#{navigationBean.navigateToTerms()}">
+                            <h:outputText value="#{msg.terms_title}"/>
+                        </h:outputLink>
+                    </h:panelGrid>
+                </p:panel>
+            </h:panelGroup>
+        </h:panelGroup>
+    </ui:composition>
+</html>
+

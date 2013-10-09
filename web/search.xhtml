@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:body>
+        <ui:composition template="templates/commontemp.xhtml">
+
+            <ui:define name="title">
+                <f:metadata>
+                    <f:viewParam name="searchQuery" value="#{searchBean.inputSearch}"/>
+                    <f:viewParam name="categorieString" value="#{searchBean.currentSelection}"/>
+                    <f:event listener="#{searchBean.search()}" type="preRenderView"/>
+                </f:metadata>
+
+                <title>
+                    <h:outputFormat value="#{msg.default_title}">
+                        <f:param value="#{msg.search}"/>
+                    </h:outputFormat>
+                </title>
+            </ui:define>
+
+            <ui:define name="content">
+                <h:form id="content">
+                    <h:panelGroup layout="block" styleClass="grid_9">
+                        <h:panelGroup layout="block" styleClass="content">
+                            <p:panel header="#{msg.search}" id="search" styleClass="tabViewMargin">
+                                <p:inputText id="searchBar" value="#{searchBean.inputSearch}" 
+                                             styleClass="indexSearchBar"/>
+                                <p:watermark for="searchBar" value="#{msg.index_searchwatermark}"/>
+                                <p:commandButton value="#{msg.search}" icon="ui-icon-search" 
+                                                 styleClass="indexSearchButton" ajax="false"/>
+                            </p:panel>
+
+                            <p:fieldset legend="#{msg.categorie}" toggleable="true" styleClass="tabViewMargin">
+                                <h:panelGrid columns="2" cellpadding="5">
+                                    <h:outputLabel for="categorieMenu" value="#{msg.categorie}"/>
+                                    <p:selectOneMenu id="categorieMenu" value="#{searchBean.currentSelection}"
+                                                     effect="drop" styleClass="selectOneMenu">
+                                        <f:selectItems value="#{searchBean.categorieList}"/>
+                                    </p:selectOneMenu>
+                                </h:panelGrid>
+                            </p:fieldset>
+
+                            <p:panel header="#{msg.search}" id="searchPanel">
+                                <p:dataGrid id="searchGrid" var="searchResult" columns="1" rows="20" value="#{searchBean.lazySearchResultList}"
+                                            paginator="true" lazy="true" rowsPerPageTemplate="15,20,30"
+                                            paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} 
+                                            {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
+                                    <p:fieldset toggleable="true" legend="#{searchResult.showcaseTitle}">
+                                        <h:outputLink value="#{constantsBean.DISPLAYSHOWCASE}#{searchResult.showcaseID}">
+                                            <h:panelGrid columns="2" cellpadding="10" columnClasses="alignTopAndCenter">
+                                                <h:graphicImage value="/resource/images/#{searchResult.frontImage.relativeimagepath}"
+                                                                width="#{imageScaleBean.width(searchResult.frontImage, 150)}"
+                                                                height="#{imageScaleBean.height(searchResult.frontImage, 150)}"
+                                                                title="#{searchResult.frontImage.imageName}" styleClass="ieRemoveBorder"
+                                                                rendered="#{searchResult.frontImage != null}"/>
+                                                <h:graphicImage library="images" name="proudcase_logo.png" width="150" height="150"
+                                                                rendered="#{searchResult.frontImage == null}" styleClass="ieRemoveBorder"/>
+                                                <h:outputText value="#{searchResult.showcaseText}"/>
+                                            </h:panelGrid>
+                                        </h:outputLink>
+                                    </p:fieldset>
+                                </p:dataGrid>
+                            </p:panel>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:form>
+            </ui:define>
+
+            <ui:define name="security"/>
+
+        </ui:composition>
+    </h:body>
+</html>

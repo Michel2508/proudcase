@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:body>
+        <ui:composition template="templates/commontemp.xhtml">
+
+            <ui:define name="title">
+                <f:metadata>
+                    <f:viewParam name="registerid" value="#{registrationBean.registerId}"/>
+                    <f:event type="preRenderView" listener="#{registrationBean.init()}"/>
+                </f:metadata>
+
+                <title>
+                    <h:outputFormat value="#{msg.default_title}">
+                        <f:param value="#{msg.register}"/>
+                    </h:outputFormat>
+                </title>
+            </ui:define>
+
+            <ui:define name="content">
+                <h:form id="content">
+                    <h:panelGroup layout="block" styleClass="grid_9">
+                        <h:panelGroup layout="block" styleClass="content">
+                            <p:messages autoUpdate="false" closable="true" id="registerMessage"
+                                        redisplay="true" showSummary="false" showDetail="true"/>
+
+                            <f:subview id="activateAcc">
+                                <p:panel header="#{msg.register}" styleClass="marginTop">
+                                    <h:outputFormat value="#{msg.redirectinformation}" id="redirectInfo">
+                                        <f:param value="#{registrationBean.redirectCountAsString}"/>
+                                    </h:outputFormat>
+                                    <p:poll interval="1" listener="#{registrationBean.redirectCounter}" 
+                                            update=":content:activateAcc:redirectInfo"/>
+                                </p:panel>
+                            </f:subview>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:form>
+            </ui:define>
+
+            <ui:define name="security"/>
+
+        </ui:composition>
+    </h:body>
+</html>

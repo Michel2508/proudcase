@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+        <h:form id="contentnav" enctype="multipart/form-data">
+            <h:panelGroup id="over" layout="block" styleClass="grid_3">
+                <h:panelGroup id="overtwo" layout="block" styleClass="contentnav">
+                    <p:panel id="registering" header="#{msg.register}" styleClass="tabViewMargin" 
+                             rendered="#{!authenticationBean.loggedIn}">
+                        <p:outputPanel id="registerPanel">
+                            <h:outputLabel value="#{msg.firstname} (#{msg.optional})" for="firstname"/><br/>
+                            <p:inputText id="firstname" value="#{registrationBean.newUser.firstname}"/>
+                            <br/><br/>
+
+                            <h:outputLabel value="#{msg.lastname} (#{msg.optional})" for="lastname"/><br/>
+                            <p:inputText id="lastname" value="#{registrationBean.newUser.lastname}"/>
+                            <br/><br/>
+
+                            <h:outputLabel value="#{msg.nickname}" for="nickname"/><br/>
+                            <p:inputText id="nickname" value="#{registrationBean.newUser.displayname}"/>
+                            <br/><br/>
+
+                            <h:outputLabel value="#{msg.email}" for="emailReg"/><br/>
+                            <p:inputText id="emailReg" value="#{registrationBean.newUser.username}"/>
+                            <br/><br/>
+
+                            <h:outputLabel value="#{msg.password}" for="passwordReg"/><br/>
+                            <p:password id="passwordReg" 
+                                        value="#{registrationBean.newUser.password}" feedback="true"/>
+                            <br/><br/>
+
+                            <h:outputLabel value="#{msg.passwort_again}" for="passwordagain"/><br/>
+                            <p:password id="passwordagain" feedback="false" value="#{registrationBean.passwordAgain}"/>
+                            <br/><br/>
+
+                            <p:commandButton id="submit" value="#{msg.register}" ajax="false" update="submitDialog" 
+                                             action="#{registrationBean.register()}"/>
+                        </p:outputPanel>
+                    </p:panel>
+
+                    <p:panel header="#{msg.contentnav_createshowcase}" id="contentnavShowcase" styleClass="tabViewMargin">
+                        <h:panelGrid columns="2" cellpadding="5">
+                            <h:outputLink value="#{navigationBean.navigateToNewShowcase()}">
+                                <h:graphicImage library="images" name="proudcase_s.png" 
+                                                title="Showcase" width="70" height="50" styleClass="ieRemoveBorder"/>
+                            </h:outputLink>
+                            <h:outputLink value="#{navigationBean.navigateToNewShowcase()}">
+                                <h:outputText value="#{msg.contentnav_showcasetext}"/>
+                            </h:outputLink>
+                        </h:panelGrid>
+                    </p:panel>
+
+                    <p:carousel id="topTenCarousel" value="#{topTenUserBean.topTenUsers}" autoPlayInterval="4000"
+                                rendered="#{topTenUserBean.topTenUsers.size() > 0}" numVisible="1" circular="true"
+                                var="user" headerText="#{msg.index_toptenusers}" effect="easeInStrong" vertical="true">
+                        <p:panel styleClass="topUsersCarousel">
+                            <h:outputLink value="#{navigationBean.navigateToProfileView()}?id=#{user.id.toString()}">
+                                <h:panelGrid columns="1" cellpadding="2" columnClasses="centerPosition">
+                                    <h:outputText value="#{user.toString()}"/>
+
+                                    <h:column>
+                                        <h:graphicImage value="/resource/images/#{user.avatar.relativeimagepath}"
+                                                        rendered="#{user.avatar != null}"
+                                                        width="#{imageScaleBean.width(user.avatar, 165)}" 
+                                                        height="#{imageScaleBean.height(user.avatar, 165)}"/>
+                                        <p:spacer width="165" height="1"/>
+                                        <h:graphicImage library="images" name="anonymus.png" width="165" height="165"
+                                                        rendered="#{user.avatar == null}"/>
+                                    </h:column>
+                                </h:panelGrid> 
+                            </h:outputLink>
+                        </p:panel>
+                    </p:carousel>
+
+                    <p:panel id="topOneShowcase" header="#{msg.contentnav_topone}" rendered="#{topShowcaseBean.topShowcaseView != null}"
+                             styleClass="marginTop">
+                        <h:outputLink value="#{constantsBean.DISPLAYSHOWCASE}#{topShowcaseBean.topShowcaseView.showcaseID}">
+                            <h:panelGrid columns="1" cellpadding="5" columnClasses="centerPosition" style="margin: auto;">
+                                <h:graphicImage id="topShowcaseImage" title="#{topShowcaseBean.topShowcaseView.frontImage.imageName}"
+                                                value="/resource/images/#{topShowcaseBean.topShowcaseView.frontImage.relativeimagepath}"
+                                                rendered="#{topShowcaseBean.topShowcaseView.frontImage != null}" styleClass="ieRemoveBorder"
+                                                width="#{imageScaleBean.width(topShowcaseBean.topShowcaseView.frontImage, 170)}" 
+                                                height="#{imageScaleBean.height(topShowcaseBean.topShowcaseView.frontImage, 170)}"/>
+                                <h:graphicImage library="images" name="proudcase_logo.png" width="170" height="170" styleClass="ieRemoveBorder"
+                                                rendered="#{topShowcaseBean.topShowcaseView.frontImage == null}"/>
+                                <h:outputText value="#{topShowcaseBean.topShowcaseView.showcaseTitle}"/>
+                            </h:panelGrid>
+                        </h:outputLink>
+                    </p:panel>
+
+                    <p:dialog widgetVar="submitDialog" modal="true" closable="false"
+                              draggable="false" showEffect="explode" hideEffect="explode"
+                              resizable="false" styleClass="dialog"
+                              visible="#{registrationBean.showDialog}">
+                        <p:messages showDetail="true" autoUpdate="false"/>
+                        <p:commandButton value="#{msg.okay_button}" oncomplete="submitDialog.hide();"
+                                         ajax="true" actionListener="#{registrationBean.switchShowDialog()}"/>
+                    </p:dialog>
+                </h:panelGroup>
+            </h:panelGroup>
+        </h:form>
+    </ui:composition>
+
+
+</html>
+

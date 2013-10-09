@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:body>
+        <ui:composition template="/templates/commontemp.xhtml">
+            <ui:define name="title">
+                <title>
+                    <h:outputFormat value="#{msg.default_title}">
+                        <f:param value="#{msg.messages_title}"/>
+                    </h:outputFormat>
+                </title>
+            </ui:define>
+
+            <ui:define name="content">
+                <h:form id="content" rendered="#{authenticationBean.loggedIn}">
+                    <!-- reset all messages which are already read -->
+                    <h:panelGroup layout="block" styleClass="grid_9" rendered="#{messagesCenterBean.resetReachedMessages}">
+                        <h:panelGroup layout="block" styleClass="content">
+                            <p:panel header="#{msg.write_msg}" styleClass="tabViewMargin">
+                                <h:panelGrid columns="1" cellpadding="10">
+                                    <h:column>
+                                        <h:outputLabel value="#{msg.receiver}:" for="userSearch" styleClass="fontBold"/>
+                                        <br />
+                                        <p:autoComplete value="#{messagesCenterBean.receiver}" completeMethod="#{userFindBean.completeFriend}"
+                                                        var="user" itemLabel="#{user.firstname} #{user.lastname}"
+                                                        itemValue="#{user}" converter="UserConverter" minQueryLength="2"
+                                                        forceSelection="true" id="userSearch">
+                                            <p:column>
+                                                <h:graphicImage value="/resource/images/#{user.avatar.relativeimagepath}" 
+                                                                rendered="#{user.avatar != null}" styleClass="ieRemoveBorder"
+                                                                width="#{imageScaleBean.width(user.avatar, 65)}" 
+                                                                height="#{imageScaleBean.height(user.avatar, 65)}"/>
+                                                <h:graphicImage library="images" name="anonymus.png" width="65" height="65"
+                                                                rendered="#{user.avatar == null}" styleClass="ieRemoveBorder"/>
+                                            </p:column>
+
+                                            <p:column>
+                                                <h:outputText value="#{user.toString()}"/>
+                                            </p:column>
+                                        </p:autoComplete>
+                                    </h:column>
+                                    <h:column>
+                                        <h:outputLabel value="#{msg.write_msg}:" for="newMessage" styleClass="fontBold"/>
+                                        <p:editor id="newMessage" value="#{messagesCenterBean.newMessage.message}"
+                                                  required="true" requiredMessage="#{msg.msgisempty}"/>
+                                    </h:column>
+                                    <h:column>
+                                        <p:commandButton value="#{msg.submit}" actionListener="#{messagesCenterBean.sendMessage}"
+                                                         oncomplete="submitDialog.show()" update=":content"/>
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:panel>
+
+                            <p:dialog widgetVar="submitDialog" modal="true" closable="true" 
+                                      draggable="true" showEffect="explode"
+                                      resizable="true" styleClass="dialog" maximizable="true" minimizable="true">
+                                <p:messages showDetail="false" autoUpdate="true" closable="true" globalOnly="true" redisplay="true"/>
+                                <p:commandButton value="#{msg.okay_button}" onclick="submitDialog.hide();" ajax="false"/>
+                            </p:dialog>
+
+                            <p:panel header="#{msg.messages_title}" rendered="#{! empty messagesCenterBean.messagesList}" id="messagesPanel">
+                                <f:subview id="messagesCarousel">
+                                    <p:carousel value="#{messagesCenterBean.messagesList}" var="singleMessage" easing="easeOutBounce"
+                                                numVisible="1">
+                                        <p:panel header="#{singleMessage.nickname} - #{messagesCenterBean.messageStatusText(singleMessage)}" 
+                                                 footer="#{singleMessage.sendDateToString}" style="width: 640px !important;white-space: normal;">
+                                            <h:panelGroup layout="block" styleClass="panelGridCol">
+                                                <h:graphicImage value="/resource/images/#{singleMessage.avatar.relativeimagepath}"
+                                                                rendered="#{singleMessage.avatar != null}" styleClass="ieRemoveBorder"
+                                                                width="#{imageScaleBean.width(singleMessage.avatar, 100)}"
+                                                                height="#{imageScaleBean.height(singleMessage.avatar, 100)}"/>
+                                                <h:graphicImage library="images" name="anonymus.png" width="100" height="100"
+                                                                rendered="#{singleMessage.avatar == null}" styleClass="ieRemoveBorder"/>
+                                            </h:panelGroup>
+                                            <h:panelGroup layout="block" styleClass="messagesDirection">
+                                                <h:outputText value="#{singleMessage.message}" escape="false"/>
+                                            </h:panelGroup>
+                                            <p:separator styleClass="smallSeparator"/>
+                                            <h:panelGroup layout="block" rendered="#{!singleMessage.invitationMessage}">
+                                                <p:commandButton value="#{msg.message_delete}" oncomplete="submitDialog.show()"
+                                                                 immediate="true" update=":content" 
+                                                                 actionListener="#{messagesCenterBean.deleteMessage(singleMessage.messageid)}"/>
+                                            </h:panelGroup>
+                                            <h:panelGroup layout="block" rendered="#{singleMessage.invitationMessage}">
+                                                <p:commandButton value="#{msg.invitation_accept}" oncomplete="submitDialog.show()"
+                                                                 actionListener="#{messagesCenterBean.acceptInvitation(singleMessage.messageid)}"
+                                                                 immediate="true" update=":content"/>
+                                                <p:spacer width="10"/>
+                                                <p:commandButton value="#{msg.cancel_button}" oncomplete="submitDialog.show()"
+                                                                 actionListener="#{messagesCenterBean.canceledInvitation(singleMessage.messageid)}"
+                                                                 immediate="true" update=":content"/>
+                                            </h:panelGroup>
+                                        </p:panel>
+                                    </p:carousel>
+                                </f:subview>
+                            </p:panel>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

@@ -1,0 +1,348 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/templates/commontemp.xhtml">
+        <ui:define name="title">
+            <f:metadata>
+                <f:viewParam name="showcaseid" value="#{newShowcaseBean.showcaseId}"/>
+                <f:event listener="#{newShowcaseBean.initShowcase()}" type="preRenderView"/>
+            </f:metadata>
+
+            <title>
+                <h:outputFormat value="#{msg.default_title}">
+                    <f:param value="#{msg.newshowcase_title}"/>
+                </h:outputFormat>
+            </title>
+        </ui:define>
+
+        <ui:define name="content">
+            <h:form id="content" enctype="multipart/form-data" rendered="#{authenticationBean.loggedIn}">
+                <h:panelGroup layout="block" styleClass="grid_9">
+                    <h:panelGroup layout="block" styleClass="content">
+                        <p:wizard widgetVar="newcase" backLabel="#{msg.back}"
+                                  nextLabel="#{msg.next}" 
+                                  flowListener="#{newShowcaseBean.onFlowProcess}">
+
+                            <p:tab id="settings" title="#{msg.settings}">
+                                <p:panel header="#{msg.managesettings}">
+                                    <p:messages autoUpdate="true" showDetail="false" />
+                                    <h:panelGrid columns="3" columnClasses="panelGridData">
+                                        <h:outputLabel value="#{msg.categorie}: " for="categories"/>
+                                        <p:selectOneMenu id="categories" required="false" 
+                                                         value="#{newShowcaseBean.categorieSelect}"
+                                                         styleClass="selectOneMenu" effect="drop">
+                                            <f:selectItem itemLabel="#{msg.choicecate}" itemValue=""/>
+                                            <f:selectItems value="#{newShowcaseBean.categorieList}"/>
+                                        </p:selectOneMenu>
+                                        <p:message for="categories" display="icon"/>
+
+                                        <h:outputLabel value="#{msg.visibility}" for="visible"/>
+                                        <p:selectOneMenu id="visible" 
+                                                         value="#{newShowcaseBean.singleShowcase.visibility}"
+                                                         effect="drop" styleClass="selectOneMenu">
+                                            <f:selectItems value="#{sessionBean.visibleNames}"/>
+                                        </p:selectOneMenu>
+                                        <p:message for="visible" display="icon"/>
+
+                                        <h:outputLabel value="#{msg.sendmsgtofriends}" for="sendmsg"/>
+                                        <p:selectBooleanCheckbox value="#{newShowcaseBean.sendMsg}" id="sendmsg"/>
+                                        <p:message for="sendmsg" display="icon"/>
+                                    </h:panelGrid>
+
+                                    <p:separator styleClass="separator"/>
+
+                                    <p:fieldset legend="#{msg.multilangual}">
+                                        <h:panelGrid columns="2">
+                                            <p:pickList value="#{newShowcaseBean.languages}" var="lang"
+                                                        itemLabel="#{lang}" itemValue="#{lang}" required="true" 
+                                                        id="langComp" requiredMessage="#{msg.langpicklistrequired}">
+                                                <p:ajax event="transfer" listener="#{newShowcaseBean.onTransfer}"/>
+
+                                                <f:facet name="sourceCaption">
+                                                    <h:outputText value="#{msg.picklangsource}"/>
+                                                </f:facet>
+
+                                                <f:facet name="targetCaption">
+                                                    <h:outputText value="#{msg.picklangtarget}"/>
+                                                </f:facet>
+                                            </p:pickList>
+                                            <p:message for="langComp" display="icon"/>
+                                        </h:panelGrid>
+                                    </p:fieldset>
+                                </p:panel>
+                            </p:tab>
+
+                            <p:tab id="createcase" title="#{msg.createshowcase}">
+                                <p:panel header="#{msg.createshowcase}">
+                                    <ui:repeat value="#{newShowcaseBean.manyShowcaseText}"
+                                               var="showcasetext">
+                                        <p:fieldset legend="#{sessionBean.localeAsString(showcasetext.lang)}">
+                                            <h:panelGrid columns="1">
+                                                <h:outputLabel value="#{msg.title}: " for="title"/>
+                                                <p:inputText id="title" required="true" requiredMessage="#{msg.requiredinfo}"
+                                                             value="#{showcasetext.title}" maxlength="#{constantsBean.MAXCHARSSHOWCASETITLE}"
+                                                             styleClass="largeinputfield"/>
+                                                <p:message for="title"/>
+
+                                                <h:outputText value="#{msg.insertdescription} #{sessionBean.localeAsString(showcasetext.lang)}:"/>
+                                                <p:editor value="#{showcasetext.explaintext}"
+                                                          widgetVar="editor" styleClass="editorComp"/>
+                                            </h:panelGrid>
+                                        </p:fieldset>
+                                        <p:separator styleClass="separator"/>
+                                    </ui:repeat>
+                                </p:panel>
+                            </p:tab>
+
+                            <p:tab id="addmedia" title="#{msg.addmedia}">
+                                <p:panel header="#{msg.addmedia}" >
+                                    <p:messages autoUpdate="true" id="errorDisplay" showDetail="true"
+                                                showSummary="false"/>
+                                    <p:spacer height="10"/>
+                                    <h:form enctype="multipart/form-data">
+                                        <p:fileUpload widgetVar="maximumUpload" id="multiUpload" 
+                                                      allowTypes="/(\.|\/)(gif|jpe?g|png)$/" 
+                                                      fileUploadListener="#{newShowcaseBean.handlePictureUpload}"  
+                                                      mode="advanced"  
+                                                      auto="true"
+                                                      multiple="true"  
+                                                      update=":content:imageGalleria"
+                                                      label="#{msg.addpicture}"
+                                                      dragDropSupport="true"
+                                                      sizeLimit="#{constantsBean.UPLOADSIZELIMIT}"/>
+                                    </h:form>
+                                    <p:spacer height="30"/>
+                                    <p:dataGrid value="#{newShowcaseBean.imageList}" var="picture" columns="3" paginator="false"
+                                                id="imageGalleria" lazy="true" emptyMessage="#{msg.noimagesavailable}">
+                                            <h:panelGrid columns="1" cellpadding="5" columnClasses="centerPosition">
+                                                <p:lightBox>
+                                                    <h:outputLink value="#{request.contextPath}/resource/#{newShowcaseBean.convertRelativeImagePath(picture)}" 
+                                                                  title="#{picture.imageName}">
+                                                        <h:graphicImage value="/resource/#{newShowcaseBean.convertRelativeImagePath(picture)}"
+                                                                        width="#{imageScaleBean.width(picture, 150)}" 
+                                                                        height="#{imageScaleBean.height(picture, 150)}" styleClass="ieRemoveBorder"/>
+                                                    </h:outputLink>
+                                                </p:lightBox>
+                                                <p:spacer height="#{135-imageScaleBean.height(picture, 150)}" width="165"
+                                                              rendered="#{imageScaleBean.height(picture, 150)!=150}" styleClass="ieRemoveBorder"/>
+                                                <h:column>
+                                                    <p:commandButton value="#{msg.delete}" update=":content:imageGalleria" action="#{newShowcaseBean.deleteImageFromList}"
+                                                                     process=":content:imageGalleria" id="deleteimage" style="">
+                                                        <f:setPropertyActionListener for="deleteimage" target="#{newShowcaseBean.deleteImageCache}"
+                                                                                     value="#{picture}"/>
+                                                    </p:commandButton>
+                                                </h:column>
+                                            </h:panelGrid>
+                                    </p:dataGrid>
+                                    <p:spacer height="10"/>
+                                    <p:separator styleClass="separator"/>
+                                    <p:spacer height="10"/>
+                                    <p:message for="addvideo"/>
+                                    <p:panel header="#{msg.addvidexpl}" id="addvideo">  
+                                        <p:spacer height="10"/>
+                                        <h:outputLabel value="Youtube-Url: " for="txt_url"></h:outputLabel>  
+                                        <p:inputText id="txt_url"   
+                                                     value="#{newShowcaseBean.singleVideoLink.videolink}"/>  
+
+                                        <p:commandButton value="#{msg.add}" update="videos @parent"  
+                                                         actionListener="#{newShowcaseBean.addVideoLink}"/>  
+                                        <p:commandButton value="#{msg.reset}" type="reset"/>  
+                                    </p:panel>  
+                                    <p:spacer height="30"/>
+                                    <p:fieldset id="videos" legend="#{msg.addvideo}">  
+                                        <ui:repeat value="#{newShowcaseBean.videoLinks}" var="video">
+                                            <p:media value="#{video.videolink}" player="flash"
+                                                     width="500" height="300"/>
+                                            <p:spacer width="10"/>
+                                            <p:commandButton value="#{msg.delete}" update=":content:videos" action="#{newShowcaseBean.deleteVideoFromList}"
+                                                             process=":content:videos" id="deletevideo" styleClass="largebutton">
+                                                <f:setPropertyActionListener for="deletevideo" target="#{newShowcaseBean.deleteVideoCache}"
+                                                                             value="#{video}"/>
+                                            </p:commandButton>
+                                            <p:separator styleClass="separator"/>
+                                        </ui:repeat>
+                                    </p:fieldset>
+                                </p:panel>
+                            </p:tab>
+
+                            <p:tab id="sortmedia" title="#{msg.sortmedia}">
+                                <h:form prependId="false">
+                                    <p:fieldset legend="#{msg.sortpics}">
+                                        <p:messages showDetail="true" showSummary="true" redisplay="false"/>
+                                        <p:spacer height="20"/>
+                                        <p:panel header="#{msg.availpics}">
+                                            <p:dataGrid id="availablePics" value="#{newShowcaseBean.imageList}" var="image" columns="4">
+                                                <p:column>
+                                                    <p:graphicImage id="singleImage" value="/resource/#{newShowcaseBean.convertRelativeImagePath(image)}"
+                                                                    width="#{imageScaleBean.width(image, 100)}"  styleClass="ieRemoveBorder"
+                                                                    height="#{imageScaleBean.width(image, 100)}"/>
+                                                    <p:draggable id="dragable" for="singleImage" revert="true" snap="true" />
+                                                </p:column>
+                                            </p:dataGrid>
+                                        </p:panel>
+                                    </p:fieldset>
+                                    <p:spacer height="50"/>
+                                    <h:panelGrid columns="5">
+                                        <h:column>
+                                            <p:outputPanel id="slot1" styleClass="slot">
+                                                <h:outputLabel value="1" styleClass="slotNumber"/>
+                                                <p:droppable activeStyleClass="slotActive" datasource="availablePics">
+                                                    <p:ajax listener="#{newShowcaseBean.onPictureDrop}"/>
+                                                </p:droppable>
+                                            </p:outputPanel>
+                                        </h:column>
+                                        <h:column>
+                                            <p:outputPanel id="slot2" styleClass="slot">
+                                                <h:outputLabel value="2" styleClass="slotNumber"/>
+                                                <p:droppable activeStyleClass="slotActive" datasource="availablePics">
+                                                    <p:ajax listener="#{newShowcaseBean.onPictureDrop}"/>
+                                                </p:droppable>
+                                            </p:outputPanel>
+                                        </h:column>
+                                        <h:column>
+                                            <p:outputPanel id="slot3" styleClass="slot">
+                                                <h:outputLabel value="3" styleClass="slotNumber"/>
+                                                <p:droppable activeStyleClass="slotActive" datasource="availablePics">
+                                                    <p:ajax listener="#{newShowcaseBean.onPictureDrop}"/>
+                                                </p:droppable>
+                                            </p:outputPanel>
+                                        </h:column>
+                                        <h:column>
+                                            <p:outputPanel id="slot4" styleClass="slot">
+                                                <h:outputLabel value="4" styleClass="slotNumber"/>
+                                                <p:droppable activeStyleClass="slotActive" datasource="availablePics">
+                                                    <p:ajax listener="#{newShowcaseBean.onPictureDrop}"/>
+                                                </p:droppable>
+                                            </p:outputPanel>
+                                        </h:column>
+                                        <h:column>
+                                            <p:outputPanel id="slot5" styleClass="slot">
+                                                <h:outputLabel value="5" styleClass="slotNumber"/>
+                                                <p:droppable activeStyleClass="slotActive" datasource="availablePics">
+                                                    <p:ajax listener="#{newShowcaseBean.onPictureDrop}"/>
+                                                </p:droppable>
+                                            </p:outputPanel>
+                                        </h:column>
+                                        <h:column>
+                                            <p:outputPanel id="slot6" styleClass="slot">
+                                                <h:outputLabel value="6" styleClass="slotNumber"/>
+                                                <p:droppable activeStyleClass="slotActive" datasource="availablePics">
+                                                    <p:ajax listener="#{newShowcaseBean.onPictureDrop}"/>
+                                                </p:droppable>
+                                            </p:outputPanel>
+                                        </h:column>
+                                        <h:column>
+                                            <p:outputPanel id="slot7" styleClass="slot">
+                                                <h:outputLabel value="7" styleClass="slotNumber"/>
+                                                <p:droppable activeStyleClass="slotActive" datasource="availablePics">
+                                                    <p:ajax listener="#{newShowcaseBean.onPictureDrop}"/>
+                                                </p:droppable>
+                                            </p:outputPanel>
+                                        </h:column>
+                                        <h:column>
+                                            <p:outputPanel id="slot8" styleClass="slot">
+                                                <h:outputLabel value="8" styleClass="slotNumber"/>
+                                                <p:droppable activeStyleClass="slotActive" datasource="availablePics">
+                                                    <p:ajax listener="#{newShowcaseBean.onPictureDrop}"/>
+                                                </p:droppable>
+                                            </p:outputPanel>
+                                        </h:column>
+                                        <h:column>
+                                            <p:outputPanel id="slot9" styleClass="slot">
+                                                <h:outputLabel value="9" styleClass="slotNumber"/>
+                                                <p:droppable activeStyleClass="slotActive" datasource="availablePics">
+                                                    <p:ajax listener="#{newShowcaseBean.onPictureDrop}"/>
+                                                </p:droppable>
+                                            </p:outputPanel>
+                                        </h:column>
+                                        <h:column>
+                                            <p:outputPanel id="slot10" styleClass="slot">
+                                                <h:outputLabel value="10" styleClass="slotNumber"/>
+                                                <p:droppable activeStyleClass="slotActive" datasource="availablePics">
+                                                    <p:ajax listener="#{newShowcaseBean.onPictureDrop}"/>
+                                                </p:droppable>
+                                            </p:outputPanel>
+                                        </h:column>
+                                    </h:panelGrid>
+                                </h:form>
+                            </p:tab>
+
+                            <p:tab id="done" title="#{msg.showcasedone}">
+                                <p:panel header="#{msg.showcasedone}" styleClass="tabViewMargin">
+                                    <p:messages autoUpdate="false" closable="true" showDetail="true" showSummary="false"/>
+                                    <p:toolbar>
+                                        <p:toolbarGroup align="left">
+                                            <p:commandButton value="#{msg.openforjury}" actionListener="#{newShowcaseBean.makeShowcasePublic}" 
+                                                             oncomplete="newShowcaseDialog.show();" icon="ui-icon-circle-check"/>
+                                            <p:separator/>
+                                            <p:commandButton value="#{msg.edit}" onclick="newcase.loadStep('settings', true);"
+                                                             icon="ui-icon-gear"/>
+                                            <p:separator/>
+                                            <p:commandButton value="#{msg.delete}" actionListener="#{newShowcaseBean.deleteShowcase}"
+                                                             oncomplete="deleteShowcaseDialog.show();" icon="ui-icon-closethick"/>
+                                        </p:toolbarGroup>
+                                    </p:toolbar>
+                                </p:panel>
+
+                                <p:tabView dynamic="true" cache="true" effect="drop" 
+                                           rendered="#{newShowcaseBean.imageList.size() > 0 || newShowcaseBean.videoLinks.size() > 0}"
+                                           styleClass="tabViewMargin">
+                                    <p:tab title="#{msg.images}" rendered="#{newShowcaseBean.imageList.size() > 0}">
+                                        <f:subview id="imageView">
+                                            <p:carousel effect="fade" value="#{newShowcaseBean.imageList}" var="image" circular="true" 
+                                                        headerText="#{image.imageName}" numVisible="1" autoPlayInterval="4000">
+                                                <p:graphicImage value="/resource/#{newShowcaseBean.convertRelativeImagePath(image)}" styleClass="carouselStyle"/>
+                                            </p:carousel>
+                                        </f:subview>
+                                        <p:spacer height="10"/>
+                                    </p:tab>
+
+                                    <p:tab title="#{msg.videos}" rendered="#{newShowcaseBean.videoLinks.size() > 0}">
+                                        <p:carousel numVisible="1" effect="easeInStrong" circular="true"
+                                                    value="#{newShowcaseBean.videoLinks}" var="videoLink"
+                                                    itemStyleClass="carouselStyle">
+                                            <p:media player="flash" styleClass="carouselStyle"
+                                                     value="#{videoLink.videolink}"/>
+                                        </p:carousel>
+                                    </p:tab>
+                                </p:tabView>
+
+                                <p:tabView dynamic="true" cache="true" effect="drop" value="#{newShowcaseBean.singleShowcase.showcaseTexts}"
+                                           var="showcasetext" styleClass="tabViewMargin">
+
+                                    <p:tab title="#{sessionBean.localeAsString(showcasetext.lang)}">
+                                        <h:outputText value="#{showcasetext.explaintext}" escape="false"/>
+                                    </p:tab>
+
+                                </p:tabView>
+                            </p:tab>
+
+                        </p:wizard>
+
+                        <p:dialog widgetVar="newShowcaseDialog" modal="true" closable="false" 
+                                  draggable="true" showEffect="explode" resizable="true" 
+                                  styleClass="dialog" maximizable="true" minimizable="false">
+                            <p:messages showDetail="true" autoUpdate="true" closable="true" showSummary="false"/>
+                            <p:commandButton value="#{msg.okay_button}" onclick="newShowcaseDialog.hide();" 
+                                             ajax="false" action="#{newShowcaseBean.linkToPreview()}"/>
+                        </p:dialog>
+
+                        <p:dialog widgetVar="deleteShowcaseDialog" modal="true" closable="false" 
+                                  draggable="true" showEffect="explode" resizable="true" 
+                                  styleClass="dialog" maximizable="true" minimizable="false">
+                            <p:messages showDetail="true" autoUpdate="true" closable="true" showSummary="false"/>
+                            <p:commandButton value="#{msg.okay_button}" onclick="deleteShowcaseDialog.hide();" 
+                                             ajax="false" action="#{navigationBean.navigateToIndexShort()}"/>
+                        </p:dialog>
+
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
+

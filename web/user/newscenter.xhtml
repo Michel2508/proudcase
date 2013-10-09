@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/templates/commontemp.xhtml" rendered="#{authenticationBean.loggedIn}">
+        <ui:define name="title">
+            <f:metadata>
+                <f:event listener="#{newsCenterBean.addInfoMessage()}" type="preRenderView"/>
+            </f:metadata>
+
+            <title>
+                <h:outputFormat value="#{msg.default_title}">
+                    <f:param value="#{msg.newscenter_title}"/>
+                </h:outputFormat>
+            </title>
+        </ui:define>
+
+        <ui:define name="content">
+            <h:form id="content" rendered="#{authenticationBean.loggedIn}" enctype="multipart/form-data">
+                <h:panelGroup layout="block" styleClass="grid_9">
+                    <h:panelGroup layout="block" styleClass="content">
+
+                        <p:panel header="#{msg.createproudcase}">
+                            <p:messages autoUpdate="false" showSummary="true" showDetail="true" closable="true">
+                                <p:effect type="pulsate" event="load" delay="500">
+                                    <f:param name="mode" value="'show'" /> 
+                                </p:effect>
+                            </p:messages>
+
+                            <h:panelGrid columns="2">
+                                <p:inputTextarea id="proudInput" styleClass="inputTextArea" 
+                                                 value="#{newsCenterBean.singleProudcase.explaintext}"
+                                                 autoResize="true" maxlength="#{constantsBean.MAXCHARSREMAINING}"
+                                                 counterTemplate="#{msg.proudcasecharsremaining}"
+                                                 counter="counter"/>
+                                <p:commandButton value="#{msg.submit}" actionListener="#{newsCenterBean.createProudcase()}" 
+                                                 ajax="true" update=":content:proudInput,:content:news:newsGrid" 
+                                                 process="@form"/>
+                                <h:outputText id="counter"/>
+                                <p:watermark for="proudInput" value="#{msg.typesomething}"/>
+                            </h:panelGrid>
+                            <p:spacer height="10"/>
+                            <p:fieldset legend="#{msg.showcasevisibility}">
+                                <h:panelGrid columns="2" cellpadding="5">
+                                    <h:outputLabel value="#{msg.visibility}" for="visibilitySelect"/>
+                                    <p:selectOneButton id="visibilitySelect" value="#{newsCenterBean.singleProudcase.visibility}">
+                                        <f:selectItems value="#{sessionBean.visibleNames}"/>
+                                    </p:selectOneButton>
+                                </h:panelGrid>
+                            </p:fieldset>
+                            <p:separator styleClass="separator"/>
+                            <p:spacer height="10"/>
+                            <p:fieldset legend="#{msg.addonepicture}">
+                                <p:fileUpload id="pictureUpload" 
+                                              allowTypes="/(\.|\/)(gif|jpe?g|png)$/" 
+                                              fileUploadListener="#{newsCenterBean.handlePictureUpload}"  
+                                              mode="advanced"  
+                                              multiple="false" 
+                                              auto="true"
+                                              sizeLimit="#{constantsBean.UPLOADSIZELIMIT}"
+                                              oncomplete="success.show()"
+                                              disabled="#{newsCenterBean.imageAlreadyUploaded}"/>
+                            </p:fieldset>
+                            <p:confirmDialog message="#{msg.uploadcomplete}" header="#{msg.success}"
+                                             severity="info" widgetVar="success">
+                                <p:commandButton value="#{msg.okay_button}" onclick="success.hide()" type="button"/>
+                            </p:confirmDialog>
+                        </p:panel>
+
+                        <f:subview id="news">
+                            <p:poll interval="60" update=":content:news:newsGrid" process="@this"/>
+                            <p:spacer height="30"/>
+                            <p:dataGrid id="newsGrid" var="news" columns="1" rows="20" value="#{newsCenterBean.lazyProudcaseList}"
+                                        paginator="true" lazy="true" rowsPerPageTemplate="15,20,30"
+                                        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} 
+                                        {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
+
+                                <p:panel header="#{news.proudcaseOwner.toString()}" footer="#{constantsBean.performDateAsString(news.createdate)}"
+                                         style="display:none;">
+                                    <p:effect type="fade" event="load" delay="50">
+                                        <f:param name="mode" value="'show'" /> 
+                                    </p:effect>
+                                    <h:panelGroup layout="block" styleClass="grid_2" style="height: 100%;width: 105px;"> 
+                                        <h:panelGrid columns="1" cellpadding="1" columnClasses="centerPosition" style="margin: auto;">
+                                            <h:outputText value="#{news.proudcaseOwner.toString()}"/>
+                                            <h:outputText value="#{sessionBean.privilegesText(news.proudcaseOwner.userPrivs)}"
+                                                          styleClass="privilegesText"/>
+                                            <h:graphicImage value="/resource/images/#{news.proudcaseOwner.avatar.relativeimagepath}"
+                                                            width="#{imageScaleBean.width(news.proudcaseOwner.avatar, 100)}"
+                                                            height="#{imageScaleBean.height(news.proudcaseOwner.avatar, 100)}"
+                                                            rendered="#{! empty news.proudcaseOwner.avatar}" styleClass="ieRemoveBorder"/>
+                                            <h:graphicImage library="images" name="anonymus.png" width="100" height="100"
+                                                            rendered="#{news.proudcaseOwner.avatar == null}" styleClass="ieRemoveBorder"/>
+                                        </h:panelGrid>
+                                    </h:panelGroup>
+                                    <h:panelGrid columns="1"> 
+                                        <h:outputText value="#{news.explaintext}"/>
+                                        <p:fieldset rendered="#{! empty news.proudcaseImage}">
+                                            <p:lightBox>
+                                                <h:outputLink value="#{request.contextPath}/resource/images/#{news.proudcaseImage.relativeimagepath}" 
+                                                              title="#{news.proudcaseImage.imageName}">
+                                                    <h:graphicImage value="/resource/images/#{news.proudcaseImage.relativeimagepath}" 
+                                                                    width="#{imageScaleBean.width(news.proudcaseImage, 100)}"
+                                                                    height="#{imageScaleBean.height(news.proudcaseImage, 100)}"
+                                                                    styleClass="ieRemoveBorder"/>
+                                                </h:outputLink>
+                                            </p:lightBox>
+                                        </p:fieldset>
+                                    </h:panelGrid>
+                                    <p:spacer height="120" rendered="#{empty news.proudcaseImage}"/>
+                                </p:panel>
+                            </p:dataGrid>
+                        </f:subview>
+
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
+

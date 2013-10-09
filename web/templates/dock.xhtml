@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html">
+
+    <ui:composition>
+        <h:form id="dockForm" enctype="multipart/form-data">
+            <p:dock rendered="#{authenticationBean.loggedIn}" >
+                <p:menuitem value="#{msg.newsimg}" icon="/resources/images/proudcase.png" url="#{constantsBean.NEWSCENTER}"/>
+                <p:menuitem value="#{msg.juryboard}" icon="/resources/images/juryboard.png" url="#{constantsBean.JURYBOARD}"
+                            rendered="#{authenticationBean.juryMember}"/>
+                <p:menuitem value="#{msg.messagesimg}" icon="/resources/images/message.png" url="#{constantsBean.MESSAGES}"/>
+                <p:menuitem value="#{msg.friendsimg}" icon="/resources/images/friends.png" url="#{constantsBean.FRIENDS}"/>
+                <p:menuitem value="#{msg.settingsimg}" icon="/resources/images/settings.png" url="#{constantsBean.PROFILESETTINGS}"/>
+                <p:menuitem value="#{msg.logout_button}" icon="/resources/images/logout.png" action="#{authenticationBean.logout()}"
+                            ajax="false" immediate="true" />
+            </p:dock>
+        </h:form>
+    </ui:composition>
+</html>
+
