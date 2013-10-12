@@ -48,51 +48,38 @@
                             </p:galleria>
                         </p:panel>
 
-                        <p:panel header="#{msg.index_toptenvideos}" id="toptenvideo" rendered="#{indexBean.topTenVideoShowcases.size() > 0}">
-                            <p:carousel numVisible="1" effect="easeInStrong" circular="true" autoPlayInterval="4000"
-                                        value="#{indexBean.topTenVideoShowcases}" var="showcaseVideo"
-                                        itemStyleClass="carouselStyle">
-                                <p:media player="flash" styleClass="carouselStyle"
-                                         value="#{showcaseVideo.videoURL}"/>
-
-                                <p:fieldset legend="#{msg.showcase_creator}" toggleable="true" style="padding-top: 10px;">
-                                    <h:outputLink value="#{constantsBean.DISPLAYSHOWCASE}#{showcaseVideo.showcaseID}">
-                                        <h:panelGrid columns="2" cellpadding="10" columnClasses="alignTopAndCenter">
-                                            <h:graphicImage value="/resource/images/#{showcaseVideo.ownerAvatar.relativeimagepath}"
-                                                            width="#{imageScaleBean.width(showcaseVideo.ownerAvatar, 150)}"
-                                                            height="#{imageScaleBean.height(showcaseVideo.ownerAvatar, 150)}"
-                                                            styleClass="ieRemoveBorder"
-                                                            rendered="#{showcaseVideo.ownerAvatar != null}"/>
-                                            <h:graphicImage library="images" name="anonymus.png" width="150" height="150"
-                                                            rendered="#{showcaseVideo.ownerAvatar == null}" styleClass="ieRemoveBorder"/>
-                                            <h:column>
-                                                <p><h:outputText value="#{showcaseVideo.showcaseTitle}"/></p>
-                                                <h:outputText value="#{showcaseVideo.showcaseText}"/>
-                                            </h:column>
-                                        </h:panelGrid>
-                                    </h:outputLink>
-                                </p:fieldset>
-                            </p:carousel>
-                        </p:panel>
+                        <p:carousel numVisible="1" effect="easeInStrong" circular="true" autoPlayInterval="4000"
+                                    value="#{indexBean.topTenVideoShowcases}" var="showcaseVideo" id="toptenvideo"
+                                    headerText="#{msg.index_toptenvideos}" styleClass="tabViewMargin"
+                                    rendered="#{indexBean.topTenVideoShowcases.size() > 0}">
+                            <p:outputPanel autoUpdate="false" style="height: 450px;">
+                                <h:panelGroup layout="block" styleClass="video">
+                                    <h:graphicImage value="#{showcaseVideo.thumbnailImage.relativeimagepath}" width="694"
+                                                    height="450" rendered="#{showcaseVideo.thumbnailImage != null}"/>
+                                    <h:graphicImage library="images" name="proudcase_logo.png" width="693" height="450"
+                                                    rendered="#{showcaseVideo.thumbnailImage == null}"/>
+                                    <a href="#"></a>
+                                </h:panelGroup>
+                            </p:outputPanel>
+                        </p:carousel>
 
                         <p:dataGrid id="topusers" columns="3" paginator="false" rows="6"
                                     value="#{indexBean.topUsersList}" var="user">
-                            <p:panel header="#{user.toString()}" styleClass="centerPosition" style="min-height: 240px !important;max-height: 240px !important">
+                            <p:panel header="#{user.toString()}" styleClass="topUsersCarouselIndex">
                                 <h:outputLink value="#{navigationBean.navigateToProfileView()}?id=#{user.id.toString()}">
-                                    <h:panelGrid columns="1" cellpadding="5" columnClasses="centerPosition">
+                                    <h:panelGrid columns="1" cellpadding="2" columnClasses="centerPosition">
+                                        <h:outputText value="#{user.toString()}"/>
+
                                         <h:column>
                                             <h:graphicImage value="/resource/images/#{user.avatar.relativeimagepath}"
                                                             rendered="#{user.avatar != null}" styleClass="ieRemoveBorder"
                                                             width="#{imageScaleBean.width(user.avatar, 120)}" 
                                                             height="#{imageScaleBean.height(user.avatar, 120)}"
                                                             title="#{user.toString()}"/>
+                                            <p:spacer width="120" height="1" styleClass="ieRemoveBorder"/>
                                             <h:graphicImage library="images" name="anonymus.png" width="120" height="120"
                                                             rendered="#{user.avatar == null}" styleClass="ieRemoveBorder"/><br/>
-                                            <p:spacer height="#{117-imageScaleBean.height(user.avatar, 120)}" 
-                                                      rendered="#{imageScaleBean.height(user.avatar, 120)!=120}" styleClass="ieRemoveBorder"/>
-                                            <p:spacer width="165" height="1" styleClass="ieRemoveBorder"/>
                                         </h:column>
-                                        <h:outputText value="#{user.toString()}"/>
                                     </h:panelGrid>
                                 </h:outputLink>
                             </p:panel>

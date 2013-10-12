@@ -36,6 +36,7 @@ public class VideoLinkBean implements Serializable {
     private ObjectId id;
     
     private String videolink;
+    private ImageBean thumbnail;
 
     public VideoLinkBean() {
     }
@@ -49,6 +50,12 @@ public class VideoLinkBean implements Serializable {
         this.videolink = videolink;
     }
 
+    public VideoLinkBean(ObjectId id, String videolink, ImageBean thumbnail) {
+        this.id = id;
+        this.videolink = videolink;
+        this.thumbnail = thumbnail;
+    }
+    
     public ObjectId getId() {
         return id;
     }
@@ -63,5 +70,13 @@ public class VideoLinkBean implements Serializable {
 
     public void setVideolink(String videolink) {
         this.videolink = videolink;
+    }
+
+    public ImageBean getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(ImageBean thumbnail) {
+        this.thumbnail = thumbnail;
     }
 }

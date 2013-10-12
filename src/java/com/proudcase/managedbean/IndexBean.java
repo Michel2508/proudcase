@@ -8,6 +8,7 @@ import com.proudcase.mongodb.manager.UserManager;
 import com.proudcase.persistence.ShowcaseBean;
 import com.proudcase.persistence.ShowcaseTextBean;
 import com.proudcase.persistence.UserBean;
+import com.proudcase.persistence.VideoLinkBean;
 import com.proudcase.view.IndexShowcaseViewBean;
 import com.proudcase.view.ShowcaseVideoViewBean;
 import java.io.Serializable;
@@ -110,8 +111,16 @@ public class IndexBean implements Serializable {
 
                 // we should have videos
                 if (singleShowcase.getVideoLinks() != null && !singleShowcase.getVideoLinks().isEmpty()) {
+                    // get the first video 
+                    VideoLinkBean firstVideoLink = singleShowcase.getVideoLinks().get(0);
+                    
                     // save the first video to our object
-                    showcaseVideoViewBean.setVideoURL(singleShowcase.getVideoLinks().get(0).getVideolink());
+                    showcaseVideoViewBean.setVideoURL(firstVideoLink.getVideolink());
+                    
+                    // if we have, set the thumbnail for this video
+                    if (firstVideoLink.getThumbnail() != null) {
+                        showcaseVideoViewBean.setThumbnailImage(firstVideoLink.getThumbnail());
+                    } 
                 }
 
                 // add the showcase view to our array

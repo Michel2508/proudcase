@@ -33,16 +33,18 @@ public class ShowcaseVideoViewBean implements Serializable {
     private String showcaseTitle;
     private String showcaseText;
     private String videoURL;
+    private ImageBean thumbnailImage;
     private ImageBean ownerAvatar;
 
     public ShowcaseVideoViewBean() {
     }
 
-    public ShowcaseVideoViewBean(ObjectId showcaseID, String showcaseTitle, String showcaseText, String videoURL, ImageBean ownerAvatar) {
+    public ShowcaseVideoViewBean(ObjectId showcaseID, String showcaseTitle, String showcaseText, String videoURL, ImageBean thumbnailImage, ImageBean ownerAvatar) {
         this.showcaseID = showcaseID;
         this.showcaseTitle = showcaseTitle;
         this.showcaseText = showcaseText;
         this.videoURL = videoURL;
+        this.thumbnailImage = thumbnailImage;
         this.ownerAvatar = ownerAvatar;
     }
 
@@ -84,5 +86,13 @@ public class ShowcaseVideoViewBean implements Serializable {
 
     public void setOwnerAvatar(ImageBean ownerAvatar) {
         this.ownerAvatar = ownerAvatar;
+    }
+
+    public ImageBean getThumbnailImage() {
+        return thumbnailImage;
+    }
+
+    public void setThumbnailImage(ImageBean thumbnailImage) {
+        this.thumbnailImage = thumbnailImage;
     }
 }

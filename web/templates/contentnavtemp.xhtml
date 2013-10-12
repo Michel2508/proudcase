@@ -63,12 +63,12 @@
 
                                     <h:column>
                                         <h:graphicImage value="/resource/images/#{user.avatar.relativeimagepath}"
-                                                        rendered="#{user.avatar != null}"
+                                                        rendered="#{user.avatar != null}" styleClass="ieRemoveBorder"
                                                         width="#{imageScaleBean.width(user.avatar, 165)}" 
                                                         height="#{imageScaleBean.height(user.avatar, 165)}"/>
-                                        <p:spacer width="165" height="1"/>
+                                        <p:spacer width="165" height="1" styleClass="ieRemoveBorder"/>
                                         <h:graphicImage library="images" name="anonymus.png" width="165" height="165"
-                                                        rendered="#{user.avatar == null}"/>
+                                                        rendered="#{user.avatar == null}" styleClass="ieRemoveBorder"/>
                                     </h:column>
                                 </h:panelGrid> 
                             </h:outputLink>

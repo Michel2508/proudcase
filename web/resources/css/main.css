@@ -314,6 +314,28 @@ body {
     font-style: italic;
 }
 
+/* topusers grid on index.xhtml */
+.topUsersCarouselIndex {
+    min-height:210px !important;
+    min-width: 210px !important;
+    max-width: 210px !important;
+}
+
+/* video thumbnail display */
+.video { 
+    position: relative; 
+}
+
+/* video thumbnail play button */
+.video a {
+   position: absolute;
+   display: block;
+   background: url(../resources/images/play_button.png);
+   height: 300px;
+   width: 300px;
+   top: 75px;
+   left: 196px;
+}
 
 
 /* Links */
