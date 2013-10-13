@@ -1,4 +1,4 @@
-package com.proudcase.util;
+package com.proudcase.constants;
 
 /**
   * Copyright © 03.07.2013 Michel Vocks
@@ -19,18 +19,12 @@ package com.proudcase.util;
   
   * @Author: Michel Vocks
   *
-  * @Date: 12.10.2013
+  * @Date: 13.10.2013
   *
   * @Encoding: UTF-8
 */
-public class VideoUtil {
+public enum EVideoTyp {
     
-    // flash autostart tag
-    private static final String AUTOSTART = "?autostart=true";
-    
-    // returns the video url with autostart tag
-    public static String getVideoURLWithAutostart(String url) {
-        return url + AUTOSTART;
-    }
+    YOUTUBEVIDEO, SELFHOSTEDVIDEO
 
 }

@@ -9,13 +9,13 @@ import com.proudcase.persistence.ShowcaseBean;
 import com.proudcase.persistence.ShowcaseTextBean;
 import com.proudcase.persistence.UserBean;
 import com.proudcase.persistence.VideoLinkBean;
+import com.proudcase.util.LanguageTranslationUtil;
 import com.proudcase.view.IndexShowcaseViewBean;
 import com.proudcase.view.ShowcaseVideoViewBean;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -51,15 +51,15 @@ public class IndexBean implements Serializable {
 
     @ManagedProperty(value = "#{sessionBean}")
     private SessionBean sessionBean;
-    transient private ShowcaseManager showcaseManager =
+    private final transient ShowcaseManager showcaseManager =
             ManagerFactory.createShowcaseManager();
-    transient private UserManager userManager =
+    private final transient UserManager userManager =
             ManagerFactory.createUserManager();
-    private List<IndexShowcaseViewBean> topTenShowcases = new ArrayList<>();
-    private List<ShowcaseVideoViewBean> topTenVideoShowcases = new ArrayList<>();
+    private final List<IndexShowcaseViewBean> topTenShowcases = new ArrayList<>();
+    private final List<ShowcaseVideoViewBean> topTenVideoShowcases = new ArrayList<>();
     private List<UserBean> topUsersList;
     private String inputQuery;
-
+    
     @PostConstruct
     public void init() {
         // Load top users
@@ -86,27 +86,11 @@ public class IndexBean implements Serializable {
 
                 // check if we can find the title and the text in a language that fits to
                 // the users language
-                ShowcaseTextBean langShowcase = getSpecifiedText(singleShowcase);
+                ShowcaseTextBean langShowcase = LanguageTranslationUtil.getSpecifiedText(singleShowcase, sessionBean.getUserLocale());
 
                 // found something
                 if (langShowcase != null) {
                     showcaseVideoViewBean.setShowcaseTitle(langShowcase.getTitle());
-
-                    // let us reduce the amount of characters on the explaintext
-                    String temp = langShowcase.getExplaintext();
-                    if (temp.length() > Constants.MAXCHARSEXPLAINTEXT) {
-                        temp = langShowcase.getExplaintext().
-                                substring(0, Constants.MAXCHARSEXPLAINTEXT);
-                        
-                        // add three dots at the end
-                        temp = temp.concat("...");
-                    }
-
-                    // remove any html tag
-                    temp = temp.replaceAll("<[^>]*>", "");
-                    
-                    // set the final text
-                    showcaseVideoViewBean.setShowcaseText(temp);
                 }
 
                 // we should have videos
@@ -115,12 +99,7 @@ public class IndexBean implements Serializable {
                     VideoLinkBean firstVideoLink = singleShowcase.getVideoLinks().get(0);
                     
                     // save the first video to our object
-                    showcaseVideoViewBean.setVideoURL(firstVideoLink.getVideolink());
-                    
-                    // if we have, set the thumbnail for this video
-                    if (firstVideoLink.getThumbnail() != null) {
-                        showcaseVideoViewBean.setThumbnailImage(firstVideoLink.getThumbnail());
-                    } 
+                    showcaseVideoViewBean.setVideoLink(firstVideoLink);
                 }
 
                 // add the showcase view to our array
@@ -144,7 +123,7 @@ public class IndexBean implements Serializable {
 
             // check if we can find the text and title in a language that fits to
             // the users language
-            ShowcaseTextBean langShowcase = getSpecifiedText(singleShowcase);
+            ShowcaseTextBean langShowcase = LanguageTranslationUtil.getSpecifiedText(singleShowcase, sessionBean.getUserLocale());
 
             // found something
             if (langShowcase != null) {
@@ -166,42 +145,17 @@ public class IndexBean implements Serializable {
         }
     }
 
-    // this method returns the ShowcaseText object
-    // for the client language
-    private ShowcaseTextBean getSpecifiedText(ShowcaseBean givenShowcase) {
-        // get the language
-        Locale clientLanguage = sessionBean.getUserLocale();
-
-        // now we have to check if this showcase has this language supported
-        for (ShowcaseTextBean singleShowcaseText : givenShowcase.getShowcaseTexts()) {
-            if (singleShowcaseText.getLang().equals(clientLanguage)) {
-                // we found the right text. Return the object
-                return singleShowcaseText;
-            }
-        }
-
-        // if we are here then the default language isn't supported
-        // so let us check if the owner of the showcase has english support
-        for (ShowcaseTextBean singleShowcaseText : givenShowcase.getShowcaseTexts()) {
-            if (singleShowcaseText.getLang().equals(Locale.ENGLISH)) {
-                return singleShowcaseText;
-            }
-        }
-
-        // Well. If we are here then english isn't supported nor the default
-        // language from the client.
-        if (!givenShowcase.getShowcaseTexts().isEmpty()) {
-            return givenShowcase.getShowcaseTexts().get(0);
-        }
-        return null;
-    }
-
     public String searchWithKeywords() {
         // redirect to the search view
         return ENavigation.SEARCH + Constants.FACESREDIRECT
                 + "searchQuery=" + inputQuery;
     }
-
+    
+    public String redirectToShowcase(ShowcaseVideoViewBean videoViewBean) {
+        // redirect to correspending showcase
+        return ENavigation.DISPLAYSHOWCASE + videoViewBean.getShowcaseID().toString();
+    }
+    
     public boolean isShowcaseAvailable() {
         return topTenShowcases != null && topTenShowcases.size() > 0;
     }
@@ -228,9 +182,5 @@ public class IndexBean implements Serializable {
 
     public List<ShowcaseVideoViewBean> getTopTenVideoShowcases() {
         return topTenVideoShowcases;
-    }
-
-    public void setTopTenVideoShowcases(List<ShowcaseVideoViewBean> topTenVideoShowcases) {
-        this.topTenVideoShowcases = topTenVideoShowcases;
     }
 }

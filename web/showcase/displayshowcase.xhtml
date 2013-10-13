@@ -26,7 +26,7 @@
                     <h:panelGroup layout="block" styleClass="grid_9">
                         <h:panelGroup layout="block" styleClass="content" rendered="#{displayShowcaseBean.hasPermission}">
                             <p:tabView dynamic="true" cache="true" effect="drop" rendered="#{displayShowcaseBean.availableMedia}"
-                                       styleClass="tabViewMargin">
+                                       styleClass="tabViewMargin" >
                                 <p:tab title="#{msg.images}" rendered="#{displayShowcaseBean.availablePic}">
                                     <p:galleria effect="fade" value="#{displayShowcaseBean.imagesList}" effectSpeed="700"
                                                 var="image" panelWidth="660" panelHeight="440" showCaption="false" >

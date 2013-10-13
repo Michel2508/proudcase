@@ -2,6 +2,9 @@ package com.proudcase.persistence;
 
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
+import com.proudcase.constants.EVideoTyp;
+import com.proudcase.util.VideoUtil;
+import com.proudcase.util.YouTubeUtil;
 import java.io.Serializable;
 import org.bson.types.ObjectId;
 
@@ -37,6 +40,7 @@ public class VideoLinkBean implements Serializable {
     
     private String videolink;
     private ImageBean thumbnail;
+    private EVideoTyp videoTyp;
 
     public VideoLinkBean() {
     }
@@ -54,6 +58,30 @@ public class VideoLinkBean implements Serializable {
         this.id = id;
         this.videolink = videolink;
         this.thumbnail = thumbnail;
+    }
+
+    public VideoLinkBean(ObjectId id, String videolink, ImageBean thumbnail, EVideoTyp videoTyp) {
+        this.id = id;
+        this.videolink = videolink;
+        this.thumbnail = thumbnail;
+        this.videoTyp = videoTyp;
+    }
+    
+    public String getVideolinkWithAutoStart() {
+        // no typ defined?
+        if (videoTyp == null) {
+            // just return default video link
+            return getVideolink();
+        }
+        
+        // determine typ
+        if (videoTyp.equals(EVideoTyp.YOUTUBEVIDEO)) {
+            // youtube needs the autoplay tag
+            return YouTubeUtil.getYouTubeLinkWithAutoplay(videolink);
+        } else {
+            // video is self hosted. So add autostart tag
+            return VideoUtil.getVideoURLWithAutostart(videolink);
+        }
     }
     
     public ObjectId getId() {
@@ -78,5 +106,13 @@ public class VideoLinkBean implements Serializable {
 
     public void setThumbnail(ImageBean thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public EVideoTyp getVideoTyp() {
+        return videoTyp;
+    }
+
+    public void setVideoTyp(EVideoTyp videoTyp) {
+        this.videoTyp = videoTyp;
     }
 }

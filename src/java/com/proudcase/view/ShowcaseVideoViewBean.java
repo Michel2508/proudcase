@@ -1,6 +1,7 @@
 package com.proudcase.view;
 
 import com.proudcase.persistence.ImageBean;
+import com.proudcase.persistence.VideoLinkBean;
 import java.io.Serializable;
 import org.bson.types.ObjectId;
 
@@ -32,19 +33,17 @@ public class ShowcaseVideoViewBean implements Serializable {
     private ObjectId showcaseID;
     private String showcaseTitle;
     private String showcaseText;
-    private String videoURL;
-    private ImageBean thumbnailImage;
+    private VideoLinkBean videoLink;
     private ImageBean ownerAvatar;
 
     public ShowcaseVideoViewBean() {
     }
 
-    public ShowcaseVideoViewBean(ObjectId showcaseID, String showcaseTitle, String showcaseText, String videoURL, ImageBean thumbnailImage, ImageBean ownerAvatar) {
+    public ShowcaseVideoViewBean(ObjectId showcaseID, String showcaseTitle, String showcaseText, VideoLinkBean videoLink, ImageBean ownerAvatar) {
         this.showcaseID = showcaseID;
         this.showcaseTitle = showcaseTitle;
         this.showcaseText = showcaseText;
-        this.videoURL = videoURL;
-        this.thumbnailImage = thumbnailImage;
+        this.videoLink = videoLink;
         this.ownerAvatar = ownerAvatar;
     }
 
@@ -72,14 +71,6 @@ public class ShowcaseVideoViewBean implements Serializable {
         this.showcaseText = showcaseText;
     }
 
-    public String getVideoURL() {
-        return videoURL;
-    }
-
-    public void setVideoURL(String videoURL) {
-        this.videoURL = videoURL;
-    }
-
     public ImageBean getOwnerAvatar() {
         return ownerAvatar;
     }
@@ -88,11 +79,11 @@ public class ShowcaseVideoViewBean implements Serializable {
         this.ownerAvatar = ownerAvatar;
     }
 
-    public ImageBean getThumbnailImage() {
-        return thumbnailImage;
+    public VideoLinkBean getVideoLink() {
+        return videoLink;
     }
 
-    public void setThumbnailImage(ImageBean thumbnailImage) {
-        this.thumbnailImage = thumbnailImage;
+    public void setVideoLink(VideoLinkBean videoLink) {
+        this.videoLink = videoLink;
     }
 }

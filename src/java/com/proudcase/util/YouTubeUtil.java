@@ -36,6 +36,9 @@ public class YouTubeUtil {
     private static final String YOUTUBE_THUMBNAIL_URL = "http://img.youtube.com/vi/";
     private static final String YOUTUBE_THUMBNAIL_MAXRES = "/maxresdefault.jpg";
     
+    // youtube autoplay
+    private static final String YOUTUBE_AUTOPLAY = "&autoplay=1";
+    
     // This method converts a typed youtube link into the right form
     public static String convertYouTubeLink(String url) {
         // parse the youtube link with the video id
@@ -50,6 +53,11 @@ public class YouTubeUtil {
         String thumbnailLink = YOUTUBE_THUMBNAIL_URL + getVideoID(url) + YOUTUBE_THUMBNAIL_MAXRES;
         
         return thumbnailLink;
+    }
+    
+    // this method adds the autoplay tag
+    public static String getYouTubeLinkWithAutoplay(String url) {
+        return url + YOUTUBE_AUTOPLAY;
     }
     
     private static String getVideoID(String url) {

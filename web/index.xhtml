@@ -54,11 +54,26 @@
                                     rendered="#{indexBean.topTenVideoShowcases.size() > 0}">
                             <p:outputPanel autoUpdate="false" style="height: 450px;">
                                 <h:panelGroup layout="block" styleClass="video">
-                                    <h:graphicImage value="#{showcaseVideo.thumbnailImage.relativeimagepath}" width="694"
-                                                    height="450" rendered="#{showcaseVideo.thumbnailImage != null}"/>
+                                    <h:graphicImage value="#{showcaseVideo.videoLink.thumbnail.relativeimagepath}" width="694"
+                                                    height="450" rendered="#{showcaseVideo.videoLink.thumbnail != null}"/>
                                     <h:graphicImage library="images" name="proudcase_logo.png" width="693" height="450"
-                                                    rendered="#{showcaseVideo.thumbnailImage == null}"/>
-                                    <a href="#"></a>
+                                                    rendered="#{showcaseVideo.videoLink.thumbnail == null}"/>
+                                    
+                                    
+
+                                    <p:lightBox iframe="true" widgetVar="PROUDCASE#{showcaseVideo.showcaseID}">
+                                        <h:outputLink value="#"/>
+
+                                        <f:facet name="inline">
+                                            <p:media value="#{showcaseVideo.videoLink.videolinkWithAutoStart}" styleClass="carouselStyle" 
+                                                     player="flash"/><br/>
+                                            <h:panelGrid columns="2" cellpadding="5">
+                                                <p:commandButton value="#{msg.index_videobox_redirecttoshowcase}" ajax="false" styleClass="largebutton" 
+                                                                 onclick="window.location.href = '#{navigationBean.navigateToDisplayShowcase()}#{showcaseVideo.showcaseID}';"/>
+                                                <p:commandButton icon="ui-icon-closethick" value="#{msg.close}" onclick="PROUDCASE#{showcaseVideo.showcaseID}.hide()"/> 
+                                            </h:panelGrid>
+                                        </f:facet>
+                                    </p:lightBox>
                                 </h:panelGroup>
                             </p:outputPanel>
                         </p:carousel>

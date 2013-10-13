@@ -52,11 +52,11 @@ public class DisplayShowcaseBean implements Serializable {
     @ManagedProperty(value = "#{sessionBean}")
     private SessionBean sessionBean;
     
-    transient private ShowcaseManager showcaseManager =
+    private final transient ShowcaseManager showcaseManager =
             ManagerFactory.createShowcaseManager();
-    transient private UserManager userManager =
+    private final transient UserManager userManager =
             ManagerFactory.createUserManager();
-    transient private JuryFeedbackManager juryFeedbackManager =
+    private final transient JuryFeedbackManager juryFeedbackManager =
             ManagerFactory.createJuryFeedbackManager();
     
     private ShowcaseBean displayShowcase;
@@ -102,13 +102,8 @@ public class DisplayShowcaseBean implements Serializable {
         // Check if everyone can see this showcase && the user is not the owner
         if (displayShowcase.getVisibility() != EVisibility.all
                 && !displayShowcase.getUserAccount().getId().equals(loggedUser.getId())) {
-            // not logged in? no permission!
-            if (loggedUser == null) {
-                hasPermission = false;
-            }
-
             // Check if the user is a friend
-            if (hasPermission && !userManager.isFriend(displayShowcase.getUserAccount(), loggedUser)) {
+            if (!userManager.isFriend(displayShowcase.getUserAccount(), loggedUser)) {
                 // friend of friend enabled?
                 if (displayShowcase.getVisibility() == EVisibility.friendsfriends) {
                     // is a friend of a friend?
