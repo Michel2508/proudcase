@@ -36,7 +36,7 @@
                         <p:panel header="#{msg.index_topten}" id="topten" rendered="#{indexBean.showcaseAvailable}"
                                  styleClass="tabViewMargin">
                             <p:galleria value="#{indexBean.topTenShowcases}" var="showcase" effect="fade"
-                                        panelWidth="670" panelHeight="450"  effectSpeed="700" 
+                                        panelWidth="670" panelHeight="450"  effectSpeed="700" id="indexGalleria"
                                         showCaption="false" frameHeight="80" frameWidth="120" styleClass="ieRemoveBorder">
                                 <p:graphicImage value="/resource/images/#{showcase.frontImage.relativeimagepath}" 
                                                 width="670" height="450" title="#{showcase.showcaseTitle}" style="cursor: pointer;"
@@ -76,6 +76,10 @@
 
                         <p:dataGrid id="topusers" columns="3" paginator="false" rows="6"
                                     value="#{indexBean.topUsersList}" var="user">
+                            <f:facet name="header">
+                                <h:outputText value="#{msg.index_topusers}"/>
+                            </f:facet>
+                            
                             <p:panel header="#{user.toString()}" styleClass="topUsersCarouselIndex">
                                 <h:outputLink value="#{navigationBean.navigateToProfileView()}?id=#{user.id.toString()}">
                                     <h:panelGrid columns="1" cellpadding="2" columnClasses="centerPosition">

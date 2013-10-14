@@ -294,24 +294,13 @@ public class ImageUtil {
                 || (!relativePath.contains(Constants.IMAGESECUREFOLDER) && secure)) {
             return false;
         }
-
-        // let us check if the image exists
-        if (new File(imageFullPath).isFile()) {
-            return true;
-        }
-
-        // does not exist
-        return false;
+        return new File(imageFullPath).isFile();
     }
 
     public static boolean isImageInTempDir(String relativePath) {
         String imageFullPath = Constants.BASEPATH + "/"
                 + Constants.IMAGETEMPFOLDER + "/" + relativePath;
 
-        if (new File(imageFullPath).isFile()) {
-            return true;
-        }
-
-        return false;
+        return new File(imageFullPath).isFile();
     }
 }

@@ -142,21 +142,51 @@
                                     <p:separator styleClass="separator"/>
                                     <p:spacer height="10"/>
                                     <p:message for="addvideo"/>
-                                    <p:panel header="#{msg.addvidexpl}" id="addvideo">  
-                                        <p:spacer height="10"/>
-                                        <h:outputLabel value="Youtube-Url: " for="txt_url"></h:outputLabel>  
+                                    <p:panel header="#{msg.addvideo}" id="addvideo">  
+                                        <h:panelGrid columns="2" cellpadding="5">
+                                            <p:fieldset>
+                                                <h:graphicImage library="images" name="upload_proudcase.png" styleClass="ieRemoveBorder"
+                                                                style="cursor:pointer" id="proudcaseUpload"/>
+
+                                                <p:overlayPanel for="proudcaseUpload" id="proudcaseUploadPanel" dismissable="false" showCloseIcon="true"
+                                                                showEffect="explode" showEvent="mousedown" hideEffect="explode" appendToBody="true" hideEvent="submit"
+                                                                style="width: 600px;height: 150px;">
+                                                    <h:form enctype="multipart/form-data">
+                                                        <p:fileUpload widgetVar="videoUploadWid" id="videoUpload" 
+                                                                      allowTypes="/(\.|\/)(flv|mp4|swf)$/" 
+                                                                      fileUploadListener="#{newShowcaseBean.handleVideoUpload}"  
+                                                                      mode="advanced"  
+                                                                      auto="false"
+                                                                      multiple="false"  
+                                                                      update=":content:videos"
+                                                                      label="#{msg.addpicture}"
+                                                                      dragDropSupport="true"
+                                                                      sizeLimit="#{constantsBean.VIDEOMAXUPLOAD}"/>
+                                                    </h:form>
+                                                </p:overlayPanel>
+                                            </p:fieldset>
+                                            <p:fieldset>
+                                                <h:graphicImage library="images" name="upload_youtube.png" styleClass="ieRemoveBorder"/>
+                                            </p:fieldset>
+                                        </h:panelGrid>
+
+                                        <!--<h:outputLabel value="Youtube-Url: " for="txt_url"></h:outputLabel>  
                                         <p:inputText id="txt_url"   
                                                      value="#{newShowcaseBean.singleVideoLink.videolink}"/>  
 
                                         <p:commandButton value="#{msg.add}" update="videos @parent"  
                                                          actionListener="#{newShowcaseBean.addVideoLink}"/>  
-                                        <p:commandButton value="#{msg.reset}" type="reset"/>  
+                                        <p:commandButton value="#{msg.reset}" type="reset"/>  -->
                                     </p:panel>  
                                     <p:spacer height="30"/>
-                                    <p:fieldset id="videos" legend="#{msg.addvideo}">  
+                                    <p:fieldset id="videos" legend="#{msg.addedvideos}">  
+                                        <h:outputLabel value="#{msg.novideouploaded}" rendered="#{newShowcaseBean.videoLinks.size() == 0}"/>
                                         <ui:repeat value="#{newShowcaseBean.videoLinks}" var="video">
                                             <p:media value="#{videoHelperBean.getYoutubeURL(video)}" player="flash"
                                                      width="500" height="300" rendered="#{videoHelperBean.isYoutubeVideo(video)}"/>
+                                            <p:media value="#{videoHelperBean.getSelfHostedURL(video)}" player="flash"
+                                                     width="500" height="300" rendered="#{videoHelperBean.isSelfHostedVideo(video)}"/>
+                                            
                                             <p:spacer width="10"/>
                                             <p:commandButton value="#{msg.delete}" update=":content:videos" action="#{newShowcaseBean.deleteVideoFromList}"
                                                              process=":content:videos" id="deletevideo" styleClass="largebutton">

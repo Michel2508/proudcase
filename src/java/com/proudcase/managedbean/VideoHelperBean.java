@@ -1,8 +1,11 @@
 package com.proudcase.managedbean;
 
+import com.proudcase.constants.Constants;
 import com.proudcase.constants.EVideoTyp;
+import com.proudcase.exclogger.ExceptionLogger;
 import com.proudcase.persistence.VideoLinkBean;
 import com.proudcase.util.YouTubeUtil;
+import java.io.File;
 import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
@@ -64,6 +67,32 @@ public class VideoHelperBean implements Serializable {
             return YouTubeUtil.getYouTubeThumbnailLink(videoLink);
         }
         return null;
+    }
+    
+    public String getSelfHostedURL(VideoLinkBean videoLink) throws ExceptionLogger {
+        // if it's really a self hosted video
+        if (videoLink.getVideoTyp().equals(EVideoTyp.SELFHOSTEDVIDEO)) {
+            // Generate the absolute path to the video
+            String absoluteVideoPath = Constants.BASEPATH + "/" + Constants.VIDEOFOLDER 
+                    + "/" + videoLink.getVideolink();
+            
+            // check if this file exists
+            if (new File(absoluteVideoPath).isFile()) {
+                return absoluteVideoPath;
+            }
+
+            // if we are here then we couldn't find the video in the default folder
+            // so let us check if the video is maybe in the temp folder
+            absoluteVideoPath = Constants.BASEPATH + "/" + Constants.VIDEOTEMPFOLDER
+                    + "/" + videoLink.getVideolink();
+            
+            // check if this file exists
+            if (new File(absoluteVideoPath).isFile()) {
+                return absoluteVideoPath;
+            }
+        }
+        
+        throw new ExceptionLogger(null, "Couldn't find video:" + videoLink.getVideolink());
     }
 
 }

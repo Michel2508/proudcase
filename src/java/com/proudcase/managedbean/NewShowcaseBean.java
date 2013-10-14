@@ -12,6 +12,7 @@ import com.proudcase.mongodb.manager.ShowcaseManager;
 import com.proudcase.mongodb.manager.VideoLinkManager;
 import com.proudcase.persistence.*;
 import com.proudcase.util.ImageUtil;
+import com.proudcase.util.VideoUtil;
 import com.proudcase.util.YouTubeUtil;
 import com.proudcase.visibility.EVisibility;
 import java.io.Serializable;
@@ -359,8 +360,11 @@ public class NewShowcaseBean implements Serializable {
         // persist video links
         for (VideoLinkBean videoLink : videoLinks) {
             videoLinkManager.save(videoLink);
+            
+            // move videos from the temp folder to the real folder
+            VideoUtil.moveVideoToUserDir(videoLink.getVideolink(), currentUser.getId());
         }
-
+        
         // add images to the showcase
         singleShowcase.setImageList(imageList);
 
@@ -413,6 +417,27 @@ public class NewShowcaseBean implements Serializable {
 
         // and add this image to our list
         imageList.add(savedImage);
+    }
+    
+    public void handleVideoUpload(FileUploadEvent event) throws ExceptionLogger {
+        FacesContext fCtx = FacesContext.getCurrentInstance();
+        UserBean currentUser = (UserBean) fCtx.getExternalContext().
+                getSessionMap().get(Constants.AUTH_KEY);
+
+        // only if we have here a real user
+        if (currentUser == null || currentUser.getId() == null) {
+            return;
+        }
+
+        // * TODO * check how much space the user has left
+
+        // get the source
+        UploadedFile videoFile = event.getFile();
+        // okay, save this video to the temp folder till the showcase is saved
+        VideoLinkBean tempVideo = VideoUtil.saveVideoInTemp(videoFile, currentUser.getId());
+        System.out.println("VideoURL:" + tempVideo.getVideolink());
+        // add video object to our reference list
+        videoLinks.add(tempVideo);
     }
 
     public void makeShowcasePublic() {

@@ -38,7 +38,10 @@ public class Constants {
     public static final String FACESREDIRECT = "?faces-redirect=true";
     
     // 5 MB maxupload pictures
-    public static final int UPLOADSIZELIMIT = 5242880; 
+    public static final int UPLOADSIZELIMIT = (5 * 1024 * 1024); 
+    
+    // 450 MB maxupload videos
+    public static final int VIDEOMAXUPLOAD = (450 * 1024 * 1024);
     
     // max images for one showcase
     public static final int MAXIMAGESFORSHOWCASE = 10;
@@ -71,6 +74,15 @@ public class Constants {
     
     // folder for secured images
     public static final String IMAGESECUREFOLDER = "imagesecure";
+    
+    // folder for videos
+    public static final String VIDEOFOLDER = "videos";
+    
+    // temp folder for uploaded videos
+    public static final String VIDEOTEMPFOLDER = "videotemp";
+    
+    // folder for secured videos
+    public static final String VIDEOSECUREFOLDER = "videosecure";
     
     // proudcase maximum chars for input
     public static final int MAXCHARSREMAINING = 250;
