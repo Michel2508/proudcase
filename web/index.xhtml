@@ -54,12 +54,8 @@
                                     rendered="#{indexBean.topTenVideoShowcases.size() > 0}">
                             <p:outputPanel autoUpdate="false" style="height: 450px;">
                                 <h:panelGroup layout="block" styleClass="video">
-                                    <h:graphicImage value="#{showcaseVideo.videoLink.thumbnail.relativeimagepath}" width="694"
-                                                    height="450" rendered="#{showcaseVideo.videoLink.thumbnail != null}"/>
-                                    <h:graphicImage library="images" name="proudcase_logo.png" width="693" height="450"
-                                                    rendered="#{showcaseVideo.videoLink.thumbnail == null}"/>
-                                    
-                                    
+                                    <h:graphicImage value="#{videoHelperBean.getYoutubeThumbnailURL(showcaseVideo.videoLink)}" width="694"
+                                                    height="450" rendered="#{videoHelperBean.isYoutubeVideo(showcaseVideo.videoLink)}"/>
 
                                     <p:lightBox iframe="true" widgetVar="PROUDCASE#{showcaseVideo.showcaseID}">
                                         <h:outputLink value="#"/>

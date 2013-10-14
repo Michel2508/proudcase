@@ -3,6 +3,7 @@ package com.proudcase.managedbean;
 import com.proudcase.comparator.SelectItemComparator;
 import com.proudcase.constants.Constants;
 import com.proudcase.constants.ENavigation;
+import com.proudcase.constants.EVideoTyp;
 import com.proudcase.exclogger.ExceptionLogger;
 import com.proudcase.filehandling.PropertyReader;
 import com.proudcase.mongodb.manager.ImageManager;
@@ -77,13 +78,13 @@ public class NewShowcaseBean implements Serializable {
             new VideoLinkBean();
     private ImageBean deleteImageCache;
     private VideoLinkBean deleteVideoCache;
-    transient private ShowcaseManager showcaseManager =
+    private final transient ShowcaseManager showcaseManager =
             ManagerFactory.createShowcaseManager();
-    transient private ImageManager imageManager =
+    private final transient ImageManager imageManager =
             ManagerFactory.createImageManager();
-    transient private VideoLinkManager videoLinkManager =
+    private final transient VideoLinkManager videoLinkManager =
             ManagerFactory.createVideoLinkManager();
-    private Map<String, SupportedLanguagesBean> localeMap =
+    private final Map<String, SupportedLanguagesBean> localeMap =
             new HashMap<>();
     private String categorieSelect;
     private String showcaseId;
@@ -460,12 +461,19 @@ public class NewShowcaseBean implements Serializable {
     }
 
     public void addVideoLink() {
-        // this checks the youtube input url
-        singleVideoLink.setVideolink(YouTubeUtil.convertYouTubeLink(singleVideoLink.getVideolink()));
+        // we just save the id from the video, so get it from the link
+        singleVideoLink.setYoutubeID(YouTubeUtil.getVideoID(singleVideoLink.getVideolink()));
+        
+        // This is a youtube video!
+        singleVideoLink.setVideoTyp(EVideoTyp.YOUTUBEVIDEO);
+
+        // add it to our reference list
         videoLinks.add(singleVideoLink);
+        
+        // create a new object for further videolinks
         singleVideoLink = new VideoLinkBean();
     }
-
+    
     public String deleteImageFromList() {
         if (deleteImageCache == null) {
             return null;

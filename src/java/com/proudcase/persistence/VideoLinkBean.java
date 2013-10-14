@@ -40,6 +40,7 @@ public class VideoLinkBean implements Serializable {
     
     private String videolink;
     private ImageBean thumbnail;
+    private String youtubeID;
     private EVideoTyp videoTyp;
 
     public VideoLinkBean() {
@@ -66,6 +67,14 @@ public class VideoLinkBean implements Serializable {
         this.thumbnail = thumbnail;
         this.videoTyp = videoTyp;
     }
+
+    public VideoLinkBean(ObjectId id, String videolink, ImageBean thumbnail, String youtubeID, EVideoTyp videoTyp) {
+        this.id = id;
+        this.videolink = videolink;
+        this.thumbnail = thumbnail;
+        this.youtubeID = youtubeID;
+        this.videoTyp = videoTyp;
+    }
     
     public String getVideolinkWithAutoStart() {
         // no typ defined?
@@ -77,7 +86,7 @@ public class VideoLinkBean implements Serializable {
         // determine typ
         if (videoTyp.equals(EVideoTyp.YOUTUBEVIDEO)) {
             // youtube needs the autoplay tag
-            return YouTubeUtil.getYouTubeLinkWithAutoplay(videolink);
+            return YouTubeUtil.getYouTubeLinkWithAutoplay(this);
         } else {
             // video is self hosted. So add autostart tag
             return VideoUtil.getVideoURLWithAutostart(videolink);
@@ -114,5 +123,13 @@ public class VideoLinkBean implements Serializable {
 
     public void setVideoTyp(EVideoTyp videoTyp) {
         this.videoTyp = videoTyp;
+    }
+
+    public String getYoutubeID() {
+        return youtubeID;
+    }
+
+    public void setYoutubeID(String youtubeID) {
+        this.youtubeID = youtubeID;
     }
 }

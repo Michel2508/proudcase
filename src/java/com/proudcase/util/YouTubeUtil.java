@@ -1,5 +1,7 @@
 package com.proudcase.util;
 
+import com.proudcase.persistence.VideoLinkBean;
+
 /**
   * Copyright © 03.07.2013 Michel Vocks
   * This file is part of proudcase.
@@ -34,33 +36,33 @@ public class YouTubeUtil {
     
     // youtube thumbnail
     private static final String YOUTUBE_THUMBNAIL_URL = "http://img.youtube.com/vi/";
-    private static final String YOUTUBE_THUMBNAIL_MAXRES = "/maxresdefault.jpg";
+    private static final String YOUTUBE_THUMBNAIL_MAXRES = "/hqdefault.jpg";
     
     // youtube autoplay
     private static final String YOUTUBE_AUTOPLAY = "&autoplay=1";
     
     // This method converts a typed youtube link into the right form
-    public static String convertYouTubeLink(String url) {
+    public static String convertYouTubeLink(VideoLinkBean videoLink) {
         // parse the youtube link with the video id
-        String newUrl = YOUTUBE_LINK + getVideoID(url) + YOUTUBE_VERSION;
+        String newUrl = YOUTUBE_LINK + videoLink.getYoutubeID() + YOUTUBE_VERSION;
         
         return newUrl;
     }
     
     // This method parses the URL for the youtube thumbnail 
-    public static String getYouTubeThumbnailLink(String url) {
+    public static String getYouTubeThumbnailLink(VideoLinkBean videoLink) {
         // parse the thumbnail link
-        String thumbnailLink = YOUTUBE_THUMBNAIL_URL + getVideoID(url) + YOUTUBE_THUMBNAIL_MAXRES;
+        String thumbnailLink = YOUTUBE_THUMBNAIL_URL + videoLink.getYoutubeID() + YOUTUBE_THUMBNAIL_MAXRES;
         
         return thumbnailLink;
     }
     
     // this method adds the autoplay tag
-    public static String getYouTubeLinkWithAutoplay(String url) {
-        return url + YOUTUBE_AUTOPLAY;
+    public static String getYouTubeLinkWithAutoplay(VideoLinkBean videoLink) {
+        return convertYouTubeLink(videoLink) + YOUTUBE_AUTOPLAY;
     }
     
-    private static String getVideoID(String url) {
+    public static String getVideoID(String url) {
         int index = url.indexOf(YOUTUBE_KEY);
         String videoID = "";
         if (index != -1) {

@@ -118,25 +118,25 @@
                                     <p:spacer height="30"/>
                                     <p:dataGrid value="#{newShowcaseBean.imageList}" var="picture" columns="3" paginator="false"
                                                 id="imageGalleria" lazy="true" emptyMessage="#{msg.noimagesavailable}">
-                                            <h:panelGrid columns="1" cellpadding="5" columnClasses="centerPosition">
-                                                <p:lightBox>
-                                                    <h:outputLink value="#{request.contextPath}/resource/#{newShowcaseBean.convertRelativeImagePath(picture)}" 
-                                                                  title="#{picture.imageName}">
-                                                        <h:graphicImage value="/resource/#{newShowcaseBean.convertRelativeImagePath(picture)}"
-                                                                        width="#{imageScaleBean.width(picture, 150)}" 
-                                                                        height="#{imageScaleBean.height(picture, 150)}" styleClass="ieRemoveBorder"/>
-                                                    </h:outputLink>
-                                                </p:lightBox>
-                                                <p:spacer height="#{135-imageScaleBean.height(picture, 150)}" width="165"
-                                                              rendered="#{imageScaleBean.height(picture, 150)!=150}" styleClass="ieRemoveBorder"/>
-                                                <h:column>
-                                                    <p:commandButton value="#{msg.delete}" update=":content:imageGalleria" action="#{newShowcaseBean.deleteImageFromList}"
-                                                                     process=":content:imageGalleria" id="deleteimage" style="">
-                                                        <f:setPropertyActionListener for="deleteimage" target="#{newShowcaseBean.deleteImageCache}"
-                                                                                     value="#{picture}"/>
-                                                    </p:commandButton>
-                                                </h:column>
-                                            </h:panelGrid>
+                                        <h:panelGrid columns="1" cellpadding="5" columnClasses="centerPosition">
+                                            <p:lightBox>
+                                                <h:outputLink value="#{request.contextPath}/resource/#{newShowcaseBean.convertRelativeImagePath(picture)}" 
+                                                              title="#{picture.imageName}">
+                                                    <h:graphicImage value="/resource/#{newShowcaseBean.convertRelativeImagePath(picture)}"
+                                                                    width="#{imageScaleBean.width(picture, 150)}" 
+                                                                    height="#{imageScaleBean.height(picture, 150)}" styleClass="ieRemoveBorder"/>
+                                                </h:outputLink>
+                                            </p:lightBox>
+                                            <p:spacer height="#{135-imageScaleBean.height(picture, 150)}" width="165"
+                                                      rendered="#{imageScaleBean.height(picture, 150)!=150}" styleClass="ieRemoveBorder"/>
+                                            <h:column>
+                                                <p:commandButton value="#{msg.delete}" update=":content:imageGalleria" action="#{newShowcaseBean.deleteImageFromList}"
+                                                                 process=":content:imageGalleria" id="deleteimage" style="">
+                                                    <f:setPropertyActionListener for="deleteimage" target="#{newShowcaseBean.deleteImageCache}"
+                                                                                 value="#{picture}"/>
+                                                </p:commandButton>
+                                            </h:column>
+                                        </h:panelGrid>
                                     </p:dataGrid>
                                     <p:spacer height="10"/>
                                     <p:separator styleClass="separator"/>
@@ -155,8 +155,8 @@
                                     <p:spacer height="30"/>
                                     <p:fieldset id="videos" legend="#{msg.addvideo}">  
                                         <ui:repeat value="#{newShowcaseBean.videoLinks}" var="video">
-                                            <p:media value="#{video.videolink}" player="flash"
-                                                     width="500" height="300"/>
+                                            <p:media value="#{videoHelperBean.getYoutubeURL(video)}" player="flash"
+                                                     width="500" height="300" rendered="#{videoHelperBean.isYoutubeVideo(video)}"/>
                                             <p:spacer width="10"/>
                                             <p:commandButton value="#{msg.delete}" update=":content:videos" action="#{newShowcaseBean.deleteVideoFromList}"
                                                              process=":content:videos" id="deletevideo" styleClass="largebutton">
@@ -305,8 +305,8 @@
                                         <p:carousel numVisible="1" effect="easeInStrong" circular="true"
                                                     value="#{newShowcaseBean.videoLinks}" var="videoLink"
                                                     itemStyleClass="carouselStyle">
-                                            <p:media player="flash" styleClass="carouselStyle"
-                                                     value="#{videoLink.videolink}"/>
+                                            <p:media value="#{videoHelperBean.getYoutubeURL(videoLink)}" player="flash"
+                                                     width="500" height="300" rendered="#{videoHelperBean.isYoutubeVideo(videoLink)}"/>
                                         </p:carousel>
                                     </p:tab>
                                 </p:tabView>
