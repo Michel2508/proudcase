@@ -8,6 +8,7 @@ import com.proudcase.visibility.EVisibility;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import org.bson.types.ObjectId;
 import org.primefaces.model.UploadedFile;
@@ -96,8 +97,9 @@ public class VideoUtil {
 
             int read = 0;
             byte[] bytes = new byte[BYTESTOREAD];
+            InputStream videoInputStream = video.getInputstream();
 
-            while ((read = video.getInputstream().read(bytes)) != -1) {
+            while ((read = videoInputStream.read(bytes)) != -1) {
                 outputStream.write(bytes, 0, read);
             }
 
@@ -153,7 +155,7 @@ public class VideoUtil {
         }
 
         // prepare the file
-        String videoFileStr = (new ObjectId()).toString();
+        String videoFileStr = (new ObjectId()).toString() + video.getFileName().substring(video.getFileName().length() - 4);
         File videoFile = new File(tempFolderStr + "/" + videoFileStr);
 
         // let us check if this file exists

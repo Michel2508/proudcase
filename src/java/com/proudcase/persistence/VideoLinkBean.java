@@ -78,7 +78,7 @@ public class VideoLinkBean implements Serializable {
     
     public String getVideolinkWithAutoStart() {
         // no typ defined?
-        if (videoTyp == null) {
+        if (videoTyp != null) {
             // just return default video link
             return getVideolink();
         }

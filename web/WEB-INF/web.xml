@@ -46,16 +46,24 @@
         <welcome-file>index.xhtml</welcome-file>
     </welcome-file-list>
     <servlet>
-        <servlet-name>imageServlet</servlet-name>
+        <servlet-name>fileServlet</servlet-name>
         <servlet-class>com.proudcase.servlets.FileServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>imageServlet</servlet-name>
+        <servlet-name>fileServlet</servlet-name>
         <url-pattern>/resource/images/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>imageServlet</servlet-name>
+        <servlet-name>fileServlet</servlet-name>
         <url-pattern>/resource/imagetemp/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>fileServlet</servlet-name>
+        <url-pattern>/resource/videos/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>fileServlet</servlet-name>
+        <url-pattern>/resource/videotemp/*</url-pattern>
     </servlet-mapping>
     <error-page>
         <error-code>404</error-code>

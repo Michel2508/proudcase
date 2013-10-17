@@ -13,6 +13,18 @@
             <f:loadBundle basename="com.proudcase.language.messages" var="msg"/>
             <link rel="shortcut icon" type="image/x-icon" href="#{request.contextPath}/resources/images/proudcase_favicon.ico"/>
             <link rel="icon" type="image/x-icon" href="#{request.contextPath}/resources/images/proudcase_favicon.ico"/>
+
+            <!-- video.js -->
+            <h:outputStylesheet name="video-js.css" library="videojs"/>
+            <h:outputScript name="video.js" library="videojs" />
+            <style type="text/css">
+                .vjs-default-skin .vjs-play-progress,
+                .vjs-default-skin .vjs-volume-level { background-color: #000000 }
+            </style>
+            <script>
+                videojs.options.flash.swf = "#{request.contextPath}/resources/videojs/video-js.swf";
+            </script>
+
             <ui:insert name="title">
                 <title>proudcase</title>
             </ui:insert>

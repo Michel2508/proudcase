@@ -59,6 +59,7 @@ public class FileServlet extends HttpServlet {
     /**
      * Initialize the servlet.
      *
+     * @throws javax.servlet.ServletException
      * @see HttpServlet#init().
      */
     @Override
@@ -125,76 +126,103 @@ public class FileServlet extends HttpServlet {
 
         // Get requested file by path info.
         String requestedFile = request.getPathInfo();
+        String requestURI = request.getRequestURI();
 
-        // Get the real path to the anonymus pic
-        String relativeWebPath = "/resources/images/anonymus.png";
-        ServletContext servletContext = request.getServletContext();
-        String absoluteDiskPath = servletContext.getRealPath(relativeWebPath);
+        // we got empty input - that not possible
+        if (requestedFile == null) {
+            return;
+        }
 
         File file = null;
-        if (requestedFile != null) {
+
+        // does it include the image or the imagetemp folder?
+        // if yes, it is a image
+        if (requestURI.contains(Constants.IMAGEFOLDER) || requestURI.contains(Constants.IMAGETEMPFOLDER)) {
+
+            // Get the real path to the anonymus pic
+            String relativeWebPath = "/resources/images/anonymus.png";
+            ServletContext servletContext = request.getServletContext();
+            String absoluteDiskPath = servletContext.getRealPath(relativeWebPath);
+
             // URL-decode the file name (might contain spaces and on) and prepare file object.
             file = new File(basePath + "/" + Constants.IMAGEFOLDER, URLDecoder.decode(requestedFile, "UTF-8"));
-        } 
 
-        // Check if file really exists in filesystem. If not try in imagetemp folder
-        if (!file.isFile()) {
-            // URL-decode the file name (might contain spaces and on) and prepare file object.
-            file = new File(basePath + "/" + Constants.IMAGETEMPFOLDER, URLDecoder.decode(requestedFile, "UTF-8"));
-        }
-        
-        // okay, really does not exist. Take the standard image
-        if (!file.isFile()) {
-            file = new File(absoluteDiskPath);
-        }
-        
-        // retrieve the user object
-        UserBean loggedUser = (UserBean) request.getSession().getAttribute(Constants.AUTH_KEY);
-        
-        // the image is secured
-        if (requestedFile != null && requestedFile.contains(Constants.IMAGESECUREFOLDER)) {
-            // get the image object from the database via the relativeimagepath
-            // it's also important that we cut the first character it's a "/"
-            ImageManager imageManager = ManagerFactory.createImageManager();
-            ImageBean imageFromDB = imageManager.getImageByRelativeImagePath(requestedFile.substring(1));
-            boolean hasAccessToImage = false;
-            
-            // we got something?
-            if (imageFromDB != null && imageFromDB.getId() != null) {
-                // first of all let us check what kind of rule is set to the image
-                if (imageFromDB.getSecurityRule().equals(EVisibility.all)) {
-                    hasAccessToImage = true;
-                }
-                
-                // is the user logged in?
-                if (!hasAccessToImage && loggedUser != null) {
-                    // check if the user who wants to see this image is the owner
-                    if (imageFromDB.getOwnerOfImage().equals(loggedUser.getId())) {
+            // Check if file really exists in filesystem. If not try in imagetemp folder
+            if (!file.isFile()) {
+                // URL-decode the file name (might contain spaces and on) and prepare file object.
+                file = new File(basePath + "/" + Constants.IMAGETEMPFOLDER, URLDecoder.decode(requestedFile, "UTF-8"));
+            }
+
+            // okay, really does not exist. Take the standard image
+            if (!file.isFile()) {
+                file = new File(absoluteDiskPath);
+            }
+
+            // retrieve the user object
+            UserBean loggedUser = (UserBean) request.getSession().getAttribute(Constants.AUTH_KEY);
+
+            // the image is secured
+            if (requestedFile.contains(Constants.IMAGESECUREFOLDER)) {
+                // get the image object from the database via the relativeimagepath
+                // it's also important that we cut the first character it's a "/"
+                ImageManager imageManager = ManagerFactory.createImageManager();
+                ImageBean imageFromDB = imageManager.getImageByRelativeImagePath(requestedFile.substring(1));
+                boolean hasAccessToImage = false;
+
+                // we got something?
+                if (imageFromDB != null && imageFromDB.getId() != null) {
+                    // first of all let us check what kind of rule is set to the image
+                    if (imageFromDB.getSecurityRule().equals(EVisibility.all)) {
                         hasAccessToImage = true;
                     }
-                }
-                
-                // if we are here then we need more information
-                UserManager userManager = ManagerFactory.createUserManager();
-                UserBean ownerOfImage = userManager.get(imageFromDB.getOwnerOfImage());
-                if (!hasAccessToImage && !imageFromDB.getSecurityRule().equals(EVisibility.onlyme) && loggedUser != null) {
-                    // is this user a friend
-                    if (userManager.isFriend(ownerOfImage, loggedUser)) {
-                        hasAccessToImage = true;
-                    } else if (imageFromDB.getSecurityRule().equals(EVisibility.friendsfriends)) {
-                        // is this user a friend of a friend?
-                        if (userManager.isFriendOfFriend(ownerOfImage, loggedUser)) {
+
+                    // is the user logged in?
+                    if (!hasAccessToImage && loggedUser != null) {
+                        // check if the user who wants to see this image is the owner
+                        if (imageFromDB.getOwnerOfImage().equals(loggedUser.getId())) {
                             hasAccessToImage = true;
                         }
                     }
+
+                    // if we are here then we need more information
+                    UserManager userManager = ManagerFactory.createUserManager();
+                    UserBean ownerOfImage = userManager.get(imageFromDB.getOwnerOfImage());
+                    if (!hasAccessToImage && !imageFromDB.getSecurityRule().equals(EVisibility.onlyme) && loggedUser != null) {
+                        // is this user a friend
+                        if (userManager.isFriend(ownerOfImage, loggedUser)) {
+                            hasAccessToImage = true;
+                        } else if (imageFromDB.getSecurityRule().equals(EVisibility.friendsfriends)) {
+                            // is this user a friend of a friend?
+                            if (userManager.isFriendOfFriend(ownerOfImage, loggedUser)) {
+                                hasAccessToImage = true;
+                            }
+                        }
+                    }
+                }
+
+                // has this user now access to the image?
+                if (!hasAccessToImage) {
+                    // no so just show him the standard image :D *like*
+                    file = new File(absoluteDiskPath);
                 }
             }
+        } else if (requestURI.contains(Constants.VIDEOFOLDER) || requestURI.contains(Constants.VIDEOTEMPFOLDER)) {
+            // It includes the video or the videotemp folder 
+            // so it must be a video!
             
-            // has this user now access to the image?
-            if (!hasAccessToImage) {
-                // no so just show him the standard image :D *like*
-                file = new File(absoluteDiskPath);
+            // URL-decode the file name (might contain spaces and on) and prepare file object.
+            file = new File(basePath + "/" + Constants.VIDEOFOLDER, URLDecoder.decode(requestedFile, "UTF-8"));
+
+            // Check if file really exists in filesystem. If not try in videotemp folder
+            if (!file.isFile()) {
+                // URL-decode the file name (might contain spaces and on) and prepare file object.
+                file = new File(basePath + "/" + Constants.VIDEOTEMPFOLDER, URLDecoder.decode(requestedFile, "UTF-8"));
             }
+        }
+        
+        // if we are here and we have no valid file - exit
+        if (file == null || !file.isFile()) {
+            return;
         }
         
         // Prepare some variables. The ETag is an unique identifier of the file.
@@ -203,9 +231,7 @@ public class FileServlet extends HttpServlet {
         long lastModified = file.lastModified();
         String eTag = fileName + "_" + length + "_" + lastModified;
 
-
         // Validate request headers for caching ---------------------------------------------------
-
         // If-None-Match header should contain "*" or ETag. If so, then return 304.
         String ifNoneMatch = request.getHeader("If-None-Match");
         if (ifNoneMatch != null && matches(ifNoneMatch, eTag)) {
@@ -223,9 +249,7 @@ public class FileServlet extends HttpServlet {
             return;
         }
 
-
         // Validate request headers for resume ----------------------------------------------------
-
         // If-Match header should contain "*" or ETag. If not, then return 412.
         String ifMatch = request.getHeader("If-Match");
         if (ifMatch != null && !matches(ifMatch, eTag)) {
@@ -240,9 +264,7 @@ public class FileServlet extends HttpServlet {
             return;
         }
 
-
         // Validate and process range -------------------------------------------------------------
-
         // Prepare some variables. The full Range represents the complete file.
         Range full = new Range(0, length - 1, length);
         List<Range> ranges = new ArrayList<>();
@@ -300,9 +322,7 @@ public class FileServlet extends HttpServlet {
             }
         }
 
-
         // Prepare and initialize response --------------------------------------------------------
-
         // Get content type by file name and set default GZIP support and content disposition.
         String contentType = getServletContext().getMimeType(fileName);
         boolean acceptsGzip = false;
@@ -337,9 +357,7 @@ public class FileServlet extends HttpServlet {
         response.setDateHeader("Last-Modified", lastModified);
         response.setDateHeader("Expires", System.currentTimeMillis() + DEFAULT_EXPIRE_TIME);
 
-
         // Send requested file (part(s)) to client ------------------------------------------------
-
         // Prepare streams.
         RandomAccessFile input = null;
         OutputStream output = null;
