@@ -64,9 +64,11 @@ public class NewShowcaseBean implements Serializable {
     private SessionBean sessionBean;
     @ManagedProperty(value = "#{applicationBean}")
     private ApplicationBean applicationBean;
+    
     private ShowcaseBean singleShowcase;
     private List<ShowcaseTextBean> manyShowcaseText =
             new ArrayList<>();
+    
     private DualListModel<String> languages;
     private boolean sendMsg = true;
     private List<ImageBean> imageList =
@@ -77,16 +79,20 @@ public class NewShowcaseBean implements Serializable {
             new ArrayList<>();
     private VideoLinkBean singleVideoLink =
             new VideoLinkBean();
+    
     private ImageBean deleteImageCache;
     private VideoLinkBean deleteVideoCache;
+    
     private final transient ShowcaseManager showcaseManager =
             ManagerFactory.createShowcaseManager();
     private final transient ImageManager imageManager =
             ManagerFactory.createImageManager();
     private final transient VideoLinkManager videoLinkManager =
             ManagerFactory.createVideoLinkManager();
+    
     private final Map<String, SupportedLanguagesBean> localeMap =
             new HashMap<>();
+    
     private String categorieSelect;
     private String showcaseId;
 
@@ -435,7 +441,7 @@ public class NewShowcaseBean implements Serializable {
         UploadedFile videoFile = event.getFile();
         
         // okay, save this video to the temp folder till the showcase is saved
-        VideoLinkBean tempVideo = VideoUtil.saveVideoInTemp(videoFile, currentUser.getId());
+        VideoLinkBean tempVideo = VideoUtil.saveVideoInTemp(videoFile, currentUser);
 
         // add video object to our reference list
         videoLinks.add(tempVideo);
