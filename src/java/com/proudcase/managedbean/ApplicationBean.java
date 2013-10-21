@@ -1,15 +1,21 @@
 package com.proudcase.managedbean;
 
+import com.proudcase.constants.Constants;
 import com.proudcase.mongodb.manager.CategorieManager;
 import com.proudcase.mongodb.manager.ManagerFactory;
 import com.proudcase.mongodb.manager.SupportedLanguagesManager;
 import com.proudcase.persistence.CategorieBean;
 import com.proudcase.persistence.LangCategorieBean;
 import com.proudcase.persistence.SupportedLanguagesBean;
+import com.proudcase.util.VideoUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
@@ -38,7 +44,7 @@ import javax.faces.model.SelectItem;
  *
  * @Encoding: UTF-8
  */
-@ManagedBean
+@ManagedBean(eager = true)
 @ApplicationScoped
 public class ApplicationBean implements Serializable {
     
@@ -51,8 +57,15 @@ public class ApplicationBean implements Serializable {
             new ArrayList<>();
     transient private SupportedLanguagesManager supportedLanguagesManager =
             ManagerFactory.createSupportedLanguagesManager();
+    
+     // ExecutorService for the spawned thread that manage the video encoding
+    private static ExecutorService videoEncodingService;
 
     public ApplicationBean() {
+    }
+    
+    @PostConstruct
+    public void applicationInitialized() {
         // get all categories by language
         categorieList = categorieManager.getAllCategories();
         
@@ -64,6 +77,18 @@ public class ApplicationBean implements Serializable {
         
         // remove the link to the manager to release the connection
         supportedLanguagesManager = null;
+        
+        // Initialize the thread pool for video encoding
+        videoEncodingService = Executors.newFixedThreadPool(Constants.MAX_VIDEO_ENCODING_THREADS);
+        
+        // set it to the video util class
+        VideoUtil.videoEncodingService = videoEncodingService;
+    }
+    
+    @PreDestroy
+    public void applicationDestroyed() {
+        // Shutdown the fixed thread pool for video encoding now!
+        videoEncodingService.shutdownNow();
     }
     
     public List<LangCategorieBean> getCategoriesByLocale(Locale locale) {

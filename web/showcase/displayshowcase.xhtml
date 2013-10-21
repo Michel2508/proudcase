@@ -42,8 +42,16 @@
                                     <p:carousel numVisible="1" effect="easeInStrong" circular="true"
                                                 value="#{displayShowcaseBean.videoLinkList}" var="videoLink"
                                                 itemStyleClass="carouselStyle">
-                                        <p:media player="flash" styleClass="carouselStyle"
+                                        <p:media player="flash" styleClass="carouselStyle" rendered="#{videoHelperBean.isYoutubeVideo(videoLink)}"
                                                  value="#{videoLink.videolink}"/>
+
+                                        <h:panelGroup layout="block" rendered="#{videoHelperBean.isSelfHostedVideo(videoLink)}">
+                                            <video class="video-js vjs-default-skin carouselStyle" controls="true" preload="auto" 
+                                                   poster="http://video-js.zencoder.com/oceans-clip.png"
+                                                   data-setup="{}">
+                                                <source src="/resource/videos/#{videoLink.videolink}" type='video/mp4' />
+                                            </video>
+                                        </h:panelGroup>
                                     </p:carousel>
                                 </p:tab>
                             </p:tabView>

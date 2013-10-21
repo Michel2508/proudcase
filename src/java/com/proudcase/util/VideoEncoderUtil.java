@@ -1,49 +1,52 @@
 package com.proudcase.util;
 
 import com.proudcase.exclogger.ExceptionLogger;
+import com.proudcase.filehandling.PropertyReader;
+import com.proudcase.mongodb.manager.ManagerFactory;
+import com.proudcase.mongodb.manager.MessagesManager;
+import com.proudcase.persistence.MessagesBean;
 import com.proudcase.persistence.UserBean;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
-  * Copyright © 03.07.2013 Michel Vocks
-  * This file is part of proudcase.
+ * Copyright © 03.07.2013 Michel Vocks This file is part of proudcase.
+ *
+ * proudcase is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * proudcase is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * proudcase. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @Author: Michel Vocks
+ *
+ * @Date: 17.10.2013
+ *
+ * @Encoding: UTF-8
+ */
+public class VideoEncoderUtil implements Runnable {
 
-  * proudcase is free software: you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License as published by
-  * the Free Software Foundation, either version 3 of the License, or
-  * (at your option) any later version.
-
-  * proudcase is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU General Public License for more details.
-
-  * You should have received a copy of the GNU General Public License
-  * along with proudcase.  If not, see <http://www.gnu.org/licenses/>.
-  
-  * @Author: Michel Vocks
-  *
-  * @Date: 17.10.2013
-  *
-  * @Encoding: UTF-8
-*/
-public class VideoEncoderUtil {
-    
     // FFMPEG arguments
     private static final List<String> FFMPEG_ARGS = new ArrayList<>();
-    
+
     // windows start command
     private static final List<String> WINSTARTCOMMAND = new ArrayList<>();
-    
-     // input placeholder
+
+    // input placeholder
     private static final String INPUTPH = "#&INPUT";
-    
+
     // output placeholder
     private static final String OUTPUTPH = "#$OUTPUT";
-    
+
     static {
         // FFMPEG args
         FFMPEG_ARGS.add("ffmpeg");
@@ -52,31 +55,43 @@ public class VideoEncoderUtil {
         FFMPEG_ARGS.add("-c:v");
         FFMPEG_ARGS.add("libx264"); // h.265 format conversion
         FFMPEG_ARGS.add(OUTPUTPH);
-        
+
         // win start command
         WINSTARTCOMMAND.add("cmd");
         WINSTARTCOMMAND.add("/C");
-    };
+    }
+    ;
     
     // This property returns the name of the os
     private static final String OSPROP = "os.name";
-    
+
     // operating system abbreveations
     private static final String WINABB = "win";
-    
+
+    // Some things we need for the encoding process
+    private final String videoInputPath;
+    private final String videoOutputPath;
+    private final File logOutput;
+    private final UserBean userObj;
+    private final String messageBundle;
+
+    public VideoEncoderUtil(String videoInputPath, String videoOutputPath, File logOutput, UserBean userObj, String messageBundle) {
+        this.videoInputPath = videoInputPath;
+        this.videoOutputPath = videoOutputPath;
+        this.logOutput = logOutput;
+        this.userObj = userObj;
+        this.messageBundle = messageBundle;
+    }
+
     /**
      * Starts external program "FFMPEG" which converts a video to other formats
-     * @param videoInputPath - Path to the initial video
-     * @param videoOutputPath - Path to the output video
-     * @param logOutput - Log output file
-     * @param userObj - User object of the owner of this video
-     * @throws com.proudcase.exclogger.ExceptionLogger
      */
-    public static void convertVideo(String videoInputPath, String videoOutputPath, File logOutput, UserBean userObj) throws ExceptionLogger {
+    @Override
+    public void run() {
         // Get the os
         String operatingSystem = System.getProperty(OSPROP).toLowerCase();
         List<String> executeCommand = new ArrayList<>();
-        
+
         // is the current operating system windows?
         if (operatingSystem.indexOf(WINABB) >= 0) {
             // format the run command
@@ -86,7 +101,7 @@ public class VideoEncoderUtil {
             // just add args
             executeCommand.addAll(FFMPEG_ARGS);
         }
-        
+
         // replace the input- and output placeholders with the real path
         int index = executeCommand.indexOf(INPUTPH);
         executeCommand.remove(index);
@@ -94,7 +109,10 @@ public class VideoEncoderUtil {
         index = executeCommand.indexOf(OUTPUTPH);
         executeCommand.remove(index);
         executeCommand.add(index, videoOutputPath);
-        
+
+        // Get the file from the input video
+        File tempVideoFile = new File(videoInputPath);
+
         try {
             // create a processbuilder which executes our command
             ProcessBuilder processBuilder = new ProcessBuilder(executeCommand);
@@ -104,17 +122,53 @@ public class VideoEncoderUtil {
             processBuilder.redirectInput(logOutput);
             processBuilder.redirectError(logOutput);
             processBuilder.redirectOutput(logOutput);
-            
+
             // let's execute the encoding process
             Process ffmpegProcess = processBuilder.start();
-            
-            // start a thread that watches the encoding and finally sends a message to the user
-            new Thread(new VideoEncodingCommandReader(ffmpegProcess, userObj)).start();
-            
+
+            // Wait until the encoding process is finished
+            int exitResult = -100;
+            try {
+                exitResult = ffmpegProcess.waitFor();
+            } catch (InterruptedException ex) {
+                throw new ExceptionLogger(ex, "Wait for ffmpeg encoding process interrupt exception!");
+            }
+
+            // if we are here, then the encoding is hopefully done
+            if (exitResult == 0) {
+                // first of all, delete the temp video file!
+                if (tempVideoFile.isFile()) {
+                    tempVideoFile.delete();
+                }
+
+                // create a new message for the user
+                MessagesBean finishMessage = new MessagesBean();
+
+                // set some attributes
+                finishMessage.setReceiver(userObj);
+                finishMessage.setSenddate(new Date());
+
+                // Get the message for the user
+                String message = PropertyReader.getMessageResourceString(
+                        messageBundle, "mediainfo", null, userObj.getPreferredLanguage());
+
+                // add the message
+                finishMessage.setMessage(message);
+
+                // finally, save our message obj in the db
+                MessagesManager messagesManager = ManagerFactory.createMessagesManager();
+                messagesManager.save(finishMessage);
+            } else {
+                throw new ExceptionLogger(new InterruptedException(), "FFMPEG exit with error!");
+            }
+
         } catch (IOException ex) {
-            throw new ExceptionLogger(ex, "Video encoding via ffmpeg not possible! (check ffmpeg in path environment)");
+            try {
+                throw new ExceptionLogger(ex, "Video encoding via ffmpeg not possible! (check ffmpeg in path environment)");
+            } catch (ExceptionLogger ex2) {
+            }
+        } catch (ExceptionLogger ex2) {
         }
-        
     }
 
 }

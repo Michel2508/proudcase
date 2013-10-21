@@ -101,4 +101,7 @@ public class Constants {
     
     // max size of an image (images are resized after upload)
     public static final int MAX_IMAGE_SIZE = 670; // 670 pixel largest display on index.html
+    
+    // max amount of fixed threads for the video encoding process
+    public static final int MAX_VIDEO_ENCODING_THREADS = 10;
 }

@@ -183,8 +183,15 @@
                                         <ui:repeat value="#{newShowcaseBean.videoLinks}" var="video">
                                             <p:media value="#{videoHelperBean.getYoutubeURL(video)}" player="flash"
                                                      width="500" height="300" rendered="#{videoHelperBean.isYoutubeVideo(video)}"/>
-                                            <p:media value="/resource/videotemp/#{video.videolink}" player="flash"
-                                                     width="500" height="300" rendered="#{videoHelperBean.isSelfHostedVideo(video)}"/>
+
+                                            <h:panelGroup layout="block" rendered="#{videoHelperBean.isSelfHostedVideo(video)}">
+                                                <video class="video-js vjs-default-skin" controls="true" preload="auto" 
+                                                       poster="http://video-js.zencoder.com/oceans-clip.png"
+                                                       width="500" height="300"
+                                                       data-setup="{}">
+                                                    <source src="/resource/videotemp/#{videoLink.videolink}" type='video/mp4' />
+                                                </video>
+                                            </h:panelGroup>
 
                                             <p:spacer width="10"/>
                                             <p:commandButton value="#{msg.delete}" update=":content:videos" action="#{newShowcaseBean.deleteVideoFromList}"

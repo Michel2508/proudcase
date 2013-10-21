@@ -441,7 +441,7 @@ public class NewShowcaseBean implements Serializable {
         UploadedFile videoFile = event.getFile();
         
         // okay, save this video to the temp folder till the showcase is saved
-        VideoLinkBean tempVideo = VideoUtil.saveVideoInTemp(videoFile, currentUser);
+        VideoLinkBean tempVideo = VideoUtil.saveVideoInTemp(videoFile, currentUser, fCtx.getApplication().getMessageBundle());
 
         // add video object to our reference list
         videoLinks.add(tempVideo);

@@ -53,18 +53,22 @@ public class MessagesCenterBean {
 
     @ManagedProperty(value = "#{sessionBean}")
     private SessionBean sessionBean;
-    transient private MessagesManager messagesManager =
-            ManagerFactory.createMessagesManager();
-    transient private FriendInvitationManager friendInvitationManager =
-            ManagerFactory.createFriendInvitationManager();
-    transient private UserManager userManager =
-            ManagerFactory.createUserManager();
-    private List<MessagesCenterViewBean> messagesList =
-            new ArrayList<>();
+    private final transient MessagesManager messagesManager
+            = ManagerFactory.createMessagesManager();
+    private final transient FriendInvitationManager friendInvitationManager
+            = ManagerFactory.createFriendInvitationManager();
+    private final transient UserManager userManager
+            = ManagerFactory.createUserManager();
+    private List<MessagesCenterViewBean> messagesList
+            = new ArrayList<>();
     private int newMessages = 0;
     private UserBean receiver;
-    private MessagesBean newMessage =
-            new MessagesBean();
+    private MessagesBean newMessage
+            = new MessagesBean();
+    
+    // sender name if not exists
+    private static final String PROUDCASE_SENDER_NAME = "Proudcase";
+    
 
     public void init() {
         // Get the informations from the user
@@ -129,11 +133,17 @@ public class MessagesCenterBean {
                 newMessages++;
             }
 
-            // set the avatarhash
-            tempView.setAvatar(singleMessage.getSender().getAvatar());
+            // check if the sender is not null
+            if (singleMessage.getSender() != null) {
+                // set the avatarhash
+                tempView.setAvatar(singleMessage.getSender().getAvatar());
 
-            // now get the nickname for the user
-            tempView.setNickname(singleMessage.getSender().toString());
+                // now get the nickname for the user
+                tempView.setNickname(singleMessage.getSender().toString());
+            } else {
+                // we have no sender - so the sender is proudcase!
+                tempView.setNickname(PROUDCASE_SENDER_NAME);
+            }
 
             // finally, add that view obj to our list
             messagesList.add(tempView);
