@@ -368,8 +368,11 @@ public class NewShowcaseBean implements Serializable {
         for (VideoLinkBean videoLink : videoLinks) {
             videoLinkManager.save(videoLink);
 
-            // move video from the temp folder to the real folder
-            VideoUtil.moveVideoToUserDir(videoLink.getVideolink(), currentUser, fCtx.getApplication().getMessageBundle());
+            // is the video self hosted?
+            if (videoLink.getVideoTyp().equals(EVideoTyp.SELFHOSTEDVIDEO)) {
+                // move video from the temp folder to the real folder
+                VideoUtil.moveVideoToUserDir(videoLink.getVideolink(), currentUser, fCtx.getApplication().getMessageBundle());
+            }
         }
 
         // add images to the showcase
@@ -578,7 +581,7 @@ public class NewShowcaseBean implements Serializable {
         }
         return thumbnailLink;
     }
-    
+
     public String linkToPreview() {
         return ENavigation.DISPLAYSHOWCASE.toString() + singleShowcase.getId();
     }

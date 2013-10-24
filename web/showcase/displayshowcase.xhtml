@@ -43,7 +43,7 @@
                                                 value="#{displayShowcaseBean.videoLinkList}" var="videoLink"
                                                 itemStyleClass="carouselStyle">
                                         <p:media player="flash" styleClass="carouselStyle" rendered="#{videoHelperBean.isYoutubeVideo(videoLink)}"
-                                                 value="#{videoLink.videolink}"/>
+                                                 value="#{videoHelperBean.getYoutubeURL(videoLink)}"/>
 
                                         <h:panelGroup layout="block" rendered="#{videoHelperBean.isSelfHostedVideo(videoLink) and videoLink.encodingDone}">
                                             <video class="video-js vjs-default-skin carouselStyle" controls="true" preload="auto" 

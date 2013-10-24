@@ -100,7 +100,7 @@
 
                             <p:tab id="addmedia" title="#{msg.addmedia}">
                                 <p:panel header="#{msg.addmedia}" >
-                                    <p:messages autoUpdate="true" id="errorDisplay" showDetail="true"
+                                    <p:messages autoUpdate="false" id="errorDisplay" showDetail="true"
                                                 showSummary="false"/>
                                     <p:spacer height="10"/>
                                     <h:form enctype="multipart/form-data">
@@ -169,16 +169,22 @@
                                                 </p:overlayPanel>
                                             </p:fieldset>
                                             <p:fieldset>
-                                                <h:graphicImage library="images" name="upload_youtube.png" styleClass="ieRemoveBorder"/>
+                                                <h:graphicImage library="images" name="upload_youtube.png" styleClass="ieRemoveBorder"
+                                                                id="youtubeLinkAdd" style="cursor: pointer;"/>
+
+                                                <p:overlayPanel for="youtubeLinkAdd" id="youtubeLinkAddPanel" dismissable="false" showCloseIcon="true"
+                                                                showEffect="explode" showEvent="mousedown" hideEffect="explode" appendToBody="false" hideEvent="submit"
+                                                                style="width: 500px;height: 40px;" widgetVar="youtubeLinkAddWidg" dynamic="true">
+                                                    <h:outputLabel value="Youtube-Url: " for="txt_url"></h:outputLabel>  
+                                                    <p:inputText id="txt_url"   
+                                                                 value="#{newShowcaseBean.singleVideoLink.videolink}"/>  
+
+                                                    <p:commandButton value="#{msg.add}" update=":content:videos txt_url" oncomplete="youtubeLinkAddWidg.hide();"  
+                                                                     actionListener="#{newShowcaseBean.addVideoLink}"/>  
+                                                    <p:commandButton value="#{msg.reset}" type="reset"/>
+                                                </p:overlayPanel>
                                             </p:fieldset>
                                         </h:panelGrid>
-                                        <!--<h:outputLabel value="Youtube-Url: " for="txt_url"></h:outputLabel>  
-                                        <p:inputText id="txt_url"   
-                                                     value="#{newShowcaseBean.singleVideoLink.videolink}"/>  
-
-                                        <p:commandButton value="#{msg.add}" update="videos @parent"  
-                                                         actionListener="#{newShowcaseBean.addVideoLink}"/>  
-                                        <p:commandButton value="#{msg.reset}" type="reset"/>  -->
                                     </p:panel>  
                                     <p:spacer height="30"/>
                                     <p:fieldset id="videos" legend="#{msg.addedvideos}">  
