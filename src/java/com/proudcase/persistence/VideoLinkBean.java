@@ -3,7 +3,6 @@ package com.proudcase.persistence;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
 import com.proudcase.constants.EVideoTyp;
-import com.proudcase.util.VideoUtil;
 import com.proudcase.util.YouTubeUtil;
 import java.io.Serializable;
 import org.bson.types.ObjectId;
@@ -39,8 +38,9 @@ public class VideoLinkBean implements Serializable {
     private ObjectId id;
     
     private String videolink;
-    private ImageBean thumbnail;
+    private String thumbnailink;
     private String youtubeID;
+    private boolean encodingDone;
     private EVideoTyp videoTyp;
 
     public VideoLinkBean() {
@@ -55,30 +55,19 @@ public class VideoLinkBean implements Serializable {
         this.videolink = videolink;
     }
 
-    public VideoLinkBean(ObjectId id, String videolink, ImageBean thumbnail) {
+    public VideoLinkBean(ObjectId id, String videolink, String thumbnailink, String youtubeID, boolean encodingDone, EVideoTyp videoTyp) {
         this.id = id;
         this.videolink = videolink;
-        this.thumbnail = thumbnail;
-    }
-
-    public VideoLinkBean(ObjectId id, String videolink, ImageBean thumbnail, EVideoTyp videoTyp) {
-        this.id = id;
-        this.videolink = videolink;
-        this.thumbnail = thumbnail;
-        this.videoTyp = videoTyp;
-    }
-
-    public VideoLinkBean(ObjectId id, String videolink, ImageBean thumbnail, String youtubeID, EVideoTyp videoTyp) {
-        this.id = id;
-        this.videolink = videolink;
-        this.thumbnail = thumbnail;
+        this.thumbnailink = thumbnailink;
         this.youtubeID = youtubeID;
+        this.encodingDone = encodingDone;
         this.videoTyp = videoTyp;
     }
-    
+
+
     public String getVideolinkWithAutoStart() {
         // no typ defined?
-        if (videoTyp != null) {
+        if (videoTyp == null) {
             // just return default video link
             return getVideolink();
         }
@@ -88,8 +77,8 @@ public class VideoLinkBean implements Serializable {
             // youtube needs the autoplay tag
             return YouTubeUtil.getYouTubeLinkWithAutoplay(this);
         } else {
-            // video is self hosted. So add autostart tag
-            return VideoUtil.getVideoURLWithAutostart(videolink);
+            // video is self hosted.
+            return videolink;
         }
     }
     
@@ -109,12 +98,12 @@ public class VideoLinkBean implements Serializable {
         this.videolink = videolink;
     }
 
-    public ImageBean getThumbnail() {
-        return thumbnail;
+    public String getThumbnailink() {
+        return thumbnailink;
     }
 
-    public void setThumbnail(ImageBean thumbnail) {
-        this.thumbnail = thumbnail;
+    public void setThumbnailink(String thumbnailink) {
+        this.thumbnailink = thumbnailink;
     }
 
     public EVideoTyp getVideoTyp() {
@@ -131,5 +120,13 @@ public class VideoLinkBean implements Serializable {
 
     public void setYoutubeID(String youtubeID) {
         this.youtubeID = youtubeID;
+    }
+
+    public boolean isEncodingDone() {
+        return encodingDone;
+    }
+
+    public void setEncodingDone(boolean encodingDone) {
+        this.encodingDone = encodingDone;
     }
 }

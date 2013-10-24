@@ -1,11 +1,14 @@
 package com.proudcase.util;
 
+import com.proudcase.constants.Constants;
 import com.proudcase.exclogger.ExceptionLogger;
 import com.proudcase.filehandling.PropertyReader;
 import com.proudcase.mongodb.manager.ManagerFactory;
 import com.proudcase.mongodb.manager.MessagesManager;
+import com.proudcase.mongodb.manager.VideoLinkManager;
 import com.proudcase.persistence.MessagesBean;
 import com.proudcase.persistence.UserBean;
+import com.proudcase.persistence.VideoLinkBean;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,6 +44,9 @@ public class VideoEncoderUtil implements Runnable {
     // windows start command
     private static final List<String> WINSTARTCOMMAND = new ArrayList<>();
 
+    // Thumbnail commands for ffmpeg
+    private static final List<String> THUMBNAIL_FFMPEG_ARGS = new ArrayList<>();
+
     // input placeholder
     private static final String INPUTPH = "#&INPUT";
 
@@ -50,15 +56,31 @@ public class VideoEncoderUtil implements Runnable {
     static {
         // FFMPEG args
         FFMPEG_ARGS.add("ffmpeg");
-        FFMPEG_ARGS.add("-i");
-        FFMPEG_ARGS.add(INPUTPH);
-        FFMPEG_ARGS.add("-c:v");
+        FFMPEG_ARGS.add("-i"); // next arg is path to input video
+        FFMPEG_ARGS.add(INPUTPH); // path to input video
+        FFMPEG_ARGS.add("-movflags"); // relocate MOOV atom in the video
+        FFMPEG_ARGS.add("faststart"); // allow playback to begin before the file is completely downloaded
+        FFMPEG_ARGS.add("-c:v"); // next arg is the output format
         FFMPEG_ARGS.add("libx264"); // h.265 format conversion
-        FFMPEG_ARGS.add(OUTPUTPH);
+        FFMPEG_ARGS.add(OUTPUTPH); // output video path
 
         // win start command
         WINSTARTCOMMAND.add("cmd");
         WINSTARTCOMMAND.add("/C");
+
+        // thumbnail args for ffmpeg
+        THUMBNAIL_FFMPEG_ARGS.add("ffmpeg");
+        THUMBNAIL_FFMPEG_ARGS.add("-i");        // next arg is path to input video
+        THUMBNAIL_FFMPEG_ARGS.add(INPUTPH);     // path to input video
+        THUMBNAIL_FFMPEG_ARGS.add("-r");        // force the frames per second
+        THUMBNAIL_FFMPEG_ARGS.add("1");         // one frame per second
+        THUMBNAIL_FFMPEG_ARGS.add("-s");        // force to capture in a specific quality
+        THUMBNAIL_FFMPEG_ARGS.add("hd1080");    // hd1080 == 1920x1080 resolution
+        THUMBNAIL_FFMPEG_ARGS.add("-t");        // force to capture only specified seconds
+        THUMBNAIL_FFMPEG_ARGS.add("1");         // forse to capture only for one second
+        THUMBNAIL_FFMPEG_ARGS.add("-ss");       // force to start at a specific point
+        THUMBNAIL_FFMPEG_ARGS.add("00:00:10");  // capture start after 10 seconds
+        THUMBNAIL_FFMPEG_ARGS.add(OUTPUTPH);    // output thumbnail path
     }
     ;
     
@@ -90,32 +112,66 @@ public class VideoEncoderUtil implements Runnable {
     public void run() {
         // Get the os
         String operatingSystem = System.getProperty(OSPROP).toLowerCase();
-        List<String> executeCommand = new ArrayList<>();
+        List<String> executeCommandEnc = new ArrayList<>();
+        List<String> executeCommandThumb = new ArrayList<>();
 
         // is the current operating system windows?
         if (operatingSystem.indexOf(WINABB) >= 0) {
-            // format the run command
-            executeCommand.addAll(WINSTARTCOMMAND);
-            executeCommand.addAll(FFMPEG_ARGS);
+            // format the run command for capturing the thumbnail
+            executeCommandThumb.addAll(WINSTARTCOMMAND);
+            executeCommandThumb.addAll(THUMBNAIL_FFMPEG_ARGS);
+
+            // format the run command for encoding
+            executeCommandEnc.addAll(WINSTARTCOMMAND);
+            executeCommandEnc.addAll(FFMPEG_ARGS);
         } else {
             // just add args
-            executeCommand.addAll(FFMPEG_ARGS);
+            executeCommandThumb.addAll(THUMBNAIL_FFMPEG_ARGS);
+            executeCommandEnc.addAll(FFMPEG_ARGS);
         }
 
-        // replace the input- and output placeholders with the real path
-        int index = executeCommand.indexOf(INPUTPH);
-        executeCommand.remove(index);
-        executeCommand.add(index, videoInputPath);
-        index = executeCommand.indexOf(OUTPUTPH);
-        executeCommand.remove(index);
-        executeCommand.add(index, videoOutputPath);
+        // replace the input- and output placeholders with the real path for thumbnail capturing
+        int index = executeCommandThumb.indexOf(INPUTPH);
+        executeCommandThumb.remove(index);
+        executeCommandThumb.add(index, videoInputPath);
+        index = executeCommandThumb.indexOf(OUTPUTPH);
+        executeCommandThumb.remove(index);
+        // Just take the video path and add jpeg suffix        
+        executeCommandThumb.add(index, videoOutputPath + Constants.JPEG_SUFFIX);
+
+        // replace the input- and output placeholders with the real path for encoding
+        index = executeCommandEnc.indexOf(INPUTPH);
+        executeCommandEnc.remove(index);
+        executeCommandEnc.add(index, videoInputPath);
+        index = executeCommandEnc.indexOf(OUTPUTPH);
+        executeCommandEnc.remove(index);
+        executeCommandEnc.add(index, videoOutputPath);
 
         // Get the file from the input video
         File tempVideoFile = new File(videoInputPath);
 
         try {
-            // create a processbuilder which executes our command
-            ProcessBuilder processBuilder = new ProcessBuilder(executeCommand);
+            // create a processbuilder which executes the thumbnail command
+            ProcessBuilder processBuilder = new ProcessBuilder(executeCommandThumb);
+
+            // Redirect all output to our log file
+            // *IMPORTANT* remove this and the thread will get a deadlock!
+            processBuilder.redirectInput(logOutput);
+            processBuilder.redirectError(logOutput);
+            processBuilder.redirectOutput(logOutput);
+
+            // let's execute the thumbnail process
+            Process ffmpegProcess = processBuilder.start();
+
+            // Wait until the capturing process is finished
+            try {
+                ffmpegProcess.waitFor();
+            } catch (InterruptedException ex) {
+                throw new ExceptionLogger(ex, "Wait for ffmpeg thumbnail process interrupt exception!");
+            }
+
+            // create a processbuilder which executes the encoding command
+            processBuilder = new ProcessBuilder(executeCommandEnc);
 
             // Redirect all output to our log file
             // *IMPORTANT* remove this and the thread will get a deadlock!
@@ -124,7 +180,7 @@ public class VideoEncoderUtil implements Runnable {
             processBuilder.redirectOutput(logOutput);
 
             // let's execute the encoding process
-            Process ffmpegProcess = processBuilder.start();
+            ffmpegProcess = processBuilder.start();
 
             // Wait until the encoding process is finished
             int exitResult = -100;
@@ -134,11 +190,27 @@ public class VideoEncoderUtil implements Runnable {
                 throw new ExceptionLogger(ex, "Wait for ffmpeg encoding process interrupt exception!");
             }
 
+            // create a file object from the output file
+            File encodedVideoFile = new File(videoOutputPath);
+
             // if we are here, then the encoding is hopefully done
-            if (exitResult == 0) {
+            if (exitResult == 0 && encodedVideoFile.isFile()) {
                 // first of all, delete the temp video file!
                 if (tempVideoFile.isFile()) {
                     tempVideoFile.delete();
+                }
+
+                // Get the videoLink object from the database
+                VideoLinkManager videoLinkManager = ManagerFactory.createVideoLinkManager();
+                VideoLinkBean videoLink = videoLinkManager.getVideoLinkByVideoName(encodedVideoFile.getName());
+
+                // this should never happen, just to be sure
+                if (videoLink != null) {
+                    // mark that the encoding is done
+                    videoLink.setEncodingDone(true);
+
+                    // update the obj in the db
+                    videoLinkManager.save(videoLink);
                 }
 
                 // create a new message for the user
@@ -150,7 +222,7 @@ public class VideoEncoderUtil implements Runnable {
 
                 // Get the message for the user
                 String message = PropertyReader.getMessageResourceString(
-                        messageBundle, "mediainfo", null, userObj.getPreferredLanguage());
+                        messageBundle, "videoencodingfinished", null, userObj.getPreferredLanguage());
 
                 // add the message
                 finishMessage.setMessage(message);

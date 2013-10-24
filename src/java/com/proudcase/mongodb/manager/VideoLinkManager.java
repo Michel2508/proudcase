@@ -2,6 +2,7 @@ package com.proudcase.mongodb.manager;
 
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.dao.BasicDAO;
+import com.google.code.morphia.query.Query;
 import com.proudcase.persistence.VideoLinkBean;
 import org.bson.types.ObjectId;
 
@@ -32,5 +33,14 @@ public class VideoLinkManager extends BasicDAO<VideoLinkBean, ObjectId> {
     
     public VideoLinkManager(Datastore datastore) {
         super(VideoLinkBean.class, datastore);
+    }
+    
+    public VideoLinkBean getVideoLinkByVideoName(String videoName) {
+        // Query 
+        Query<VideoLinkBean> query = ds.createQuery(VideoLinkBean.class)
+                .field("videolink").contains(videoName);
+        
+        // return result
+        return query.get();
     }
 }

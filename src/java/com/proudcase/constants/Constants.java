@@ -104,4 +104,7 @@ public class Constants {
     
     // max amount of fixed threads for the video encoding process
     public static final int MAX_VIDEO_ENCODING_THREADS = 10;
+    
+    // JPEG os typ specification
+    public static final String JPEG_SUFFIX = ".jpeg";
 }

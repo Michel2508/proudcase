@@ -37,12 +37,6 @@ import org.primefaces.model.UploadedFile;
  */
 public class VideoUtil {
 
-    // flash autostart tag
-    private static final String AUTOSTART = "?autostart=true";
-
-    // suffix for temp video file
-    private static final String VIDEOTEMPSUFF = "TEMP";
-
     // File type of the encoding log files
     private static final String VIDEOENCODINGLOGTYPE = ".log";
     
@@ -55,67 +49,13 @@ public class VideoUtil {
     // instance of the video encoding thread pool
     public static ExecutorService videoEncodingService;
     
-    public static VideoLinkBean saveVideoAsFile(UploadedFile video, UserBean userObj, String messageBundle)
-            throws ExceptionLogger {
-        // let us check if the user has a "home"-dir
-        String homeDirStr = Constants.BASEPATH + "/"
-                + Constants.VIDEOFOLDER + "/" + userObj.getId().toString();
-
-        File homeDir = new File(homeDirStr);
-        if (!homeDir.isDirectory()) {
-            // create the home-dir
-            homeDir.mkdirs();
-        }
-
-        // create a new videolink obj 
-        VideoLinkBean newVideo = new VideoLinkBean();
-
-        // create an unique video name
-        String videoName = (new ObjectId()).toString() + FINALVIDEOTYP;
-
-        // Create the videopath. 
-        // BASEPATH + unique user id + (maybe securevideo) + videohash (new generated)
-        String videoPath = homeDirStr + "/" + videoName;
-
-        // let us check if this file exists
-        // should never happen so throw an exception if it exists
-        File videoFile = new File(videoPath);
-        if (videoFile.exists()) {
-            throw new ExceptionLogger(
-                    new RuntimeException("Video:" + videoPath + ":already exists"));
-        }
-
-        // write video to harddisk
-        writeVideoToFile(video, videoFile, userObj, messageBundle);
-
-        // create the relative video path
-        String relativeVideoPath = userObj.getId().toString()
-                + "/" + videoName;
-
-        // complete the object
-        newVideo.setVideolink(relativeVideoPath);
-        newVideo.setVideoTyp(EVideoTyp.SELFHOSTEDVIDEO);
-
-        // return the video obj
-        return newVideo;
-    }
-
-    private static void writeVideoToFile(UploadedFile video, File videoFile, UserBean userObj, String messageBundle) throws ExceptionLogger {
+    private static void writeVideoToFile(UploadedFile video, File videoFile) throws ExceptionLogger {
         OutputStream outputStream = null;
-
-        // get the absolute path from the final video file
-        String absolutePath = videoFile.getAbsolutePath();
-
-        // Add to the name of the video the suffix
-        absolutePath += VIDEOTEMPSUFF;
-
-        // create the temp video file
-        File tempVideoFile = new File(absolutePath);
 
         try {
             // write the inputStream to a FileOutputStream
             outputStream
-                    = new FileOutputStream(tempVideoFile);
+                    = new FileOutputStream(videoFile);
 
             int read = 0;
             byte[] bytes = new byte[BYTESTOREAD];
@@ -137,24 +77,6 @@ public class VideoUtil {
                 }
             }
         }
-
-        File encodingLogFile = null;
-        try {
-            // Create a new log file for encoding of the video
-            encodingLogFile = new File(videoFile.getAbsoluteFile() + VIDEOENCODINGLOGTYPE);
-            encodingLogFile.createNewFile();
-        } catch (IOException ex) {
-            throw new ExceptionLogger(ex, "Cannot create log file for video encoding!");
-        }
-
-        // The video was moved into the temp video file.
-        // Now, convert the temp video file!
-        // First of all, create a new instance of the new encoding thread
-        VideoEncoderUtil videoEncodingThread = new VideoEncoderUtil(tempVideoFile.getAbsolutePath(),
-                videoFile.getAbsolutePath(), encodingLogFile, userObj, messageBundle);
-        
-        // execute the encoding via the executor service
-        videoEncodingService.execute(videoEncodingThread);
     }
 
     public static void deleteVideo(String videoPath) {
@@ -178,7 +100,7 @@ public class VideoUtil {
         }
     }
 
-    public static VideoLinkBean saveVideoInTemp(UploadedFile video, UserBean userObj, String messageBundle)
+    public static VideoLinkBean saveVideoInTemp(UploadedFile video, UserBean userObj)
             throws ExceptionLogger {
         // create a new video obj
         VideoLinkBean tempVideo = new VideoLinkBean();
@@ -207,7 +129,7 @@ public class VideoUtil {
         }
 
         // write video to harddisk
-        writeVideoToFile(video, videoFile, userObj, messageBundle);
+        writeVideoToFile(video, videoFile);
 
         // create the relative path
         videoFileStr = userObj.getId().toString()
@@ -217,28 +139,22 @@ public class VideoUtil {
         // complete the object
         tempVideo.setVideoTyp(EVideoTyp.SELFHOSTEDVIDEO);
         tempVideo.setVideolink(videoFileStr);
+        
+        // also add the link to the thumbnail (which will be created during encoding)
+        tempVideo.setThumbnailink(videoFileStr + Constants.JPEG_SUFFIX);
 
         return tempVideo;
     }
 
-    public static String moveVideoToUserDir(String relativePath, ObjectId userID)
+    public static void moveVideoToUserDir(String relativePath, UserBean userObj, String messageBundle)
             throws ExceptionLogger {
-        // is the video available?
-        File videoFile = new File(Constants.BASEPATH + "/"
-                + Constants.VIDEOTEMPFOLDER
-                + "/" + relativePath);
-
-        // not exists?
-        if (!videoFile.isFile()) {
-            return null;
-        }
-
-        // get the video name
-        String videoName = videoFile.getName();
-
+        
+        // save the user id temp
+        String userID = userObj.getId().toString();
+        
         // create the new destination folder
-        String destinationPath = Constants.BASEPATH + "/" + Constants.VIDEOFOLDER
-                + "/" + userID.toString();
+        String basePath = Constants.BASEPATH + "/" + Constants.VIDEOFOLDER + "/";
+        String destinationPath = basePath + userID.toString();
 
         // not exists?
         File destinationDir = new File(destinationPath);
@@ -246,26 +162,30 @@ public class VideoUtil {
             // create all dir
             destinationDir.mkdirs();
         }
-
-        // relative video path
-        String relativeVideoPath = userID.toString() + "/" + videoName;
-
-        // let us check if this file exists
-        // should never happen so throw an exception if it exists
-        File newVideoDestination = new File(destinationPath + "/" + videoName);
-        if (newVideoDestination.exists()) {
-            throw new ExceptionLogger(
-                    new RuntimeException("Video:" + newVideoDestination.getAbsolutePath()
-                            + ":already exists (can't move it)"));
+        
+        // Get the absolute input video path
+        String videoInputPath = Constants.BASEPATH + "/" + Constants.VIDEOTEMPFOLDER
+                + "/" + relativePath;
+        
+        // Get the absolute output video path
+        String videoOutputPath = basePath + relativePath;
+        
+        // Create the logging file for the encoding process
+        File encodingLogFile = null;
+        try {
+            // Create a new log file for encoding of the video
+            encodingLogFile = new File(videoOutputPath + VIDEOENCODINGLOGTYPE);
+            encodingLogFile.createNewFile();
+        } catch (IOException ex) {
+            throw new ExceptionLogger(ex, "Cannot create log file for video encoding!");
         }
-
-        // well, move the file
-        if (videoFile.renameTo(newVideoDestination)) {
-            // success
-            return relativeVideoPath;
-        } else {
-            return null;
-        }
+        
+        // First of all, create a new instance of the new encoding thread
+        VideoEncoderUtil videoEncodingThread = new VideoEncoderUtil(videoInputPath,
+                videoOutputPath, encodingLogFile, userObj, messageBundle);
+        
+        // execute the encoding via the executor service
+        videoEncodingService.execute(videoEncodingThread);
     }
 
     public static boolean isVideoInTempDir(String relativePath) {
@@ -274,10 +194,4 @@ public class VideoUtil {
 
         return new File(videoFullPath).isFile();
     }
-
-    // returns the video url with autostart tag
-    public static String getVideoURLWithAutostart(String url) {
-        return url + AUTOSTART;
-    }
-    
 }

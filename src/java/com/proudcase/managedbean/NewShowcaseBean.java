@@ -25,6 +25,7 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import org.bson.types.ObjectId;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.DragDropEvent;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.FlowEvent;
@@ -64,35 +65,35 @@ public class NewShowcaseBean implements Serializable {
     private SessionBean sessionBean;
     @ManagedProperty(value = "#{applicationBean}")
     private ApplicationBean applicationBean;
-    
+
     private ShowcaseBean singleShowcase;
-    private List<ShowcaseTextBean> manyShowcaseText =
-            new ArrayList<>();
-    
+    private List<ShowcaseTextBean> manyShowcaseText
+            = new ArrayList<>();
+
     private DualListModel<String> languages;
     private boolean sendMsg = true;
-    private List<ImageBean> imageList =
-            new ArrayList<>();
-    private List<VideoLinkBean> videoLinks =
-            new ArrayList<>();
-    private List<SelectItem> categorieList =
-            new ArrayList<>();
-    private VideoLinkBean singleVideoLink =
-            new VideoLinkBean();
-    
+    private List<ImageBean> imageList
+            = new ArrayList<>();
+    private List<VideoLinkBean> videoLinks
+            = new ArrayList<>();
+    private List<SelectItem> categorieList
+            = new ArrayList<>();
+    private VideoLinkBean singleVideoLink
+            = new VideoLinkBean();
+
     private ImageBean deleteImageCache;
     private VideoLinkBean deleteVideoCache;
-    
-    private final transient ShowcaseManager showcaseManager =
-            ManagerFactory.createShowcaseManager();
-    private final transient ImageManager imageManager =
-            ManagerFactory.createImageManager();
-    private final transient VideoLinkManager videoLinkManager =
-            ManagerFactory.createVideoLinkManager();
-    
-    private final Map<String, SupportedLanguagesBean> localeMap =
-            new HashMap<>();
-    
+
+    private final transient ShowcaseManager showcaseManager
+            = ManagerFactory.createShowcaseManager();
+    private final transient ImageManager imageManager
+            = ManagerFactory.createImageManager();
+    private final transient VideoLinkManager videoLinkManager
+            = ManagerFactory.createVideoLinkManager();
+
+    private final Map<String, SupportedLanguagesBean> localeMap
+            = new HashMap<>();
+
     private String categorieSelect;
     private String showcaseId;
 
@@ -342,7 +343,7 @@ public class NewShowcaseBean implements Serializable {
                 // Move the image
                 String newRelativeImagePath = ImageUtil.moveImageToUserDir(
                         singleImage.getRelativeimagepath(), currentUser.getId(), secure);
-                
+
                 // save the new relative path
                 if (newRelativeImagePath != null) {
                     singleImage.setRelativeimagepath(newRelativeImagePath);
@@ -352,25 +353,25 @@ public class NewShowcaseBean implements Serializable {
                             "Can't move image:" + singleImage.getRelativeimagepath());
                 }
             }
-            
+
             // check if the visibility is still correct
             if (!singleImage.getSecurityRule().equals(singleShowcase.getVisibility())) {
                 // set the new visibility
                 singleImage.setSecurityRule(singleShowcase.getVisibility());
             }
-            
+
             // save the image information in the database
             imageManager.save(singleImage);
         }
-        
+
         // persist video links
         for (VideoLinkBean videoLink : videoLinks) {
             videoLinkManager.save(videoLink);
-            
-            // move videos from the temp folder to the real folder
-            VideoUtil.moveVideoToUserDir(videoLink.getVideolink(), currentUser.getId());
+
+            // move video from the temp folder to the real folder
+            VideoUtil.moveVideoToUserDir(videoLink.getVideolink(), currentUser, fCtx.getApplication().getMessageBundle());
         }
-        
+
         // add images to the showcase
         singleShowcase.setImageList(imageList);
 
@@ -424,7 +425,7 @@ public class NewShowcaseBean implements Serializable {
         // and add this image to our list
         imageList.add(savedImage);
     }
-    
+
     public void handleVideoUpload(FileUploadEvent event) throws ExceptionLogger {
         FacesContext fCtx = FacesContext.getCurrentInstance();
         UserBean currentUser = (UserBean) fCtx.getExternalContext().
@@ -436,12 +437,11 @@ public class NewShowcaseBean implements Serializable {
         }
 
         // * TODO * check how much space the user has left
-
         // get the source
         UploadedFile videoFile = event.getFile();
-        
+
         // okay, save this video to the temp folder till the showcase is saved
-        VideoLinkBean tempVideo = VideoUtil.saveVideoInTemp(videoFile, currentUser, fCtx.getApplication().getMessageBundle());
+        VideoLinkBean tempVideo = VideoUtil.saveVideoInTemp(videoFile, currentUser);
 
         // add video object to our reference list
         videoLinks.add(tempVideo);
@@ -495,17 +495,17 @@ public class NewShowcaseBean implements Serializable {
     public void addVideoLink() {
         // we just save the id from the video, so get it from the link
         singleVideoLink.setYoutubeID(YouTubeUtil.getVideoID(singleVideoLink.getVideolink()));
-        
+
         // This is a youtube video!
         singleVideoLink.setVideoTyp(EVideoTyp.YOUTUBEVIDEO);
 
         // add it to our reference list
         videoLinks.add(singleVideoLink);
-        
+
         // create a new object for further videolinks
         singleVideoLink = new VideoLinkBean();
     }
-    
+
     public String deleteImageFromList() {
         if (deleteImageCache == null) {
             return null;
@@ -530,7 +530,7 @@ public class NewShowcaseBean implements Serializable {
 
         // remove from temporal list
         videoLinks.remove(deleteVideoCache);
-        
+
         // check if this object already has an id
         if (deleteVideoCache.getId() != null) {
             // delete it from the database
@@ -555,6 +555,30 @@ public class NewShowcaseBean implements Serializable {
         return relativeImagePath;
     }
 
+    public String convertRelativeVideoPath(VideoLinkBean video) {
+        String videoLink;
+        if (VideoUtil.isVideoInTempDir(video.getVideolink())) {
+            videoLink = Constants.VIDEOTEMPFOLDER + "/"
+                    + video.getVideolink();
+        } else {
+            videoLink = Constants.VIDEOFOLDER + "/"
+                    + video.getVideolink();
+        }
+        return videoLink;
+    }
+
+    public String convertRelativeThumbnailPath(VideoLinkBean video) {
+        String thumbnailLink;
+        if (VideoUtil.isVideoInTempDir(video.getVideolink())) {
+            thumbnailLink = Constants.VIDEOTEMPFOLDER + "/"
+                    + video.getThumbnailink();
+        } else {
+            thumbnailLink = Constants.VIDEOFOLDER + "/"
+                    + video.getThumbnailink();
+        }
+        return thumbnailLink;
+    }
+    
     public String linkToPreview() {
         return ENavigation.DISPLAYSHOWCASE.toString() + singleShowcase.getId();
     }

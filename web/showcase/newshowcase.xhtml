@@ -146,21 +146,24 @@
                                         <h:panelGrid columns="2" cellpadding="5">
                                             <p:fieldset>
                                                 <h:graphicImage library="images" name="proudcase_logo.png" styleClass="ieRemoveBorder"
-                                                                style="cursor:pointer" id="proudcaseUpload" width="128" height="128"/>
+                                                                id="proudcaseUpload" style="cursor: pointer;" width="148" height="128"/>
 
                                                 <p:overlayPanel for="proudcaseUpload" id="proudcaseUploadPanel" dismissable="false" showCloseIcon="true"
                                                                 showEffect="explode" showEvent="mousedown" hideEffect="explode" appendToBody="true" hideEvent="submit"
-                                                                style="width: 600px;height: 150px;">
+                                                                style="width: 600px;height: 150px;" widgetVar="proudcaseUploadWidg">
                                                     <h:form enctype="multipart/form-data">
                                                         <p:fileUpload widgetVar="videoUploadWid" id="videoUpload" 
-                                                                      allowTypes="/(\.|\/)(flv|swf|mp4)$/" 
+                                                                      allowTypes="/(\.|\/)(3gp|amv|asf|asx|avi|divx|dpg|moo?v|mp4|mpg|qt|rm|swf|wmv)$/" 
                                                                       fileUploadListener="#{newShowcaseBean.handleVideoUpload}"  
                                                                       mode="advanced"  
                                                                       auto="false"
                                                                       multiple="false"  
                                                                       update=":content:videos"
-                                                                      label="#{msg.addpicture}"
+                                                                      label="#{msg.addvideo}"
+                                                                      cancelLabel="#{msg.cancel_button}"
+                                                                      uploadLabel="#{msg.upload}"
                                                                       dragDropSupport="true"
+                                                                      oncomplete="proudcaseUploadWidg.hide();"
                                                                       sizeLimit="#{constantsBean.VIDEOMAXUPLOAD}"/>
                                                     </h:form>
                                                 </p:overlayPanel>
@@ -184,13 +187,17 @@
                                             <p:media value="#{videoHelperBean.getYoutubeURL(video)}" player="flash"
                                                      width="500" height="300" rendered="#{videoHelperBean.isYoutubeVideo(video)}"/>
 
-                                            <h:panelGroup layout="block" rendered="#{videoHelperBean.isSelfHostedVideo(video)}">
+                                            <h:panelGroup layout="block" rendered="#{videoHelperBean.isSelfHostedVideo(video) and video.encodingDone}">
                                                 <video class="video-js vjs-default-skin" controls="true" preload="auto" 
-                                                       poster="http://video-js.zencoder.com/oceans-clip.png"
+                                                       poster="/resource/#{newShowcaseBean.convertRelativeThumbnailPath(video)}"
                                                        width="500" height="300"
                                                        data-setup="{}">
-                                                    <source src="/resource/videotemp/#{videoLink.videolink}" type='video/mp4' />
+                                                    <source src="/resource/#{newShowcaseBean.convertRelativeVideoPath(video)}" type='video/mp4' />
                                                 </video>
+                                            </h:panelGroup>
+
+                                            <h:panelGroup layout="block" rendered="#{videoHelperBean.isSelfHostedVideo(video) and !video.encodingDone}" styleClass="videoNotAvailable">
+                                                <p><h:outputText value="#{msg.videoisinprocess}"/></p>
                                             </h:panelGroup>
 
                                             <p:spacer width="10"/>
@@ -342,7 +349,20 @@
                                                     value="#{newShowcaseBean.videoLinks}" var="videoLink"
                                                     itemStyleClass="carouselStyle">
                                             <p:media value="#{videoHelperBean.getYoutubeURL(videoLink)}" player="flash"
-                                                     width="500" height="300" rendered="#{videoHelperBean.isYoutubeVideo(videoLink)}"/>
+                                                     styleClass="carouselStyle" rendered="#{videoHelperBean.isYoutubeVideo(videoLink)}"/>
+
+                                            <h:panelGroup layout="block" rendered="#{videoHelperBean.isSelfHostedVideo(videoLink) and videoLink.encodingDone}">
+                                                <video class="video-js vjs-default-skin carouselStyle" controls="true" preload="auto" 
+                                                       poster="/resource/#{newShowcaseBean.convertRelativeThumbnailPath(videoLink)}"
+                                                       data-setup="{}">
+                                                    <source src="/resource/#{newShowcaseBean.convertRelativeVideoPath(videoLink)}" type='video/mp4' />
+                                                </video>
+                                            </h:panelGroup>
+
+                                            <h:panelGroup layout="block" rendered="#{videoHelperBean.isSelfHostedVideo(videoLink) and !videoLink.encodingDone}" 
+                                                          styleClass="videoNotAvailable carouselStyle">
+                                                <p><h:outputText value="#{msg.videoisinprocess}"/></p>
+                                            </h:panelGroup>
                                         </p:carousel>
                                     </p:tab>
                                 </p:tabView>
@@ -351,7 +371,7 @@
                                            var="showcasetext" styleClass="tabViewMargin">
 
                                     <p:tab title="#{sessionBean.localeAsString(showcasetext.lang)}">
-                                        <h:outputText value="#{showcasetext.explaintext}" escape="false"/>
+                                        <p><h:outputText value="Dieses Video wird gerade verarbeitet!"/></p>
                                     </p:tab>
 
                                 </p:tabView>

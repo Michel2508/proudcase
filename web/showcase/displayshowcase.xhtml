@@ -45,12 +45,17 @@
                                         <p:media player="flash" styleClass="carouselStyle" rendered="#{videoHelperBean.isYoutubeVideo(videoLink)}"
                                                  value="#{videoLink.videolink}"/>
 
-                                        <h:panelGroup layout="block" rendered="#{videoHelperBean.isSelfHostedVideo(videoLink)}">
+                                        <h:panelGroup layout="block" rendered="#{videoHelperBean.isSelfHostedVideo(videoLink) and videoLink.encodingDone}">
                                             <video class="video-js vjs-default-skin carouselStyle" controls="true" preload="auto" 
-                                                   poster="http://video-js.zencoder.com/oceans-clip.png"
+                                                   poster="/resource/videos/#{videoLink.thumbnailink}"
                                                    data-setup="{}">
                                                 <source src="/resource/videos/#{videoLink.videolink}" type='video/mp4' />
                                             </video>
+                                        </h:panelGroup>
+
+                                        <h:panelGroup layout="block" rendered="#{videoHelperBean.isSelfHostedVideo(videoLink) and !videoLink.encodingDone}" 
+                                                      styleClass="videoNotAvailable carouselStyle">
+                                            <p><h:outputText value="#{msg.videoisinprocess}"/></p>
                                         </h:panelGroup>
                                     </p:carousel>
                                 </p:tab>

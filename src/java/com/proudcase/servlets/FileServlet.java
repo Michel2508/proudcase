@@ -208,7 +208,7 @@ public class FileServlet extends HttpServlet {
             }
         } else if (requestURI.contains(Constants.VIDEOFOLDER) || requestURI.contains(Constants.VIDEOTEMPFOLDER)) {
             // It includes the video or the videotemp folder 
-            // so it must be a video!
+            // so it must be a video or the thumbnail image!
             
             // URL-decode the file name (might contain spaces and on) and prepare file object.
             file = new File(basePath + "/" + Constants.VIDEOFOLDER, URLDecoder.decode(requestedFile, "UTF-8"));

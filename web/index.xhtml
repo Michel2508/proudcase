@@ -56,6 +56,8 @@
                                 <h:panelGroup layout="block" styleClass="video">
                                     <h:graphicImage value="#{videoHelperBean.getYoutubeThumbnailURL(showcaseVideo.videoLink)}" width="694"
                                                     height="450" rendered="#{videoHelperBean.isYoutubeVideo(showcaseVideo.videoLink)}"/>
+                                    <h:graphicImage value="/resource/videos/#{showcaseVideo.videoLink.thumbnailink}" width="694"
+                                                    height="450" rendered="#{videoHelperBean.isSelfHostedVideo(showcaseVideo.videoLink)}"/>
                                     <h:outputLink value="#{navigationBean.navigateToDisplayShowcase()}#{showcaseVideo.showcaseID}"/>
                                 </h:panelGroup>
                             </p:outputPanel>

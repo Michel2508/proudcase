@@ -337,6 +337,24 @@ body {
    left: 196px;
 }
 
+.videoNotAvailable {
+    min-width: 500px;
+    min-height: 300px;
+    width: 500px;
+    height: 300px;
+    background-color: black;
+    display: table;
+}
+
+.videoNotAvailable p {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    color: #92B4C0; 
+    font-weight: bold; 
+    text-decoration: none;
+}
+
 
 /* Links */
 a:link {color: #92B4C0; font-weight: bold; text-decoration: none;}
