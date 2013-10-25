@@ -25,7 +25,6 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import org.bson.types.ObjectId;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.DragDropEvent;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.FlowEvent;
@@ -448,6 +447,11 @@ public class NewShowcaseBean implements Serializable {
 
         // add video object to our reference list
         videoLinks.add(tempVideo);
+
+        // add a message that informs the user about the encoding process
+        String outputMessage = PropertyReader.getMessageResourceString(fCtx.getApplication().getMessageBundle(),
+                "videoprocessinginfo", null, sessionBean.getUserLocale());
+        fCtx.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, outputMessage, outputMessage));
     }
 
     public void makeShowcasePublic() {

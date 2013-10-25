@@ -37,8 +37,10 @@
                                             <p:fieldset>
                                                 <h:graphicImage value="/resource/images/#{profileViewBean.givenUser.avatar.relativeimagepath}"
                                                                 rendered="#{profileViewBean.givenUser.avatar != null}"
-                                                                width="90" height="90" styleClass="ieRemoveBorder"/>
-                                                <h:graphicImage library="images" name="anonymus.png" width="90" height="90"
+                                                                width="#{imageScaleBean.width(profileViewBean.givenUser.avatar, 90)}" 
+                                                                height="#{imageScaleBean.height(profileViewBean.givenUser.avatar, 90)}"
+                                                                styleClass="ieRemoveBorder"/>
+                                                <h:graphicImage library="images" name="anonymus.png" width="90" height="100"
                                                                 rendered="#{profileViewBean.givenUser.avatar == null}" styleClass="ieRemoveBorder"/>
                                             </p:fieldset>
                                         </h:column>
@@ -62,7 +64,7 @@
                                                                        rendered="#{! empty profileViewBean.givenUser.companyname}"/>
                                                         <h:outputText id="companyname" value="#{profileViewBean.givenUser.companyname}"
                                                                       rendered="#{! empty profileViewBean.givenUser.companyname}"/>
-                                                        
+
                                                         <h:outputLabel for="privileges" value="#{msg.privileges}:"/>
                                                         <h:outputText id="privileges" styleClass="privilegesText"
                                                                       value="#{sessionBean.privilegesText(profileViewBean.givenUser.userPrivs)}"/>

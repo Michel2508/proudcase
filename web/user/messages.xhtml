@@ -63,42 +63,40 @@
                                 <p:commandButton value="#{msg.okay_button}" onclick="submitDialog.hide();" ajax="false"/>
                             </p:dialog>
 
-                            <p:panel header="#{msg.messages_title}" rendered="#{! empty messagesCenterBean.messagesList}" id="messagesPanel">
-                                <f:subview id="messagesCarousel">
-                                    <p:carousel value="#{messagesCenterBean.messagesList}" var="singleMessage" easing="easeOutBounce"
-                                                numVisible="1">
-                                        <p:panel header="#{singleMessage.nickname} - #{messagesCenterBean.messageStatusText(singleMessage)}" 
-                                                 footer="#{singleMessage.sendDateToString}" style="width: 640px !important;white-space: normal;">
-                                            <h:panelGroup layout="block" styleClass="panelGridCol">
-                                                <h:graphicImage value="/resource/images/#{singleMessage.avatar.relativeimagepath}"
-                                                                rendered="#{singleMessage.avatar != null}" styleClass="ieRemoveBorder"
-                                                                width="#{imageScaleBean.width(singleMessage.avatar, 100)}"
-                                                                height="#{imageScaleBean.height(singleMessage.avatar, 100)}"/>
-                                                <h:graphicImage library="images" name="anonymus.png" width="100" height="100"
-                                                                rendered="#{singleMessage.avatar == null}" styleClass="ieRemoveBorder"/>
-                                            </h:panelGroup>
-                                            <h:panelGroup layout="block" styleClass="messagesDirection">
-                                                <h:outputText value="#{singleMessage.message}" escape="false"/>
-                                            </h:panelGroup>
-                                            <p:separator styleClass="smallSeparator"/>
-                                            <h:panelGroup layout="block" rendered="#{!singleMessage.invitationMessage}">
-                                                <p:commandButton value="#{msg.message_delete}" oncomplete="submitDialog.show()"
-                                                                 immediate="true" update=":content" 
-                                                                 actionListener="#{messagesCenterBean.deleteMessage(singleMessage.messageid)}"/>
-                                            </h:panelGroup>
-                                            <h:panelGroup layout="block" rendered="#{singleMessage.invitationMessage}">
-                                                <p:commandButton value="#{msg.invitation_accept}" oncomplete="submitDialog.show()"
-                                                                 actionListener="#{messagesCenterBean.acceptInvitation(singleMessage.messageid)}"
-                                                                 immediate="true" update=":content"/>
-                                                <p:spacer width="10"/>
-                                                <p:commandButton value="#{msg.cancel_button}" oncomplete="submitDialog.show()"
-                                                                 actionListener="#{messagesCenterBean.canceledInvitation(singleMessage.messageid)}"
-                                                                 immediate="true" update=":content"/>
-                                            </h:panelGroup>
-                                        </p:panel>
-                                    </p:carousel>
-                                </f:subview>
-                            </p:panel>
+                            <f:subview id="messagesCarousel" rendered="#{! empty messagesCenterBean.messagesList}">
+                                <p:carousel value="#{messagesCenterBean.messagesList}" var="singleMessage" easing="easeOutBounce"
+                                            numVisible="1" headerText="#{msg.messages_title}">
+                                    <p:panel header="#{singleMessage.nickname} - #{messagesCenterBean.messageStatusText(singleMessage)}" 
+                                             footer="#{singleMessage.sendDateToString}" style="width: 688px !important;white-space: normal;">
+                                        <h:panelGroup layout="block" styleClass="panelGridCol">
+                                            <h:graphicImage value="/resource/images/#{singleMessage.avatar.relativeimagepath}"
+                                                            rendered="#{singleMessage.avatar != null}" styleClass="ieRemoveBorder"
+                                                            width="#{imageScaleBean.width(singleMessage.avatar, 100)}"
+                                                            height="#{imageScaleBean.height(singleMessage.avatar, 100)}"/>
+                                            <h:graphicImage library="images" name="anonymus.png" width="100" height="100"
+                                                            rendered="#{singleMessage.avatar == null}" styleClass="ieRemoveBorder"/>
+                                        </h:panelGroup>
+                                        <h:panelGroup layout="block" styleClass="messagesDirection">
+                                            <h:outputText value="#{singleMessage.message}" escape="false"/>
+                                        </h:panelGroup>
+                                        <p:separator styleClass="smallSeparator"/>
+                                        <h:panelGroup layout="block" rendered="#{!singleMessage.invitationMessage}">
+                                            <p:commandButton value="#{msg.message_delete}" oncomplete="submitDialog.show()"
+                                                             immediate="true" update=":content" 
+                                                             actionListener="#{messagesCenterBean.deleteMessage(singleMessage.messageid)}"/>
+                                        </h:panelGroup>
+                                        <h:panelGroup layout="block" rendered="#{singleMessage.invitationMessage}">
+                                            <p:commandButton value="#{msg.invitation_accept}" oncomplete="submitDialog.show()"
+                                                             actionListener="#{messagesCenterBean.acceptInvitation(singleMessage.messageid)}"
+                                                             immediate="true" update=":content"/>
+                                            <p:spacer width="10"/>
+                                            <p:commandButton value="#{msg.cancel_button}" oncomplete="submitDialog.show()"
+                                                             actionListener="#{messagesCenterBean.canceledInvitation(singleMessage.messageid)}"
+                                                             immediate="true" update=":content"/>
+                                        </h:panelGroup>
+                                    </p:panel>
+                                </p:carousel>
+                            </f:subview>
                         </h:panelGroup>
                     </h:panelGroup>
                 </h:form>
