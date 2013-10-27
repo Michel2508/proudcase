@@ -63,8 +63,9 @@ public class Constants {
     
     // basePath Path
     // pc: E:\selfmade\crap
+    // laptop: /Users/michel/Documents/selfmade/crap
     // server: /var/lib/proudcase-images
-    public static final String BASEPATH = "E:\\selfmade\\crap";
+    public static final String BASEPATH = "/Users/michel/Documents/selfmade/crap";
     
     // folder for images (on edit: don't forget to edit the servlet mapping)
     public static final String IMAGEFOLDER = "images";
