@@ -164,7 +164,7 @@ public class NewsCenterBean implements Serializable {
             UploadedFile picture = event.getFile();
 
             // save our image to the temp folder
-            singleImage = ImageUtil.saveImageInTemp(picture, loggedUser.getId(), singleProudcase.getVisibility());
+            singleImage = ImageUtil.saveImageInTemp(picture, loggedUser.getId(), singleProudcase.getVisibility(), false);
         }
     }
     

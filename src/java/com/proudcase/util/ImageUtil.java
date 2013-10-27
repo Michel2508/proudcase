@@ -40,14 +40,14 @@ public class ImageUtil {
 
     private static final String DEFAULT_CONTENTTYP = "image/";
 
-    public static ImageBean saveImageAsFile(UploadedFile image, ObjectId userID, EVisibility securityRule, boolean secure)
+    public static ImageBean saveImageAsFile(UploadedFile image, ObjectId userID, EVisibility securityRule, boolean resizeImage)
             throws ExceptionLogger {
         // let us check if the user has a "home"-dir
         String homeDirStr = Constants.BASEPATH + "/"
                 + Constants.IMAGEFOLDER + "/" + userID.toString();
 
         // the user wants to secure the image
-        if (secure) {
+        if (!securityRule.equals(EVisibility.all)) {
             homeDirStr += "/" + Constants.IMAGESECUREFOLDER;
         }
 
@@ -76,12 +76,12 @@ public class ImageUtil {
         }
 
         // write image to harddisk
-        Dimension dimension = writeImageToHardDrive(image, imageFile);
+        Dimension dimension = writeImageToHardDrive(image, imageFile, resizeImage);
 
         // create the relative image path
         String relativeImagePath = userID.toString()
                 + "/"
-                + (secure ? Constants.IMAGESECUREFOLDER + "/" : "")
+                + ((!securityRule.equals(EVisibility.all)) ? Constants.IMAGESECUREFOLDER + "/" : "")
                 + imageName;
 
         // complete the object
@@ -117,7 +117,7 @@ public class ImageUtil {
         }
     }
 
-    public static ImageBean saveImageInTemp(UploadedFile image, ObjectId id, EVisibility securityRule)
+    public static ImageBean saveImageInTemp(UploadedFile image, ObjectId id, EVisibility securityRule, boolean resizeImage)
             throws ExceptionLogger {
         // create a new image obj
         ImageBean savedImage = new ImageBean();
@@ -146,7 +146,7 @@ public class ImageUtil {
         }
 
         // write image to harddisk
-        Dimension dimension = writeImageToHardDrive(image, imageFile);
+        Dimension dimension = writeImageToHardDrive(image, imageFile, resizeImage);
 
         // create the relative path
         imageFileStr = id.toString()
@@ -164,17 +164,19 @@ public class ImageUtil {
 
         return savedImage;
     }
-    
-    private static Dimension writeImageToHardDrive(UploadedFile image, File imageFile) throws ExceptionLogger {
+
+    private static Dimension writeImageToHardDrive(UploadedFile image, File imageFile, boolean resizeImage) throws ExceptionLogger {
         // alright, let's start saving our file to filesystem
-        String contentType = null;
+        String contentType;
         BufferedImage uploadedImage;
         try {
             // format the image to a nicer form
             uploadedImage = ImageIO.read(image.getInputstream());
-            
+
             // resize the image that it fits to all proudcase views
-            uploadedImage = ImageScale.resizeImage(uploadedImage, Constants.MAX_IMAGE_SIZE_WIDTH, Constants.MAX_IMAGE_SIZE_HEIGHT);
+            if (resizeImage) {
+                uploadedImage = ImageScale.resizeImage(uploadedImage, Constants.MAX_IMAGE_SIZE_WIDTH, Constants.MAX_IMAGE_SIZE_HEIGHT);
+            }
 
             // get the right content type
             contentType = image.getContentType();
