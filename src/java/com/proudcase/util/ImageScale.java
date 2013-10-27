@@ -4,7 +4,8 @@ import java.awt.image.BufferedImage;
 import org.imgscalr.Scalr;
 
 /**
- * Copyright © 30.09.2012 Michel Vocks This file is part of proudcase.
+ * Copyright © 30.09.2012 Michel Vocks 
+ * This file is part of proudcase.
  *
  * proudcase is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -42,6 +43,12 @@ public class ImageScale {
         // first get the width and the height of the image
         int originWidth = inputImage.getWidth();
         int originHeight = inputImage.getHeight();
+        
+        // let us check if we have to scale the image
+        if (originWidth <= resultWidth && originHeight <= resultHeight) {
+            // we don't have to scale the image, just return the origin
+            return inputImage;
+        }
 
         // Scale in respect to width or height?
         Scalr.Mode scaleMode = Scalr.Mode.AUTOMATIC;
