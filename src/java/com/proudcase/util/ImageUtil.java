@@ -6,7 +6,6 @@ import com.proudcase.persistence.ImageBean;
 import com.proudcase.visibility.EVisibility;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -40,18 +39,15 @@ import org.primefaces.model.UploadedFile;
 public class ImageUtil {
 
     private static final String DEFAULT_CONTENTTYP = "image/";
-    private static final String CONTENTTYP_JPG = "JPG";
-    private static final String CONTENTTYP_JPEG = "JPEG";
-    private static final String CONTENTTYP_PNG = "PNG";
 
-    public static ImageBean saveImageAsFile(UploadedFile image, ObjectId userID, EVisibility securityRule, boolean secure)
+    public static ImageBean saveImageAsFile(UploadedFile image, ObjectId userID, EVisibility securityRule, boolean resizeImage)
             throws ExceptionLogger {
         // let us check if the user has a "home"-dir
         String homeDirStr = Constants.BASEPATH + "/"
                 + Constants.IMAGEFOLDER + "/" + userID.toString();
 
         // the user wants to secure the image
-        if (secure) {
+        if (!securityRule.equals(EVisibility.all)) {
             homeDirStr += "/" + Constants.IMAGESECUREFOLDER;
         }
 
@@ -80,12 +76,12 @@ public class ImageUtil {
         }
 
         // write image to harddisk
-        Dimension dimension = writeImageToHardDrive(image, imageFile);
+        Dimension dimension = writeImageToHardDrive(image, imageFile, resizeImage);
 
         // create the relative image path
         String relativeImagePath = userID.toString()
                 + "/"
-                + (secure ? Constants.IMAGESECUREFOLDER + "/" : "")
+                + ((!securityRule.equals(EVisibility.all)) ? Constants.IMAGESECUREFOLDER + "/" : "")
                 + imageName;
 
         // complete the object
@@ -121,7 +117,7 @@ public class ImageUtil {
         }
     }
 
-    public static ImageBean saveImageInTemp(UploadedFile image, ObjectId id, EVisibility securityRule)
+    public static ImageBean saveImageInTemp(UploadedFile image, ObjectId id, EVisibility securityRule, boolean resizeImage)
             throws ExceptionLogger {
         // create a new image obj
         ImageBean savedImage = new ImageBean();
@@ -150,7 +146,7 @@ public class ImageUtil {
         }
 
         // write image to harddisk
-        Dimension dimension = writeImageToHardDrive(image, imageFile);
+        Dimension dimension = writeImageToHardDrive(image, imageFile, resizeImage);
 
         // create the relative path
         imageFileStr = id.toString()
@@ -168,14 +164,19 @@ public class ImageUtil {
 
         return savedImage;
     }
-    
-    private static Dimension writeImageToHardDrive(UploadedFile image, File imageFile) throws ExceptionLogger {
+
+    private static Dimension writeImageToHardDrive(UploadedFile image, File imageFile, boolean resizeImage) throws ExceptionLogger {
         // alright, let's start saving our file to filesystem
-        String contentType = null;
-        RenderedImage uploadedImage;
+        String contentType;
+        BufferedImage uploadedImage;
         try {
             // format the image to a nicer form
             uploadedImage = ImageIO.read(image.getInputstream());
+
+            // resize the image that it fits to all proudcase views
+            if (resizeImage) {
+                uploadedImage = ImageScale.resizeImage(uploadedImage, Constants.MAX_IMAGE_SIZE_WIDTH, Constants.MAX_IMAGE_SIZE_HEIGHT);
+            }
 
             // get the right content type
             contentType = image.getContentType();
@@ -187,37 +188,9 @@ public class ImageUtil {
             throw new ExceptionLogger(ex2);
         }
 
-        // determine the contentType
-        int contentTypNum = ImageSave.IMAGE_UNKNOWN;
-        if (contentType.equalsIgnoreCase(CONTENTTYP_JPEG)) {
-            contentTypNum = ImageSave.IMAGE_JPEG;
-        } else if (contentType.equalsIgnoreCase(CONTENTTYP_JPG)) {
-            contentTypNum = ImageSave.IMAGE_JPEG;
-        } else if (contentType.equalsIgnoreCase(CONTENTTYP_PNG)) {
-            contentTypNum = ImageSave.IMAGE_PNG;
-        }
-
         // Dimension
         Dimension dimension = new Dimension(uploadedImage.getWidth(), uploadedImage.getHeight());
 
-        // so resize the image and compress it
-        if (contentTypNum != ImageSave.IMAGE_UNKNOWN) {
-            // resize
-            BufferedImage resizedImage = ImageSave.resizeImage(imageFile.getAbsolutePath()
-                    , contentTypNum, Constants.MAX_IMAGE_SIZE, Constants.MAX_IMAGE_SIZE);
-            
-            // save the new width and height
-            dimension.setSize(resizedImage.getWidth(), resizedImage.getHeight());
-            
-            if (contentTypNum == ImageSave.IMAGE_JPEG) {
-                // compression allowed
-                ImageSave.saveCompressedImage(resizedImage, imageFile.getAbsolutePath(), contentTypNum);
-            } else {
-                // no compression allowed for png images
-                ImageSave.saveImage(resizedImage, imageFile.getAbsolutePath(), contentTypNum);
-            }
-        }
-        
         // return dimension 
         return dimension;
     }

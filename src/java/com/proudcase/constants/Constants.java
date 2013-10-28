@@ -62,9 +62,7 @@ public class Constants {
     public static final String ICQURL_END = "&img=5";
     
     // basePath Path
-    // pc: E:\selfmade\crap
-    // server: /var/lib/proudcase-images
-    public static final String BASEPATH = "E:\\selfmade\\crap";
+    public static final String BASEPATH = BasePath.BASEPATH;
     
     // folder for images (on edit: don't forget to edit the servlet mapping)
     public static final String IMAGEFOLDER = "images";
@@ -100,7 +98,8 @@ public class Constants {
     public static final String SAVELOGIN_COOKIE_NAME = "proudcase-cookie";
     
     // max size of an image (images are resized after upload)
-    public static final int MAX_IMAGE_SIZE = 670; // 670 pixel largest display on index.html
+    public static final int MAX_IMAGE_SIZE_WIDTH = 670; // 670 pixel largest display on index.xhtml
+    public static final int MAX_IMAGE_SIZE_HEIGHT = 450; // 450 pixel largest display on index.xhtml
     
     // max amount of fixed threads for the video encoding process
     public static final int MAX_VIDEO_ENCODING_THREADS = 10;

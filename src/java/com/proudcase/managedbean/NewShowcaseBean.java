@@ -421,8 +421,8 @@ public class NewShowcaseBean implements Serializable {
             }
         }
 
-        // okay, save this image to the temp folder till the showcase is saved
-        ImageBean savedImage = ImageUtil.saveImageInTemp(pictureFile, currentUser.getId(), singleShowcase.getVisibility());
+        // okay, save this image to the temp folder till the showcase is saved and resize it.
+        ImageBean savedImage = ImageUtil.saveImageInTemp(pictureFile, currentUser.getId(), singleShowcase.getVisibility(), true);
 
         // and add this image to our list
         imageList.add(savedImage);
