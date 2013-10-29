@@ -79,8 +79,11 @@ public class Constants {
     // temp folder for uploaded videos
     public static final String VIDEOTEMPFOLDER = "videotemp";
     
-    // folder for secured videos
-    public static final String VIDEOSECUREFOLDER = "videosecure";
+    // folder for files
+    public static final String FILEFOLDER = "files";
+    
+    // temp folder for files
+    public static final String FILETEMPFOLDER = "filetemp";
     
     // proudcase maximum chars for input
     public static final int MAXCHARSREMAINING = 250;

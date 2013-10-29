@@ -38,7 +38,7 @@ public class VideoLinkBean implements Serializable {
     private ObjectId id;
     
     private String videolink;
-    private String thumbnailink;
+    private String thumbnaillink;
     private String youtubeID;
     private boolean encodingDone;
     private EVideoTyp videoTyp;
@@ -55,10 +55,10 @@ public class VideoLinkBean implements Serializable {
         this.videolink = videolink;
     }
 
-    public VideoLinkBean(ObjectId id, String videolink, String thumbnailink, String youtubeID, boolean encodingDone, EVideoTyp videoTyp) {
+    public VideoLinkBean(ObjectId id, String videolink, String thumbnaillink, String youtubeID, boolean encodingDone, EVideoTyp videoTyp) {
         this.id = id;
         this.videolink = videolink;
-        this.thumbnailink = thumbnailink;
+        this.thumbnaillink = thumbnaillink;
         this.youtubeID = youtubeID;
         this.encodingDone = encodingDone;
         this.videoTyp = videoTyp;
@@ -98,12 +98,12 @@ public class VideoLinkBean implements Serializable {
         this.videolink = videolink;
     }
 
-    public String getThumbnailink() {
-        return thumbnailink;
+    public String getThumbnaillink() {
+        return thumbnaillink;
     }
 
-    public void setThumbnailink(String thumbnailink) {
-        this.thumbnailink = thumbnailink;
+    public void setThumbnaillink(String thumbnaillink) {
+        this.thumbnaillink = thumbnaillink;
     }
 
     public EVideoTyp getVideoTyp() {

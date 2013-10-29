@@ -141,7 +141,7 @@ public class VideoUtil {
         tempVideo.setVideolink(videoFileStr);
         
         // also add the link to the thumbnail (which will be created during encoding)
-        tempVideo.setThumbnailink(videoFileStr + Constants.JPEG_SUFFIX);
+        tempVideo.setThumbnaillink(videoFileStr + Constants.JPEG_SUFFIX);
 
         return tempVideo;
     }

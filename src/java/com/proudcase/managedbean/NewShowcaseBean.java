@@ -578,10 +578,10 @@ public class NewShowcaseBean implements Serializable {
         String thumbnailLink;
         if (VideoUtil.isVideoInTempDir(video.getVideolink())) {
             thumbnailLink = Constants.VIDEOTEMPFOLDER + "/"
-                    + video.getThumbnailink();
+                    + video.getThumbnaillink();
         } else {
             thumbnailLink = Constants.VIDEOFOLDER + "/"
-                    + video.getThumbnailink();
+                    + video.getThumbnaillink();
         }
         return thumbnailLink;
     }

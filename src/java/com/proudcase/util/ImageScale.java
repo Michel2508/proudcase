@@ -81,10 +81,10 @@ public class ImageScale {
         int paddingSize = 0;
         if (outputImage.getWidth() != resultWidth) {
             // we need padding on the width axis
-            paddingSize = (outputImage.getWidth() - resultWidth) / 2;
+            paddingSize = (resultWidth - outputImage.getWidth()) / 2;
         } else if (outputImage.getHeight() != resultHeight) {
             // we need padding on the height axis
-            paddingSize = (outputImage.getHeight() - resultHeight) / 2;
+            paddingSize = (resultHeight - outputImage.getHeight()) / 2;
         }
 
         // we need padding?

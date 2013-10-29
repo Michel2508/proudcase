@@ -218,6 +218,18 @@ public class FileServlet extends HttpServlet {
                 // URL-decode the file name (might contain spaces and on) and prepare file object.
                 file = new File(basePath + "/" + Constants.VIDEOTEMPFOLDER, URLDecoder.decode(requestedFile, "UTF-8"));
             }
+        } else if (requestURI.contains(Constants.FILEFOLDER) || requestURI.contains(Constants.FILETEMPFOLDER)) {
+            // It includes the files or the filetemp folder 
+            // so it must be a file!
+            
+            // URL-decode the file name (might contain spaces and on) and prepare file object.
+            file = new File(basePath + "/" + Constants.FILEFOLDER, URLDecoder.decode(requestedFile, "UTF-8"));
+
+            // Check if file really exists in filesystem. If not try in videotemp folder
+            if (!file.isFile()) {
+                // URL-decode the file name (might contain spaces and on) and prepare file object.
+                file = new File(basePath + "/" + Constants.FILETEMPFOLDER, URLDecoder.decode(requestedFile, "UTF-8"));
+            }
         }
         
         // if we are here and we have no valid file - exit

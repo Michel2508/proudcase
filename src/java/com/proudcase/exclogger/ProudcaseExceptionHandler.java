@@ -2,7 +2,6 @@ package com.proudcase.exclogger;
 
 import com.proudcase.constants.ENavigation;
 import com.proudcase.filehandling.PropertyReader;
-import java.io.IOException;
 import java.util.Iterator;
 import javax.faces.FacesException;
 import javax.faces.application.FacesMessage;
@@ -40,7 +39,7 @@ import javax.faces.event.ExceptionQueuedEventContext;
  */
 public class ProudcaseExceptionHandler extends ExceptionHandlerWrapper {
 
-    private ExceptionHandler wrapper;
+    private final ExceptionHandler wrapper;
 
     public ProudcaseExceptionHandler(ExceptionHandler wrapper) {
         this.wrapper = wrapper;

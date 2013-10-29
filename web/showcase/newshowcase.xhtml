@@ -99,9 +99,9 @@
                             </p:tab>
 
                             <p:tab id="addmedia" title="#{msg.addmedia}">
+                                <p:messages autoUpdate="false" id="errorDisplay" showDetail="true"
+                                            showSummary="false"/>
                                 <p:panel header="#{msg.addmedia}" >
-                                    <p:messages autoUpdate="false" id="errorDisplay" showDetail="true"
-                                                showSummary="false"/>
                                     <p:spacer height="10"/>
                                     <h:form enctype="multipart/form-data">
                                         <p:fileUpload widgetVar="maximumUpload" id="multiUpload" 
@@ -138,10 +138,12 @@
                                             </h:column>
                                         </h:panelGrid>
                                     </p:dataGrid>
+                                </p:panel>
+                                <p:spacer height="10"/>
+                                <p:panel header="Video Upload">
+                                    <!--<p:separator styleClass="separator"/>
                                     <p:spacer height="10"/>
-                                    <p:separator styleClass="separator"/>
-                                    <p:spacer height="10"/>
-                                    <p:message for="addvideo"/>
+                                    <p:message for="addvideo"/>-->
                                     <p:panel header="#{msg.addvideo}" id="addvideo">  
                                         <h:panelGrid columns="2" cellpadding="5">
                                             <p:fieldset>
@@ -392,7 +394,7 @@
                             <p:commandButton value="#{msg.okay_button}" onclick="newShowcaseDialog.hide();" 
                                              ajax="false" action="#{newShowcaseBean.linkToPreview()}"/>
                         </p:dialog>
-                        
+
                         <p:dialog widgetVar="videoUploadNotification" modal="true" closable="false" 
                                   draggable="true" showEffect="explode" resizable="true" hideEffect="explode"
                                   styleClass="dialog" maximizable="true" minimizable="false">
