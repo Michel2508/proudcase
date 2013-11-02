@@ -65,6 +65,14 @@
         <servlet-name>fileServlet</servlet-name>
         <url-pattern>/resource/videotemp/*</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>fileServlet</servlet-name>
+        <url-pattern>/resource/files/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>fileServlet</servlet-name>
+        <url-pattern>/resource/filetemp/*</url-pattern>
+    </servlet-mapping>
     <error-page>
         <error-code>404</error-code>
         <location>/error.xhtml</location>

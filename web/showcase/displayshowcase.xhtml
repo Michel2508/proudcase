@@ -59,6 +59,24 @@
                                         </h:panelGroup>
                                     </p:carousel>
                                 </p:tab>
+
+                                <p:tab title="#{msg.files}" rendered="#{displayShowcaseBean.availableFile}">
+                                    <p:dataGrid value="#{displayShowcaseBean.fileList}" var="file" columns="3" paginator="false"
+                                                id="fileDisplay" lazy="true" styleClass="carouselStyle">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{msg.availablefiles}"/>
+                                        </f:facet>
+                                        <h:outputLink value="/resource/files/#{file.relativeFilePath}">
+                                            <h:panelGrid columns="1" cellpadding="5" columnClasses="centerPosition">
+                                                <h:graphicImage library="images" name="download.png"/>
+                                                <h:outputFormat value="#{msg.fileinformation}">
+                                                    <f:param value="#{file.fileName}"/>
+                                                    <f:param value="#{applicationBean.convertBytesToMegaBytes(file.fileSize)}"/>
+                                                </h:outputFormat>
+                                            </h:panelGrid>
+                                        </h:outputLink>
+                                    </p:dataGrid>
+                                </p:tab>
                             </p:tabView>
 
                             <p:tabView dynamic="true" cache="true" effect="drop" value="#{displayShowcaseBean.showcaseTextList}"

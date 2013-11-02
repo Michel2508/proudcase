@@ -6,11 +6,13 @@ import com.proudcase.constants.ENavigation;
 import com.proudcase.constants.EVideoTyp;
 import com.proudcase.exclogger.ExceptionLogger;
 import com.proudcase.filehandling.PropertyReader;
+import com.proudcase.mongodb.manager.FileManager;
 import com.proudcase.mongodb.manager.ImageManager;
 import com.proudcase.mongodb.manager.ManagerFactory;
 import com.proudcase.mongodb.manager.ShowcaseManager;
 import com.proudcase.mongodb.manager.VideoLinkManager;
 import com.proudcase.persistence.*;
+import com.proudcase.util.FileUtil;
 import com.proudcase.util.ImageUtil;
 import com.proudcase.util.VideoUtil;
 import com.proudcase.util.YouTubeUtil;
@@ -79,9 +81,12 @@ public class NewShowcaseBean implements Serializable {
             = new ArrayList<>();
     private VideoLinkBean singleVideoLink
             = new VideoLinkBean();
+    private List<FileBean> fileList
+            = new ArrayList<>();
 
     private ImageBean deleteImageCache;
     private VideoLinkBean deleteVideoCache;
+    private FileBean deleteFileCache;
 
     private final transient ShowcaseManager showcaseManager
             = ManagerFactory.createShowcaseManager();
@@ -89,6 +94,8 @@ public class NewShowcaseBean implements Serializable {
             = ManagerFactory.createImageManager();
     private final transient VideoLinkManager videoLinkManager
             = ManagerFactory.createVideoLinkManager();
+    private final transient FileManager fileManager
+            = ManagerFactory.createFileManager();
 
     private final Map<String, SupportedLanguagesBean> localeMap
             = new HashMap<>();
@@ -191,6 +198,11 @@ public class NewShowcaseBean implements Serializable {
                 // videolinks
                 if (singleShowcase.getVideoLinks() != null && !singleShowcase.getVideoLinks().isEmpty()) {
                     videoLinks = singleShowcase.getVideoLinks();
+                }
+
+                // files
+                if (singleShowcase.getFileList() != null && !singleShowcase.getFileList().isEmpty()) {
+                    fileList = singleShowcase.getFileList();
                 }
             }
         } else if (singleShowcase == null) {
@@ -368,9 +380,20 @@ public class NewShowcaseBean implements Serializable {
             videoLinkManager.save(videoLink);
 
             // is the video self hosted?
-            if (videoLink.getVideoTyp().equals(EVideoTyp.SELFHOSTEDVIDEO)) {
+            if (videoLink.getVideoTyp().equals(EVideoTyp.SELFHOSTEDVIDEO) && VideoUtil.isVideoInTempDir(videoLink.getVideolink())) {
                 // move video from the temp folder to the real folder
                 VideoUtil.moveVideoToUserDir(videoLink.getVideolink(), currentUser, fCtx.getApplication().getMessageBundle());
+            }
+        }
+
+        // persist files
+        for (FileBean file : fileList) {
+            // persist
+            fileManager.save(file);
+
+            // move the file from the temp folder to the real folder
+            if (FileUtil.isFileInTempDir(file.getRelativeFilePath())) {
+                FileUtil.moveFileToUserDir(file, currentUser);
             }
         }
 
@@ -382,6 +405,9 @@ public class NewShowcaseBean implements Serializable {
 
         // add videolinks
         singleShowcase.setVideoLinks(videoLinks);
+
+        // add files
+        singleShowcase.setFileList(fileList);
 
         // add text to the showcase
         singleShowcase.setShowcaseTexts(manyShowcaseText);
@@ -454,6 +480,27 @@ public class NewShowcaseBean implements Serializable {
         fCtx.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, outputMessage, outputMessage));
     }
 
+    public void handleFileUpload(FileUploadEvent event) throws ExceptionLogger {
+        FacesContext fCtx = FacesContext.getCurrentInstance();
+        UserBean currentUser = (UserBean) fCtx.getExternalContext().
+                getSessionMap().get(Constants.AUTH_KEY);
+
+        // only if we have here a real user
+        if (currentUser == null || currentUser.getId() == null) {
+            return;
+        }
+
+        // * TODO * check how much space the user has left
+        // get the source
+        UploadedFile uploadedFile = event.getFile();
+
+        // okay, save this file to the temp folder till the showcase is saved
+        FileBean tempFile = FileUtil.saveFileInTemp(uploadedFile, currentUser);
+
+        // add the file to our reference list
+        fileList.add(tempFile);
+    }
+
     public void makeShowcasePublic() {
         // set the showcase to public
         singleShowcase.setShowcasepublic(true);
@@ -472,6 +519,27 @@ public class NewShowcaseBean implements Serializable {
         // delete the pictures 
         for (ImageBean singleImage : singleShowcase.getImageList()) {
             ImageUtil.deleteImage(singleImage.getRelativeimagepath());
+        }
+
+        // delete videos
+        for (VideoLinkBean videoLink : videoLinks) {
+            // delete
+            videoLinkManager.delete(videoLink);
+
+            // is the video self hosted?
+            if (videoLink.getVideoTyp().equals(EVideoTyp.SELFHOSTEDVIDEO)) {
+                // remove it from the harddisc
+                VideoUtil.deleteVideo(videoLink);
+            }
+        }
+
+        // delete files
+        for (FileBean file : fileList) {
+            // delete
+            fileManager.delete(file);
+
+            // remove it from the harddisc
+            FileUtil.deleteFile(file.getRelativeFilePath());
         }
 
         // delete the showcase from the database
@@ -544,8 +612,37 @@ public class NewShowcaseBean implements Serializable {
             videoLinkManager.delete(deleteVideoCache);
         }
 
+        // is this video self hosted?
+        if (deleteVideoCache.getVideoTyp().equals(EVideoTyp.SELFHOSTEDVIDEO)) {
+            // remove this video from the harddrive
+            VideoUtil.deleteVideo(deleteVideoCache);
+        }
+
         // reset the state
         deleteVideoCache = null;
+
+        return null;
+    }
+
+    public String deleteFileFromList() {
+        if (deleteFileCache == null) {
+            return null;
+        }
+
+        // remove from temporal list
+        fileList.remove(deleteFileCache);
+
+        // has already an id?
+        if (deleteFileCache.getId() != null) {
+            // delete it from the database
+            fileManager.delete(deleteFileCache);
+        }
+
+        // remove this file from harddrive
+        FileUtil.deleteFile(deleteFileCache.getRelativeFilePath());
+
+        // reset the state
+        deleteFileCache = null;
 
         return null;
     }
@@ -584,6 +681,18 @@ public class NewShowcaseBean implements Serializable {
                     + video.getThumbnaillink();
         }
         return thumbnailLink;
+    }
+
+    public String convertRelativeFilePath(FileBean file) {
+        String filePath;
+        if (FileUtil.isFileInTempDir(file.getRelativeFilePath())) {
+            filePath = Constants.FILETEMPFOLDER + "/"
+                    + file.getRelativeFilePath();
+        } else {
+            filePath = Constants.FILEFOLDER + "/"
+                    + file.getRelativeFilePath();
+        }
+        return filePath;
     }
 
     public String linkToPreview() {
@@ -696,5 +805,17 @@ public class NewShowcaseBean implements Serializable {
 
     public void setShowcaseId(String showcaseId) {
         this.showcaseId = showcaseId;
+    }
+
+    public List<FileBean> getFileList() {
+        return fileList;
+    }
+
+    public FileBean getDeleteFileCache() {
+        return deleteFileCache;
+    }
+
+    public void setDeleteFileCache(FileBean deleteFileCache) {
+        this.deleteFileCache = deleteFileCache;
     }
 }

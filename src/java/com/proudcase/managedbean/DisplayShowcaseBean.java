@@ -8,12 +8,12 @@ import com.proudcase.mongodb.manager.ManagerFactory;
 import com.proudcase.mongodb.manager.ShowcaseManager;
 import com.proudcase.mongodb.manager.UserManager;
 import com.proudcase.persistence.*;
+import com.proudcase.util.LanguageTranslationUtil;
 import com.proudcase.visibility.EVisibility;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -67,6 +67,7 @@ public class DisplayShowcaseBean implements Serializable {
     private List<ShowcaseTextBean> showcaseTextList;
     private List<ImageBean> imagesList;
     private List<JuryFeedbackBean> juryFeedbackList;
+    private List<FileBean> fileList;
 
     private JuryFeedbackBean juryFeedback;
     private boolean showFeedbackDialog = false;
@@ -76,7 +77,7 @@ public class DisplayShowcaseBean implements Serializable {
 
     public void loadShowcase() {
         // parameter is shit
-        if (showcaseID == null || showcaseID.equals("")) {
+        if (showcaseID == null || !ObjectId.isValid(showcaseID)) {
             return;
         }
 
@@ -145,6 +146,12 @@ public class DisplayShowcaseBean implements Serializable {
         if (imagesList == null) {
             imagesList = new ArrayList<>();
         }
+        
+        // files
+        fileList = displayShowcase.getFileList();
+        if (fileList == null) {
+            fileList = new ArrayList<>();
+        }
 
         // jury feedback
         juryFeedbackList = displayShowcase.getJuryFeedbackList();
@@ -190,7 +197,7 @@ public class DisplayShowcaseBean implements Serializable {
         }
 
         // Get the specified text for the preferred language
-        ShowcaseTextBean langShowcase = getSpecifiedText();
+        ShowcaseTextBean langShowcase = LanguageTranslationUtil.getSpecifiedText(displayShowcase, sessionBean.getUserLocale());
 
         // return the showcase title only if available
         if (langShowcase != null) {
@@ -200,7 +207,7 @@ public class DisplayShowcaseBean implements Serializable {
     }
 
     public String getShowcaseText() {
-        ShowcaseTextBean langShowcase = getSpecifiedText();
+        ShowcaseTextBean langShowcase = LanguageTranslationUtil.getSpecifiedText(displayShowcase, sessionBean.getUserLocale());
 
         // return the showcase text only if available
         if (langShowcase != null) {
@@ -209,46 +216,11 @@ public class DisplayShowcaseBean implements Serializable {
         return null;
     }
 
-    // this method returns the ShowcaseText object
-    // for the client language
-    private ShowcaseTextBean getSpecifiedText() {
-        // get the language
-        Locale clientLanguage = sessionBean.getUserLocale();
-
-        // invalid showcase
-        if (showcaseID == null || showcaseTextList == null) {
-            return null;
-        }
-
-        // now we have to check if this showcase has this language supported
-        for (ShowcaseTextBean singleShowcaseText : showcaseTextList) {
-            if (singleShowcaseText.getLang().equals(clientLanguage)) {
-                // we found the right text. Return the object
-                return singleShowcaseText;
-            }
-        }
-
-        // if we are here then the default language isn't supported
-        // so let us check if the owner of the showcase has english support
-        for (ShowcaseTextBean singleShowcaseText : showcaseTextList) {
-            if (singleShowcaseText.getLang().equals(Locale.ENGLISH)) {
-                return singleShowcaseText;
-            }
-        }
-
-        // Well. If we are here then english isn't supported nor the default
-        // language from the client.
-        if (!showcaseTextList.isEmpty()) {
-            return showcaseTextList.get(0);
-        }
-        return null;
-    }
-
     // here we sort the list of showcasetext objs
     // we need this because on display we want 
     // that the prefered language is on the first tab
     private void sortShowcaseTextObj() {
-        ShowcaseTextBean preferedShowcaseText = getSpecifiedText();
+        ShowcaseTextBean preferedShowcaseText = LanguageTranslationUtil.getSpecifiedText(displayShowcase, sessionBean.getUserLocale());
 
         if (preferedShowcaseText != null) {
             for (int i = 0; i < showcaseTextList.size(); i++) {
@@ -307,10 +279,15 @@ public class DisplayShowcaseBean implements Serializable {
     public boolean isAvailableVideo() {
         return videoLinkList.size() > 0;
     }
+    
+    // files available?
+    public boolean isAvailableFile() {
+        return fileList.size() > 0;
+    }
 
-    // A video or/and pic available?
+    // A video or/and pic and/or file available?
     public boolean isAvailableMedia() {
-        return (isAvailablePic() == true || isAvailableVideo() == true);
+        return (isAvailablePic() || isAvailableVideo() || isAvailableFile());
     }
 
     // calculates the current rating for this showcase
@@ -483,5 +460,13 @@ public class DisplayShowcaseBean implements Serializable {
 
     public void setShowFeedbackDialog(boolean showFeedbackDialog) {
         this.showFeedbackDialog = showFeedbackDialog;
+    }
+
+    public List<FileBean> getFileList() {
+        return fileList;
+    }
+
+    public void setFileList(List<FileBean> fileList) {
+        this.fileList = fileList;
     }
 }

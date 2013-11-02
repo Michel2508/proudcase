@@ -2,13 +2,17 @@ package com.proudcase.managedbean;
 
 import com.proudcase.constants.Constants;
 import com.proudcase.constants.ENavigation;
+import com.proudcase.constants.EVideoTyp;
 import com.proudcase.filehandling.PropertyReader;
+import com.proudcase.mongodb.manager.FileManager;
 import com.proudcase.mongodb.manager.ImageManager;
 import com.proudcase.mongodb.manager.ManagerFactory;
 import com.proudcase.mongodb.manager.ShowcaseManager;
 import com.proudcase.mongodb.manager.VideoLinkManager;
 import com.proudcase.persistence.*;
+import com.proudcase.util.FileUtil;
 import com.proudcase.util.ImageUtil;
+import com.proudcase.util.VideoUtil;
 import com.proudcase.view.ShowcasemanagerViewBean;
 import com.proudcase.visibility.VisibilityLangConverter;
 import java.io.Serializable;
@@ -52,9 +56,9 @@ public class ShowcasemanagerBean implements Serializable {
 
     @ManagedProperty(value = "#{sessionBean}")
     private SessionBean sessionBean;
-    transient private ShowcaseManager showcaseManager =
+    private final transient ShowcaseManager showcaseManager =
             ManagerFactory.createShowcaseManager();
-    transient private ImageManager imageManager =
+    private final transient ImageManager imageManager =
             ManagerFactory.createImageManager();
     private List<ShowcasemanagerViewBean> showcaseViewList;
     private ShowcasemanagerViewBean selectedViewObj;
@@ -170,12 +174,32 @@ public class ShowcasemanagerBean implements Serializable {
 
         // delete the video links
         if (showcase.getVideoLinks() != null && !showcase.getVideoLinks().isEmpty()) {
+            // get the videolink manager
+            VideoLinkManager videoLinkManager = ManagerFactory.createVideoLinkManager();
+            
             for (VideoLinkBean videoLink : showcase.getVideoLinks()) {
-                // get the videolink manager
-                VideoLinkManager videoLinkManager = ManagerFactory.createVideoLinkManager();
-                
                 // delete
                 videoLinkManager.delete(videoLink);
+                
+                // is the video self hosted?
+                if (videoLink.getVideoTyp().equals(EVideoTyp.SELFHOSTEDVIDEO)) {
+                    // remove it from the harddisc
+                    VideoUtil.deleteVideo(videoLink);
+                }
+            }
+        }
+        
+        // delete the files
+        if (showcase.getFileList() != null && !showcase.getFileList().isEmpty()) {
+            // get the file manager
+            FileManager fileManager = ManagerFactory.createFileManager();
+            
+            for (FileBean file : showcase.getFileList()) {
+                // delete
+                fileManager.delete(file);
+                
+                // remove it from the harddisc
+                FileUtil.deleteFile(file.getRelativeFilePath());
             }
         }
 

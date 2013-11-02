@@ -50,6 +50,10 @@ public class ConstantsBean {
         return String.valueOf(Constants.VIDEOMAXUPLOAD);
     }
     
+    public String getFILEMAXUPLOAD() {
+        return String.valueOf(Constants.FILEMAXUPLOAD);
+    }
+    
     public String getMAXIMAGESFORSHOWCASE() {
         return String.valueOf(Constants.MAXIMAGESFORSHOWCASE);
     }

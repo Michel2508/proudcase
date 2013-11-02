@@ -104,6 +104,7 @@ public class ImageUtil {
         if (oldImageFromUser.isFile()) {
             // delete it
             oldImageFromUser.delete();
+            return;
         }
 
         // probably in the temp folder

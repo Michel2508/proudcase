@@ -75,6 +75,7 @@ public class FileUtil {
         if (oldFileFromUser.isFile()) {
             // delete it
             oldFileFromUser.delete();
+            return;
         }
 
         // probably in the temp folder
@@ -107,9 +108,10 @@ public class FileUtil {
             tempFolder.mkdirs();
         }
         
-        // set the original name and size
+        // set the original name, size and file folder id
         fileTemp.setFileName(file.getFileName());
         fileTemp.setFileSize(file.getSize());
+        fileTemp.setFileFolderID(fileFolderID);
 
         // prepare the file
         File fileDest = new File(tempFolderStr + "/" + fileTemp.getFileName());

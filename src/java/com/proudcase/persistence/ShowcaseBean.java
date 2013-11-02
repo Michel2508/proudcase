@@ -64,6 +64,9 @@ public class ShowcaseBean implements Serializable {
     @Reference
     private List<VideoLinkBean> videoLinks;
     
+    @Reference
+    private List<FileBean> fileList;
+    
     public ShowcaseBean() {
     }
 
@@ -190,5 +193,13 @@ public class ShowcaseBean implements Serializable {
 
     public void setJuryFeedbackList(List<JuryFeedbackBean> juryFeedbackList) {
         this.juryFeedbackList = juryFeedbackList;
+    }
+
+    public List<FileBean> getFileList() {
+        return fileList;
+    }
+
+    public void setFileList(List<FileBean> fileList) {
+        this.fileList = fileList;
     }
 }

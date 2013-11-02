@@ -36,9 +36,9 @@
                                                             height="#{imageScaleBean.height(showcase.frontImage, 120)}"
                                                             title="#{showcase.frontImage.imageName}" styleClass="ieRemoveBorder"
                                                             rendered="#{! empty showcase.frontImage}"/>
+                                            <h:graphicImage library="images" name="proudcase_logo.png" width="120" height="90"
+                                                            rendered="#{showcase.frontImage == null}" styleClass="ieRemoveBorder"/>
                                         </h:outputLink>
-                                        <h:graphicImage library="images" name="proudcase_logo.png" width="120" height="120"
-                                                        rendered="#{showcase.frontImage == null}" styleClass="ieRemoveBorder"/>
                                     </h:column>
 
                                     <h:column>

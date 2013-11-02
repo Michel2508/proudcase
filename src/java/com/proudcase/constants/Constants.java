@@ -43,6 +43,9 @@ public class Constants {
     // 450 MB maxupload videos
     public static final int VIDEOMAXUPLOAD = (450 * 1024 * 1024);
     
+    // 450 MB maxupload files
+    public static final int FILEMAXUPLOAD = (450 * 1024 * 1024);
+    
     // max images for one showcase
     public static final int MAXIMAGESFORSHOWCASE = 10;
     

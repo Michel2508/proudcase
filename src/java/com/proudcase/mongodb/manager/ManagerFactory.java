@@ -29,7 +29,7 @@ import com.proudcase.mongodb.util.MongoUtil;
 public final class ManagerFactory {
     
     // get instance from singleton
-    private static MongoUtil mongoUtilSingleton = 
+    private static final MongoUtil mongoUtilSingleton = 
             MongoUtil.getMongoUtilInst();
     
     // Create usermanager
@@ -85,5 +85,10 @@ public final class ManagerFactory {
     // Create videolinkmanager
     public static VideoLinkManager createVideoLinkManager() {
         return new VideoLinkManager(mongoUtilSingleton.getDatastore());
+    }
+    
+    // Create filemanager
+    public static FileManager createFileManager() {
+        return new FileManager(mongoUtilSingleton.getDatastore());
     }
 }

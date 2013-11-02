@@ -231,7 +231,7 @@ public class FileServlet extends HttpServlet {
                 file = new File(basePath + "/" + Constants.FILETEMPFOLDER, URLDecoder.decode(requestedFile, "UTF-8"));
             }
         }
-        
+
         // if we are here and we have no valid file - exit
         if (file == null || !file.isFile()) {
             return;

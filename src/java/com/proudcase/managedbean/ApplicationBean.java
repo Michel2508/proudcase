@@ -9,6 +9,7 @@ import com.proudcase.persistence.LangCategorieBean;
 import com.proudcase.persistence.SupportedLanguagesBean;
 import com.proudcase.util.VideoUtil;
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -134,6 +135,15 @@ public class ApplicationBean implements Serializable {
                     supportedLanguage.getLanguage().getDisplayLanguage(locale)));
         }
         return languagesList;
+    }
+    
+    public String convertBytesToMegaBytes(long bytes) {
+        if (bytes > 0) {
+            DecimalFormat df = new DecimalFormat("###.##");
+            double megaBytes = (double) bytes / 1024 / 1024;
+            return df.format(megaBytes);
+        }
+        return "0.0";
     }
 
     public List<CategorieBean> getCategorieList() {

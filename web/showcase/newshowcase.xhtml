@@ -101,8 +101,8 @@
                             <p:tab id="addmedia" title="#{msg.addmedia}">
                                 <p:messages autoUpdate="false" id="errorDisplay" showDetail="true"
                                             showSummary="false"/>
-                                <p:panel header="#{msg.addmedia}" >
-                                    <p:spacer height="10"/>
+                                <p:panel header="#{msg.addmedia}" styleClass="tabViewMargin" >
+                                    <p:spacer height="10" styleClass="ieRemoveBorder"/>
                                     <h:form enctype="multipart/form-data">
                                         <p:fileUpload widgetVar="maximumUpload" id="multiUpload" 
                                                       allowTypes="/(\.|\/)(gif|jpe?g|png)$/" 
@@ -110,6 +110,7 @@
                                                       mode="advanced"  
                                                       auto="true"
                                                       multiple="true"  
+                                                      invalidFileMessage="#{msg.filetypnotsupported}"
                                                       update=":content:imageGalleria"
                                                       label="#{msg.addpicture}"
                                                       dragDropSupport="true"
@@ -139,55 +140,52 @@
                                         </h:panelGrid>
                                     </p:dataGrid>
                                 </p:panel>
-                                <p:spacer height="10"/>
-                                <p:panel header="Video Upload">
-                                    <!--<p:separator styleClass="separator"/>
-                                    <p:spacer height="10"/>
-                                    <p:message for="addvideo"/>-->
-                                    <p:panel header="#{msg.addvideo}" id="addvideo">  
-                                        <h:panelGrid columns="2" cellpadding="5">
-                                            <p:fieldset>
-                                                <h:graphicImage library="images" name="proudcase_logo.png" styleClass="ieRemoveBorder"
-                                                                id="proudcaseUpload" style="cursor: pointer;" width="148" height="128"/>
 
-                                                <p:overlayPanel for="proudcaseUpload" id="proudcaseUploadPanel" dismissable="false" showCloseIcon="true"
-                                                                showEffect="explode" showEvent="mousedown" hideEffect="explode" appendToBody="true" hideEvent="submit"
-                                                                style="width: 600px;height: 150px;" widgetVar="proudcaseUploadWidg">
-                                                    <h:form enctype="multipart/form-data">
-                                                        <p:fileUpload widgetVar="videoUploadWid" id="videoUpload" 
-                                                                      allowTypes="/(\.|\/)(3gp|amv|asf|asx|avi|divx|dpg|moo?v|mp4|mpg|qt|rm|swf|wmv)$/" 
-                                                                      fileUploadListener="#{newShowcaseBean.handleVideoUpload}"  
-                                                                      mode="advanced"  
-                                                                      auto="false"
-                                                                      multiple="false"  
-                                                                      update=":content:videos"
-                                                                      label="#{msg.addvideo}"
-                                                                      cancelLabel="#{msg.cancel_button}"
-                                                                      uploadLabel="#{msg.upload}"
-                                                                      dragDropSupport="true"
-                                                                      oncomplete="proudcaseUploadWidg.hide();videoUploadNotification.show();"
-                                                                      sizeLimit="#{constantsBean.VIDEOMAXUPLOAD}"/>
-                                                    </h:form>
-                                                </p:overlayPanel>
-                                            </p:fieldset>
-                                            <p:fieldset>
-                                                <h:graphicImage library="images" name="upload_youtube.png" styleClass="ieRemoveBorder"
-                                                                id="youtubeLinkAdd" style="cursor: pointer;"/>
+                                <p:panel header="#{msg.addvideo}" styleClass="tabViewMargin" id="addvideo">
+                                    <h:panelGrid columns="2" cellpadding="5">
+                                        <p:fieldset>
+                                            <h:graphicImage library="images" name="proudcase_logo.png" styleClass="ieRemoveBorder"
+                                                            id="proudcaseUpload" style="cursor: pointer;" width="171" height="128"/>
 
-                                                <p:overlayPanel for="youtubeLinkAdd" id="youtubeLinkAddPanel" dismissable="false" showCloseIcon="true"
-                                                                showEffect="explode" showEvent="mousedown" hideEffect="explode" appendToBody="false" hideEvent="submit"
-                                                                style="width: 490px;height: 40px;" widgetVar="youtubeLinkAddWidg" dynamic="true">
-                                                    <h:outputLabel value="Youtube-Url: " for="txt_url"></h:outputLabel>  
-                                                    <p:inputText id="txt_url"   
-                                                                 value="#{newShowcaseBean.singleVideoLink.videolink}"/>  
+                                            <p:overlayPanel for="proudcaseUpload" id="proudcaseUploadPanel" dismissable="false" showCloseIcon="true"
+                                                            showEffect="explode" showEvent="mousedown" hideEffect="explode" appendToBody="true" hideEvent="submit"
+                                                            style="width: 600px;height: 150px;" widgetVar="proudcaseUploadWidg" onShow="youtubeLinkAddWidg.hide();">
+                                                <h:form enctype="multipart/form-data">
+                                                    <p:fileUpload widgetVar="videoUploadWid" id="videoUpload" 
+                                                                  allowTypes="/(\.|\/)(3gp|amv|asf|asx|avi|divx|dpg|moo?v|mp4|mpg|qt|rm|swf|wmv)$/" 
+                                                                  fileUploadListener="#{newShowcaseBean.handleVideoUpload}"  
+                                                                  mode="advanced"  
+                                                                  auto="false"
+                                                                  multiple="false"  
+                                                                  update=":content:videos"
+                                                                  invalidFileMessage="#{msg.filetypnotsupported}"
+                                                                  label="#{msg.addvideo}"
+                                                                  cancelLabel="#{msg.cancel_button}"
+                                                                  uploadLabel="#{msg.upload}"
+                                                                  dragDropSupport="true"
+                                                                  oncomplete="proudcaseUploadWidg.hide();videoUploadNotification.show();"
+                                                                  sizeLimit="#{constantsBean.VIDEOMAXUPLOAD}"/>
+                                                </h:form>
+                                            </p:overlayPanel>
+                                        </p:fieldset>
+                                        <p:fieldset>
+                                            <h:graphicImage library="images" name="upload_youtube.png" styleClass="ieRemoveBorder"
+                                                            id="youtubeLinkAdd" style="cursor: pointer;"/>
 
-                                                    <p:commandButton value="#{msg.add}" update=":content:videos txt_url" oncomplete="youtubeLinkAddWidg.hide();"  
-                                                                     actionListener="#{newShowcaseBean.addVideoLink}"/>  
-                                                    <p:commandButton value="#{msg.reset}" type="reset"/>
-                                                </p:overlayPanel>
-                                            </p:fieldset>
-                                        </h:panelGrid>
-                                    </p:panel>  
+                                            <p:overlayPanel for="youtubeLinkAdd" id="youtubeLinkAddPanel" dismissable="false" showCloseIcon="true"
+                                                            showEffect="explode" showEvent="mousedown" hideEffect="explode" appendToBody="false" hideEvent="submit"
+                                                            style="width: 490px;height: 40px;" widgetVar="youtubeLinkAddWidg" dynamic="true"
+                                                            onShow="proudcaseUploadWidg.hide();">
+                                                <h:outputLabel value="Youtube-Url: " for="txt_url"></h:outputLabel>  
+                                                <p:inputText id="txt_url"   
+                                                             value="#{newShowcaseBean.singleVideoLink.videolink}"/>  
+
+                                                <p:commandButton value="#{msg.add}" update=":content:videos txt_url" oncomplete="youtubeLinkAddWidg.hide();"  
+                                                                 actionListener="#{newShowcaseBean.addVideoLink}"/>  
+                                                <p:commandButton value="#{msg.reset}" type="reset"/>
+                                            </p:overlayPanel>
+                                        </p:fieldset>
+                                    </h:panelGrid>
                                     <p:spacer height="30"/>
                                     <p:fieldset id="videos" legend="#{msg.addedvideos}">  
                                         <h:outputLabel value="#{msg.novideouploaded}" rendered="#{newShowcaseBean.videoLinks.size() == 0}"/>
@@ -217,6 +215,43 @@
                                             <p:separator styleClass="separator"/>
                                         </ui:repeat>
                                     </p:fieldset>
+                                </p:panel>
+
+                                <p:panel header="#{msg.addfile}">
+                                    <p:spacer height="10" styleClass="ieRemoveBorder"/>
+                                    <h:form enctype="multipart/form-data">
+                                        <p:fileUpload widgetVar="fileUploadWid" id="fileUpload" 
+                                                      allowTypes="/(\.|\/)(zip|rar|exe|msi)$/" 
+                                                      fileUploadListener="#{newShowcaseBean.handleFileUpload}"  
+                                                      mode="advanced"  
+                                                      auto="false"
+                                                      invalidFileMessage="#{msg.filetypnotsupported}"
+                                                      multiple="false"  
+                                                      update=":content:fileDisplay"
+                                                      label="#{msg.addfile}"
+                                                      cancelLabel="#{msg.cancel_button}"
+                                                      uploadLabel="#{msg.upload}"
+                                                      dragDropSupport="true"
+                                                      sizeLimit="#{constantsBean.FILEMAXUPLOAD}"/>
+                                    </h:form>
+                                    <p:spacer height="30"/>
+                                    <p:dataGrid value="#{newShowcaseBean.fileList}" var="file" columns="3" paginator="false"
+                                                id="fileDisplay" lazy="true" emptyMessage="#{msg.nofileavailable}">
+                                        <h:outputLink value="/resource/#{newShowcaseBean.convertRelativeFilePath(file)}">
+                                            <h:panelGrid columns="1" cellpadding="5" columnClasses="centerPosition">
+                                                <h:graphicImage library="images" name="download.png"/>
+                                                <h:outputFormat value="#{msg.fileinformation}">
+                                                    <f:param value="#{file.fileName}"/>
+                                                    <f:param value="#{applicationBean.convertBytesToMegaBytes(file.fileSize)}"/>
+                                                </h:outputFormat>
+                                                <p:commandButton value="#{msg.delete}" update=":content:fileDisplay" action="#{newShowcaseBean.deleteFileFromList()}"
+                                                                 process=":content:fileDisplay" id="deletefile">
+                                                    <f:setPropertyActionListener for="deletefile" target="#{newShowcaseBean.deleteFileCache}"
+                                                                                 value="#{file}"/>
+                                                </p:commandButton>
+                                            </h:panelGrid>
+                                        </h:outputLink>
+                                    </p:dataGrid>
                                 </p:panel>
                             </p:tab>
 

@@ -79,19 +79,31 @@ public class VideoUtil {
         }
     }
 
-    public static void deleteVideo(String videoPath) {
+    public static void deleteVideo(VideoLinkBean videoLink) {
         File oldVideoFromUser = new File(Constants.BASEPATH + "/"
-                + Constants.VIDEOFOLDER + "/" + videoPath);
+                + Constants.VIDEOFOLDER + "/" + videoLink.getVideolink());
 
         // check if it exists and is a file
         if (oldVideoFromUser.isFile()) {
             // delete it
             oldVideoFromUser.delete();
+            
+            // the file was located in the real video folder
+            // so let us check for the thumbnail from the video
+            File thumbnailFile = new File(Constants.BASEPATH + "/"
+                + Constants.VIDEOFOLDER + "/" + videoLink.getThumbnaillink());
+            
+            // exists?
+            if (thumbnailFile.isFile()) {
+                // delete it
+                thumbnailFile.delete();
+            }
+            return;
         }
 
         // probably in the temp folder
         oldVideoFromUser = new File(Constants.BASEPATH + "/"
-                + Constants.VIDEOTEMPFOLDER + "/" + videoPath);
+                + Constants.VIDEOTEMPFOLDER + "/" + videoLink.getVideolink());
 
         // check if it exists and is a file
         if (oldVideoFromUser.isFile()) {
