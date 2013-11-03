@@ -32,7 +32,8 @@
                                     <p:messages autoUpdate="true" showDetail="false" />
                                     <h:panelGrid columns="3" columnClasses="panelGridData">
                                         <h:outputLabel value="#{msg.categorie}: " for="categories"/>
-                                        <p:selectOneMenu id="categories" required="false" 
+                                        <p:selectOneMenu id="categories" required="true" 
+                                                         requiredMessage="#{msg.requiredinfo}"
                                                          value="#{newShowcaseBean.categorieSelect}"
                                                          styleClass="selectOneMenu" effect="drop">
                                             <f:selectItem itemLabel="#{msg.choicecate}" itemValue=""/>

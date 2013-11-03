@@ -48,6 +48,7 @@
                             <p:panel header="#{msg.search}" id="searchPanel">
                                 <p:dataGrid id="searchGrid" var="searchResult" columns="1" rows="20" value="#{searchBean.lazySearchResultList}"
                                             paginator="true" lazy="true" rowsPerPageTemplate="15,20,30"
+                                            emptyMessage="#{msg.nocontent}"
                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} 
                                             {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
                                     <p:fieldset toggleable="true" legend="#{searchResult.showcaseTitle}">

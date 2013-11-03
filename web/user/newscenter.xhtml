@@ -76,7 +76,7 @@
                             <p:poll interval="60" update=":content:news:newsGrid" process="@this"/>
                             <p:spacer height="30"/>
                             <p:dataGrid id="newsGrid" var="news" columns="1" rows="20" value="#{newsCenterBean.lazyProudcaseList}"
-                                        paginator="true" lazy="true" rowsPerPageTemplate="15,20,30"
+                                        paginator="true" lazy="true" rowsPerPageTemplate="15,20,30" emptyMessage="#{msg.nocontent}"
                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} 
                                         {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
 

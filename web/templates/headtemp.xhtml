@@ -99,7 +99,7 @@
                         <p:megaMenu model="#{menuControllerBean.menuModel}" autoDisplay="false">
                             <f:facet name="options">
                                 <p:selectOneMenu effect="fade" id="languageMenu" value="#{sessionBean.userLocale}"
-                                                 styleClass="selectOneMenu" converter="LanguageConverter" var="lang">
+                                                 style="width: 220px;" converter="LanguageConverter" var="lang">
                                     <f:selectItems value="#{sessionBean.languagesAsSelectItem}" var="language" 
                                                    itemLabel="#{language.label}" itemValue="#{language.value}"/>
                                     <p:ajax oncomplete="window.location.href=window.location.href;"/>

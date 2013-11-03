@@ -27,7 +27,7 @@
                                         <h:outputLabel value="#{msg.receiver}:" for="userSearch" styleClass="fontBold"/>
                                         <br />
                                         <p:autoComplete value="#{messagesCenterBean.receiver}" completeMethod="#{userFindBean.completeFriend}"
-                                                        var="user" itemLabel="#{user.firstname} #{user.lastname}"
+                                                        var="user" itemLabel="#{user.displayname}"
                                                         itemValue="#{user}" converter="UserConverter" minQueryLength="2"
                                                         forceSelection="true" id="userSearch">
                                             <p:column>

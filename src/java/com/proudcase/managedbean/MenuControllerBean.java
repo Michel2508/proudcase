@@ -225,7 +225,7 @@ public class MenuControllerBean implements Serializable {
 
         // ----------------- Next Menu ------------------
         // create the ranking menu
-        DefaultSubMenu rankingMenu = new DefaultSubMenu();
+        /*DefaultSubMenu rankingMenu = new DefaultSubMenu();
         rankingMenu.setIcon("ui-icon-star");
         rankingMenu.setLabel(PropertyReader.getMessageResourceString(fCtx
                 .getApplication().getMessageBundle(), "menutab_3", null, sessionBean.getUserLocale()));
@@ -274,7 +274,7 @@ public class MenuControllerBean implements Serializable {
         rankingMenu.addElement(secondRankColumn);
 
         // add ranking menu
-        menuModel.addElement(rankingMenu);
+        menuModel.addElement(rankingMenu);*/
 
         // ----------------- Next Menu ------------------
         // create the member menu
