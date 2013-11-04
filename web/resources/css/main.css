@@ -321,6 +321,12 @@ body {
     max-width: 210px !important;
 }
 
+/* megamenu style change (adds padding) */
+.ui-menu .ui-menu-parent {
+    padding: 0 0 0 20px !important;
+    position: relative;
+}
+
 /* video thumbnail display */
 .video { 
     position: relative; 
@@ -355,12 +361,32 @@ body {
     text-decoration: none;
 }
 
+.dockHref a {
+    -webkit-transition: 0.0s;
+    -moz-transition: 0.0s;
+    -o-transition: 0.0s;
+    -ms-transition: 0.0s;
+    transition: 0.0s;
+    text-shadow: none;
+}
+
 
 /* Links */
-a:link {color: #92B4C0; font-weight: bold; text-decoration: none;}
-a:hover {color: #92B4C0; text-decoration: underline;}
-a:active {color: #92B4C0; font-weight: bold; text-decoration: none;}
-a:visited {color: #92B4C0; font-weight: bold; text-decoration: none;}
+a:link {color: #1D96B8; font-weight: bold; text-decoration: none;}
+a:hover {
+    color: #39f; text-decoration: none;
+    text-shadow: -1px 1px 5px #03c, 1px -1px 5px #03c;
+}
+a:active {color: #39f; font-weight: bold; text-decoration: none;}
+a:visited {color: #1D96B8; font-weight: bold; text-decoration: none;}
+
+a {
+    -webkit-transition: 0.5s;
+    -moz-transition: 0.5s;
+    -o-transition: 0.5s;
+    -ms-transition: 0.5s;
+    transition: 0.5s;
+}
 
 
 /* Grid >> Children (Alpha ~ First, Omega ~ Last)

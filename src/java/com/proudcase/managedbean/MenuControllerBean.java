@@ -65,7 +65,7 @@ public class MenuControllerBean implements Serializable {
 
         // create the index menu
         DefaultSubMenu indexMenu = new DefaultSubMenu();
-        indexMenu.setIcon("ui-icon-home");
+        //indexMenu.setIcon("ui-icon-home");
         indexMenu.setLabel(PropertyReader.getMessageResourceString(fCtx
                 .getApplication().getMessageBundle(), "menutab_0", null, sessionBean.getUserLocale()));
 
@@ -118,7 +118,7 @@ public class MenuControllerBean implements Serializable {
         // ----------------- Next Menu ------------------
         // create the categorie menu
         DefaultSubMenu categorieMenu = new DefaultSubMenu();
-        categorieMenu.setIcon("ui-icon-tag");
+        //categorieMenu.setIcon("ui-icon-tag");
         categorieMenu.setLabel(PropertyReader.getMessageResourceString(fCtx
                 .getApplication().getMessageBundle(), "menutab_1", null, sessionBean.getUserLocale()));
 
@@ -166,7 +166,7 @@ public class MenuControllerBean implements Serializable {
         // ----------------- Next Menu ------------------
         // create the showcase menu
         DefaultSubMenu showcaseMenu = new DefaultSubMenu();
-        showcaseMenu.setIcon("ui-icon-comment");
+        //showcaseMenu.setIcon("ui-icon-comment");
         showcaseMenu.setLabel(PropertyReader.getMessageResourceString(fCtx
                 .getApplication().getMessageBundle(), "menutab_2", null, sessionBean.getUserLocale()));
 
@@ -279,7 +279,7 @@ public class MenuControllerBean implements Serializable {
         // ----------------- Next Menu ------------------
         // create the member menu
         DefaultSubMenu memberMenu = new DefaultSubMenu();
-        memberMenu.setIcon("ui-icon-person");
+        //memberMenu.setIcon("ui-icon-person");
         memberMenu.setLabel(PropertyReader.getMessageResourceString(fCtx
                 .getApplication().getMessageBundle(), "menutab_4", null, sessionBean.getUserLocale()));
 
@@ -332,7 +332,7 @@ public class MenuControllerBean implements Serializable {
         // ----------------- Next Menu ------------------
         // create the account menu
         DefaultSubMenu accountMenu = new DefaultSubMenu();
-        accountMenu.setIcon("ui-icon-gear");
+        //accountMenu.setIcon("ui-icon-gear");
         accountMenu.setLabel(PropertyReader.getMessageResourceString(fCtx
                 .getApplication().getMessageBundle(), "menutab_5", null, sessionBean.getUserLocale()));
 
@@ -385,7 +385,7 @@ public class MenuControllerBean implements Serializable {
         // ----------------- Next Menu ------------------
         // create the terms menu
         DefaultSubMenu termsMenu = new DefaultSubMenu();
-        termsMenu.setIcon("ui-icon-power");
+        //termsMenu.setIcon("ui-icon-power");
         termsMenu.setLabel(PropertyReader.getMessageResourceString(fCtx
                 .getApplication().getMessageBundle(), "menutab_6", null, sessionBean.getUserLocale()));
 

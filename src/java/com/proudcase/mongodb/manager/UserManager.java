@@ -54,7 +54,7 @@ public class UserManager extends BasicDAO<UserBean, ObjectId> {
 
         // just save the user
         Key<UserBean> save = save(user);
-        
+
         // return the user
         if (save != null) {
             return ds.getByKey(UserBean.class, save);
@@ -73,17 +73,17 @@ public class UserManager extends BasicDAO<UserBean, ObjectId> {
         // return 
         return singleUser;
     }
-    
+
     public UserBean getUserByNickname(String nickname) {
         // query
         Query<UserBean> query = ds.createQuery(UserBean.class).field("displayname")
                 .equal(nickname);
-        
+
         // return result
         return query.get();
-        
+
     }
-    
+
     public UserBean getUserByRegistrationId(ObjectId registerId) {
         // Query
         Query<UserBean> query = ds.createQuery(UserBean.class).
@@ -115,18 +115,18 @@ public class UserManager extends BasicDAO<UserBean, ObjectId> {
     public List<UserBean> getFriends(UserBean user) {
         // get the actual friends list 
         List<ObjectId> friendList = get(user.getId()).getFriendRelations();
-        
+
         // initial check if the user has friends
         if (friendList == null || friendList.isEmpty()) {
             return new ArrayList<>();
         }
-        
+
         // friend relations contains keys (which morphia does not accept for id fields)
         List<ObjectId> friendIDs = new ArrayList<>();
         for (ObjectId userKey : friendList) {
             friendIDs.add(userKey);
         }
-        
+
         // query
         Query<UserBean> query = ds.createQuery(UserBean.class)
                 .field(Mapper.ID_KEY).in(friendIDs);
@@ -138,22 +138,33 @@ public class UserManager extends BasicDAO<UserBean, ObjectId> {
     public List<UserBean> getSuggestionList(String searchQuery) {
         // remove the first and last space
         searchQuery = searchQuery.trim();
-        
-        // add the star operator (like search)
-        searchQuery += ".*";
 
-        // create the pattern
-        Pattern regex = Pattern.compile(searchQuery, Pattern.CASE_INSENSITIVE);
+        // try to split with spaces as pattern
+        String[] splittedSearchQuery = searchQuery.split(" ");
 
         // inititate the query
         Query<UserBean> query = ds.createQuery(UserBean.class);
-        
-        // query for specific criteria
-        query.or(
-                query.criteria("firstname").equal(regex),
-                query.criteria("lastname").equal(regex),
-                query.criteria("displayname").equal(regex),
-                query.criteria("companyname").equal(regex));
+
+        // iterate all query's
+        for (int i = 0; i < splittedSearchQuery.length; i++) {
+            searchQuery = splittedSearchQuery[i];
+            
+            // only the last argument gets the star expression
+            if (i == (splittedSearchQuery.length + 1)) {
+                // add the star operator (like search)
+                searchQuery += ".*";
+            }
+
+            // create the pattern
+            Pattern regex = Pattern.compile(searchQuery, Pattern.CASE_INSENSITIVE);
+
+            // query for specific criteria
+            query.or(
+                    query.criteria("firstname").equal(regex),
+                    query.criteria("lastname").equal(regex),
+                    query.criteria("displayname").equal(regex),
+                    query.criteria("companyname").equal(regex));
+        }
 
         // max results
         query.limit(Constants.MAXSUGGESTIONS);
@@ -171,7 +182,7 @@ public class UserManager extends BasicDAO<UserBean, ObjectId> {
         // create the update command 
         UpdateOperations<UserBean> ops = ds.createUpdateOperations(UserBean.class)
                 .removeAll("friendRelations", friendToRemove.getId());
-        
+
         // yes, do it please
         result = ds.updateFirst(query, ops);
 
@@ -193,16 +204,16 @@ public class UserManager extends BasicDAO<UserBean, ObjectId> {
         // return the result
         return query.countAll() > 0;
     }
-    
+
     public boolean isFriendOfFriend(UserBean user, UserBean friendOfFriend) {
         // Get all friends from the user 
         List<UserBean> userFriends = getFriends(user);
-        
+
         // is empty so no!
         if (userFriends == null || userFriends.isEmpty()) {
             return false;
         }
-        
+
         // Iterate through all friends
         for (UserBean singleFriend : userFriends) {
             // Check for every friend if the given user is a friend (friend of friend)
@@ -211,7 +222,7 @@ public class UserManager extends BasicDAO<UserBean, ObjectId> {
                 return true;
             }
         }
-        
+
         // if we are here then he is not a friend of friend!
         return false;
     }
@@ -229,51 +240,51 @@ public class UserManager extends BasicDAO<UserBean, ObjectId> {
 
         return update.getUpdatedExisting();
     }
-    
+
     public List<UserBean> getTopUsersByLimit(int limit) {
         // query
         Query<UserBean> query = ds.createQuery(UserBean.class)
                 .order("-personalrating").limit(limit);
-        
+
         // retrieve the users
         List<UserBean> topTenUsers = query.asList();
-        
+
         // we got something?
         if (topTenUsers == null || topTenUsers.isEmpty()) {
             return null;
         }
-        
+
         // return the list
         return topTenUsers;
     }
-    
+
     public boolean updateUserLastLogin(UserBean user, Date lastlogin) {
         // Query
         Query<UserBean> query = ds.createQuery(UserBean.class).
                 field(Mapper.ID_KEY).equal(user.getId());
-        
+
         // Update operation
         UpdateOperations<UserBean> ops = ds.createUpdateOperations(UserBean.class)
                 .set("lastlogin", lastlogin);
-        
+
         // execute update
         UpdateResults<UserBean> update = ds.update(query, ops);
-        
+
         return update.getUpdatedExisting();
     }
-    
+
     public boolean updateUserLocale(UserBean user, Locale locale) {
         // Query
         Query<UserBean> query = ds.createQuery(UserBean.class)
                 .field(Mapper.ID_KEY).equal(user.getId());
-        
+
         // Update operation
         UpdateOperations<UserBean> ops = ds.createUpdateOperations(UserBean.class)
                 .set("preferredLanguage", locale);
-        
+
         // execute update
         UpdateResults<UserBean> update = ds.update(query, ops);
-        
+
         return update.getUpdatedExisting();
     }
 }

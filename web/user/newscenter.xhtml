@@ -54,18 +54,16 @@
                             </p:fieldset>
                             <p:separator styleClass="separator"/>
                             <p:spacer height="10"/>
-                            <p:fieldset legend="#{msg.addonepicture}">
-                                <p:fileUpload id="pictureUpload" 
-                                              allowTypes="/(\.|\/)(gif|jpe?g|png)$/" 
-                                              fileUploadListener="#{newsCenterBean.handlePictureUpload}"  
-                                              mode="advanced"  
-                                              multiple="false" 
-                                              auto="true"
-                                              label="#{msg.addpicture}"
-                                              sizeLimit="#{constantsBean.UPLOADSIZELIMIT}"
-                                              oncomplete="success.show()"
-                                              disabled="#{newsCenterBean.imageAlreadyUploaded}"/>
-                            </p:fieldset>
+                            <p:fileUpload id="pictureUpload" 
+                                          allowTypes="/(\.|\/)(gif|jpe?g|png)$/" 
+                                          fileUploadListener="#{newsCenterBean.handlePictureUpload}"  
+                                          mode="advanced"  
+                                          multiple="false" 
+                                          auto="true"
+                                          label="#{msg.addpicture}"
+                                          sizeLimit="#{constantsBean.UPLOADSIZELIMIT}"
+                                          oncomplete="success.show()"
+                                          disabled="#{newsCenterBean.imageAlreadyUploaded}"/>
                             <p:confirmDialog message="#{msg.uploadcomplete}" header="#{msg.success}"
                                              severity="info" widgetVar="success">
                                 <p:commandButton value="#{msg.okay_button}" onclick="success.hide()" type="button"/>
