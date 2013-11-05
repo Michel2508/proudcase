@@ -102,15 +102,15 @@ body {
 
 /* bottom */
 .ui-dock-bottom {
-	width: 200px !important;
-	bottom: 0px;
-	position: absolute;
-	margin-left: 38%;
+    width: 200px !important;
+    bottom: 0px;
+    position: absolute;
+    margin-left: 38%;
 }
 .ui-dock-container-bottom {
-	position: fixed;
-	height: 50px;
-	margin-left: 38%
+    position: fixed;
+    height: 50px;
+    margin-left: 38%
 }
 
 .inputsfield {
@@ -286,8 +286,8 @@ body {
 }
 
 .ui-progressbar .ui-widget-header {
-   border:0px;
-   background: url(../resources/images/animated.gif) repeat-x; 
+    border:0px;
+    background: url(../resources/images/animated.gif) repeat-x; 
 }
 
 .alignTopAndCenter {
@@ -334,13 +334,13 @@ body {
 
 /* video thumbnail play button */
 .video a {
-   position: absolute;
-   display: block;
-   background: url(../resources/images/play_button.png);
-   height: 300px;
-   width: 300px;
-   top: 75px;
-   left: 196px;
+    position: absolute;
+    display: block;
+    background: url(../resources/images/play_button.png);
+    height: 300px;
+    width: 300px;
+    top: 75px;
+    left: 196px;
 }
 
 .videoNotAvailable {
@@ -388,6 +388,14 @@ a {
     transition: 0.5s;
 }
 
+.indexComicStyleRoot {
+    width: 170px;
+    float: left;
+    padding-right: 5px;
+    text-align: center;
+    height: 180px;
+    text-transform: capitalize;
+}
 
 /* Grid >> Children (Alpha ~ First, Omega ~ Last)
 ----------------------------------------------------------------------------------------------------*/

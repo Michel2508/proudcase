@@ -20,9 +20,50 @@
             <h:form id="content">
                 <h:panelGroup layout="block" styleClass="grid_9">
                     <h:panelGroup layout="block" styleClass="content">
-                        <p:panel toggleable="false" header=" " styleClass="tabViewMargin highlightedPanel">
-                            <h:outputText value="#{msg.pageinfo_indextext}" escape="false"/>
-                        </p:panel>
+                        <h:panelGroup layout="block" styleClass="indexComicStyleRoot tabViewMargin">
+                            <p:panel header=" " styleClass="highlightedPanel">
+                                <h:commandLink>
+                                    <h:graphicImage name="register_comic.png" library="images"
+                                                    width="140" height="105" styleClass="ieRemoveBorder"/>
+                                    <p:spacer width="140" height="5" styleClass="ieRemoveBorder"/>
+                                    <h:outputText value="#{msg.index_register}"/>
+                                </h:commandLink>
+                            </p:panel>
+                        </h:panelGroup>
+
+                        <h:panelGroup layout="block" styleClass="indexComicStyleRoot tabViewMargin">
+                            <p:panel header=" " styleClass="highlightedPanel">
+                                <h:commandLink>
+                                    <h:graphicImage name="createshowcase_comic.png" library="images"
+                                                    width="140" height="105" styleClass="ieRemoveBorder"/>
+                                    <p:spacer width="140" height="5" styleClass="ieRemoveBorder"/>
+                                    <h:outputText value="#{msg.index_createshowcase}"/>
+                                </h:commandLink>
+                            </p:panel>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup layout="block" styleClass="indexComicStyleRoot tabViewMargin">
+                            <p:panel header=" " styleClass="highlightedPanel">
+                                <h:commandLink>
+                                    <h:graphicImage name="addmedia_comic.png" library="images"
+                                                    width="140" height="105" styleClass="ieRemoveBorder"/>
+                                    <p:spacer width="140" height="5" styleClass="ieRemoveBorder"/>
+                                    <h:outputText value="#{msg.index_addmedia}"/>
+                                </h:commandLink>
+                            </p:panel>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup layout="block" styleClass="indexComicStyleRoot tabViewMargin">
+                            <p:panel header=" " styleClass="highlightedPanel">
+                                <h:commandLink>
+                                    <h:graphicImage name="distribute_comic.png" library="images"
+                                                    width="140" height="105" styleClass="ieRemoveBorder"/>
+                                    <p:spacer width="140" height="5" styleClass="ieRemoveBorder"/>
+                                    <h:outputText value="#{msg.index_distribute}"/>
+                                </h:commandLink>
+                            </p:panel>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" style="clear: left;"/>
 
                         <p:panel header="#{msg.search}" id="search" styleClass="tabViewMargin">
                             <p:inputText id="searchBar" value="#{indexBean.inputQuery}" 
