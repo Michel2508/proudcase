@@ -168,5 +168,14 @@ public enum ENavigation {
         public String toString() {
             return "/user/juryboard.xhtml";
         }
+    },
+    
+    GETSTARTED {
+        
+         @Override
+         public String toString() {
+             return "/getstarted.xhtml"
+                     + Constants.FACESREDIRECT;
+         }
     }
 }

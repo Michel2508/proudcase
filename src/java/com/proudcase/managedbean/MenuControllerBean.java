@@ -88,11 +88,18 @@ public class MenuControllerBean implements Serializable {
         DefaultMenuItem index2Item = new DefaultMenuItem();
         index2Item.setValue(PropertyReader.getMessageResourceString(fCtx
                 .getApplication().getMessageBundle(), "submenu_0_2", null, sessionBean.getUserLocale()));
-        index2Item.setUrl(ENavigation.INFOPAGE.toString());
+        index2Item.setUrl(ENavigation.GETSTARTED.toString());
+        
+        // Create the menu item
+        DefaultMenuItem index3Item = new DefaultMenuItem();
+        index3Item.setValue(PropertyReader.getMessageResourceString(fCtx
+                .getApplication().getMessageBundle(), "submenu_0_3", null, sessionBean.getUserLocale()));
+        index3Item.setUrl(ENavigation.INFOPAGE.toString());
 
         // add to the subsubmenu
         subindexMenu.addElement(index1Item);
         subindexMenu.addElement(index2Item);
+        subindexMenu.addElement(index3Item);
 
         // add subsubmenu to column
         firstIndColumn.addElement(subindexMenu);

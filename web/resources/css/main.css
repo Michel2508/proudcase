@@ -130,11 +130,6 @@ body {
     width: 100% !important;
 }
 
-.editorComp {
-    /*width: 800px;*/
-    /*height: 600px;*/
-}
-
 .dialog {
     width: 500px !important;
 }
@@ -397,6 +392,78 @@ a {
     text-transform: capitalize;
 }
 
+/* getstarted.xhtml column size */
+.getstartedColumnSize {
+    width: 310px;
+    height: 400px;
+}
+
+/* Twitter Bootstrap button */
+.btn {
+    display:inline-block;
+    margin-bottom:0;
+    font-weight: bolder;
+    text-align:center;
+    vertical-align:middle;
+    cursor:pointer;
+    background-image:none;
+    border:1px solid transparent;
+    white-space:nowrap;
+    padding:6px 12px;
+    font-size:14px;
+    line-height:1.428571429;
+    border-radius:4px;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    -o-user-select:none;
+}
+.btn:focus { 
+    outline:thin dotted #333;
+    outline:5px auto -webkit-focus-ring-color;
+    outline-offset:-2px;
+}
+.btn:hover,.btn:focus {
+    color:#333333;text-decoration:none;
+}
+.btn:active,.btn.active {
+    outline:0;
+    background-image:none;
+    -webkit-box-shadow:inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    box-shadow:inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.btn.disabled,.btn[disabled],fieldset[disabled] .btn {
+    cursor:not-allowed;
+    pointer-events:none;
+    opacity:0.65;
+    filter:alpha(opacity=65);
+    -webkit-box-shadow:none;box-shadow:none;
+}
+.btn-primary {
+    color:#ffffff;
+    background-color:#428bca;
+    border-color:#357ebd;
+}
+.btn-primary:hover,.btn-primary:focus,.btn-primary:active,.btn-primary.active {
+    color:#ffffff;
+    background-color:#3276b1;
+    border-color:#285e8e;
+}
+.btn-primary:active,.btn-primary.active,.open .dropdown-toggle.btn-primary { 
+    background-image:none;
+}
+.btn-primary.disabled,.btn-primary[disabled],.btn-primary.disabled:hover,
+.btn-primary[disabled]:hover,.btn-primary.disabled:focus,.btn-primary[disabled]:focus,
+.btn-primary.disabled:active,.btn-primary[disabled]:active,.btn-primary.disabled.active,
+.btn-primary[disabled].active {
+    background-color:#428bca;
+    border-color:#357ebd;
+}
+
+.inputHeightLarge {
+    height: 40px;
+}
+
 /* Grid >> Children (Alpha ~ First, Omega ~ Last)
 ----------------------------------------------------------------------------------------------------*/
 
@@ -446,7 +513,7 @@ a {
 }
 
 .container_12 .grid_3{
-    width:230px;
+    width:240px;
 }
 
 .container_12 .grid_4{

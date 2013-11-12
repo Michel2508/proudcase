@@ -9,48 +9,37 @@
             <h:panelGroup id="over" layout="block" styleClass="grid_3">
                 <h:panelGroup id="overtwo" layout="block" styleClass="contentnav">
                     <p:panel id="registering" header="#{msg.register}" styleClass="tabViewMargin" 
-                             rendered="#{!authenticationBean.loggedIn}">
-                        <p:outputPanel id="registerPanel">
-                            <h:outputLabel value="#{msg.firstname} (#{msg.optional})" for="firstname"/><br/>
-                            <p:inputText id="firstname" value="#{registrationBean.newUser.firstname}"/>
-                            <br/><br/>
-
-                            <h:outputLabel value="#{msg.lastname} (#{msg.optional})" for="lastname"/><br/>
-                            <p:inputText id="lastname" value="#{registrationBean.newUser.lastname}"/>
-                            <br/><br/>
-
-                            <h:outputLabel value="#{msg.nickname}" for="nickname"/><br/>
-                            <p:inputText id="nickname" value="#{registrationBean.newUser.displayname}"/>
-                            <br/><br/>
-
-                            <h:outputLabel value="#{msg.email}" for="emailReg"/><br/>
-                            <p:inputText id="emailReg" value="#{registrationBean.newUser.username}"/>
-                            <br/><br/>
-
-                            <h:outputLabel value="#{msg.password}" for="passwordReg"/><br/>
-                            <p:password id="passwordReg" 
-                                        value="#{registrationBean.newUser.password}" feedback="true"/>
-                            <br/><br/>
-
-                            <h:outputLabel value="#{msg.passwort_again}" for="passwordagain"/><br/>
-                            <p:password id="passwordagain" feedback="false" value="#{registrationBean.passwordAgain}"/>
-                            <br/><br/>
-
-                            <p:commandButton id="submit" value="#{msg.register}" ajax="false" update="submitDialog" 
-                                             action="#{registrationBean.register()}"/>
-                        </p:outputPanel>
+                             rendered="#{!authenticationBean.loggedIn}" style="text-align: center;">
+                        <h:panelGrid columns="1" cellpadding="5">
+                            <p:inputText styleClass="inputHeightLarge" id="nickname"
+                                         value="#{registrationBean.newUser.displayname}"/>
+                            <p:watermark for="nickname" value="#{msg.inputnickname}"/>
+                            
+                            <p:inputText styleClass="inputHeightLarge" id="emailReg"
+                                         value="#{registrationBean.newUser.username}"/>
+                            <p:watermark for="emailReg" value="#{msg.inputemail}"/>
+                            
+                            <p:password styleClass="inputHeightLarge" id="passwordReg" feedback="true"
+                                        value="#{registrationBean.newUser.password}"/>
+                            <p:watermark for="passwordReg" value="#{msg.inputpassword}"/>
+                            
+                            <p:password styleClass="inputHeightLarge" id="passwordagain"
+                                         feedback="false" value="#{registrationBean.passwordAgain}"/>
+                            <p:watermark for="passwordagain" value="#{msg.inputpasswordagain}"/>
+                            
+                            <h:commandButton id="submit" value="#{msg.register}" style="width: 150px;"
+                                             action="#{registrationBean.register()}" styleClass="btn btn-primary"/>
+                        </h:panelGrid>
                     </p:panel>
 
                     <p:panel header="#{msg.contentnav_createshowcase}" id="contentnavShowcase" styleClass="tabViewMargin">
-                        <h:panelGrid columns="2" cellpadding="5">
-                            <h:outputLink value="#{navigationBean.navigateToNewShowcase()}">
+                        <h:outputLink value="#{navigationBean.navigateToNewShowcase()}">
+                            <h:panelGrid columns="2" cellpadding="5">
                                 <h:graphicImage library="images" name="proudcase_s.png" 
                                                 title="Showcase" width="70" height="50" styleClass="ieRemoveBorder"/>
-                            </h:outputLink>
-                            <h:outputLink value="#{navigationBean.navigateToNewShowcase()}">
                                 <h:outputText value="#{msg.contentnav_showcasetext}"/>
-                            </h:outputLink>
-                        </h:panelGrid>
+                            </h:panelGrid>
+                        </h:outputLink>
                     </p:panel>
 
                     <p:carousel id="topTenCarousel" value="#{topTenUserBean.topTenUsers}" autoPlayInterval="4000"

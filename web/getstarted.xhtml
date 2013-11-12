@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:body>
+        <ui:composition template="templates/commontemp.xhtml">
+
+            <ui:define name="title">
+                <title>
+                    <h:outputFormat value="#{msg.default_title}">
+                        <f:param value="#{msg.getstarted_title}"/>
+                    </h:outputFormat>
+                </title>
+            </ui:define>
+
+            <ui:define name="content">
+                <h:form id="content" prependId="false">
+                    <h:panelGroup layout="block" styleClass="grid_9">
+                        <h:panelGroup layout="block" styleClass="content">
+                            <p:panel styleClass="highlightedPanel tabViewMargin" header="">
+
+                                <h:panelGrid columns="2" rowClasses=",getstartedColumnSize">
+                                    <h:column>
+                                        <h:graphicImage name="register_comic.png" library="images"
+                                                        width="310" height="233"
+                                                        styleClass="ieRemoveBorder"/>
+                                    </h:column>
+                                    <h:column>
+                                        <p><h2><h:outputText value="#{msg.getstarted_register_head}" escape="false"/></h2></p>
+                                        <h:outputText value="#{msg.getstarted_register}"/>
+                                    </h:column>
+                                </h:panelGrid>
+
+                            </p:panel>
+
+                            <p:panel styleClass="highlightedPanel tabViewMargin" header=" ">
+                                <h:panelGrid columns="2" rowClasses=",getstartedColumnSize">
+                                    <h:column>
+                                        <p><h2><h:outputText value="#{msg.getstarted_createshowcase_head}" escape="false"/></h2></p>
+                                        <h:outputText value="#{msg.getstarted_createshowcase}"/>
+                                    </h:column>
+                                    <h:column>
+                                        <h:graphicImage name="createshowcase_comic.png" library="images"
+                                                        width="310" height="233"
+                                                        styleClass="ieRemoveBorder"/>
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:panel>
+
+                            <p:panel styleClass="highlightedPanel tabViewMargin" header=" ">
+                                <h:panelGrid columns="2" rowClasses=",getstartedColumnSize">
+                                    <h:column>
+                                        <h:graphicImage name="addmedia_comic.png" library="images"
+                                                        width="310" height="233"
+                                                        styleClass="ieRemoveBorder"/>
+                                    </h:column>
+                                    <h:column>
+                                        <p><h2><h:outputText value="#{msg.getstarted_addmedia_head}" escape="false"/></h2></p>
+                                        <h:outputText value="#{msg.getstarted_addmedia}"/>
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:panel>
+
+                            <p:panel styleClass="highlightedPanel tabViewMargin" header=" ">
+                                <h:panelGrid columns="2" rowClasses=",getstartedColumnSize">
+                                    <h:column>
+                                        <p><h2><h:outputText value="#{msg.getstarted_distribute_head}" escape="false"/></h2></p>
+                                        <h:outputText value="#{msg.getstarted_distribute}"/>
+                                    </h:column>
+                                    <h:column>
+                                        <h:graphicImage name="distribute_comic.png" library="images"
+                                                        width="310" height="233"
+                                                        styleClass="ieRemoveBorder"/>
+                                    </h:column>
+                                </h:panelGrid>
+
+                                <h:panelGroup layout="block" style="width: 100%; text-align: center;">
+                                    <h:commandButton styleClass="btn btn-primary" value="#{msg.getstarted_startbutton}"
+                                                     style="width: 500px; height: 40px; margin-bottom: 20px; margin-top: 30px;"/>
+                                </h:panelGroup>
+                            </p:panel>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:form>
+            </ui:define>
+
+            <ui:define name="security"/>
+
+        </ui:composition>
+    </h:body>
+</html>
