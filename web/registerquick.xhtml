@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:body>
+        <ui:composition template="templates/commontemp.xhtml">
+
+            <ui:define name="title">
+                <title>
+                    <h:outputFormat value="#{msg.default_title}">
+                        <f:param value="#{msg.register}"/>
+                    </h:outputFormat>
+                </title>
+            </ui:define>
+
+            <ui:define name="content">
+                <h:form id="content" prependId="false">
+                    <h:panelGroup layout="block" styleClass="grid_12">
+                        <h:panelGroup layout="block" style="width: 230px;margin-left: auto;margin-right: auto;">
+                            <p:panel id="registerquick" header="#{msg.register}" styleClass="tabViewMargin" 
+                                     style="text-align: center;">
+                                <h:panelGrid columns="1" cellpadding="5">
+                                    <p:inputText styleClass="inputHeightLarge" id="nicknamequick"
+                                                 value="#{registrationBean.newUser.displayname}"/>
+                                    <p:watermark for="nicknamequick" value="#{msg.inputnickname}"/>
+
+                                    <p:inputText styleClass="inputHeightLarge" id="emailRegquick"
+                                                 value="#{registrationBean.newUser.username}"/>
+                                    <p:watermark for="emailRegquick" value="#{msg.inputemail}"/>
+
+                                    <p:password styleClass="inputHeightLarge" id="passwordRegquick" feedback="true"
+                                                value="#{registrationBean.newUser.password}"/>
+                                    <p:watermark for="passwordRegquick" value="#{msg.inputpassword}"/>
+
+                                    <p:password styleClass="inputHeightLarge" id="passwordagainquick"
+                                                feedback="false" value="#{registrationBean.passwordAgain}"/>
+                                    <p:watermark for="passwordagainquick" value="#{msg.inputpasswordagain}"/>
+
+                                    <h:commandButton id="submitquick" value="#{msg.register}" style="width: 150px;"
+                                                     action="#{registrationBean.register()}" styleClass="btn btn-primary"/>
+                                </h:panelGrid>
+                            </p:panel>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:form>
+            </ui:define>
+
+            <ui:define name="contentnav"/>
+
+            <ui:define name="security"/>
+
+        </ui:composition>
+    </h:body>
+</html>

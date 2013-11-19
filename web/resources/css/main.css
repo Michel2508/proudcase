@@ -67,7 +67,7 @@ body {
 .content {
     min-height: 400px;
     background-color: #fff;
-    max-width: 700px;
+    max-width: 710px;
 }
 
 .footer {
@@ -260,7 +260,7 @@ body {
 
 /* index.xhtml searchbutton */
 .indexSearchButton {
-    width: 95px !important;
+    width: 105px !important;
     height: 40px !important;
 }
 
@@ -386,7 +386,7 @@ a {
 .indexComicStyleRoot {
     width: 170px;
     float: left;
-    padding-right: 5px;
+    padding-right: 10px;
     text-align: center;
     height: 180px;
     text-transform: capitalize;
@@ -513,7 +513,7 @@ a {
 }
 
 .container_12 .grid_3{
-    width:240px;
+    width:230px;
 }
 
 .container_12 .grid_4{
@@ -537,7 +537,7 @@ a {
 }
 
 .container_12 .grid_9{
-    width:700px;
+    width:710px;
 }
 
 .container_12 .grid_10{

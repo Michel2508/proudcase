@@ -68,4 +68,8 @@ public class NavigationBean implements Serializable{
         return ENavigation.CONTEXT.toString() + ENavigation.INFOPAGE.toString();
     }
     
+    public String navigateToGetStarted() {
+        return ENavigation.CONTEXT.toString() + ENavigation.GETSTARTED.toString();
+    }
+    
 }

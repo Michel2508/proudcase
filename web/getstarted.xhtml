@@ -80,6 +80,7 @@
 
                                 <h:panelGroup layout="block" style="width: 100%; text-align: center;">
                                     <h:commandButton styleClass="btn btn-primary" value="#{msg.getstarted_startbutton}"
+                                                     rendered="#{authenticationBean.loggedIn == false}" action="registerquick.xhtml?faces-redirect=true"
                                                      style="width: 500px; height: 40px; margin-bottom: 20px; margin-top: 30px;"/>
                                 </h:panelGroup>
                             </p:panel>
