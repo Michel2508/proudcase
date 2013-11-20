@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+        <h:form id="dialogform">
+            <p:dialog widgetVar="globalInfoDialog" modal="true" closable="true" 
+                      draggable="true" showEffect="explode" hideEffect="explode"
+                      resizable="true" styleClass="dialog" maximizable="false" minimizable="false"
+                      visible="#{sessionBean.showGlobalInfoDialog}" header="#{msg.info}">
+                <p:messages showDetail="false" autoUpdate="true" closable="true" redisplay="true"/>
+                <p:commandButton value="#{msg.okay_button}" oncomplete="globalInfoDialog.hide();" 
+                                 ajax="true" actionListener="#{sessionBean.switchOffGlobalInfoDialog()}"/>
+            </p:dialog>
+        </h:form>
+    </ui:composition>
+
+
+</html>
+

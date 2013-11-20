@@ -166,7 +166,7 @@
                                                       stars="#{constantsBean.NUMBEROFSTARS}"/>
                                             <p:spacer height="5"/>
                                             <p:commandButton value="#{msg.rating}" styleClass="largebutton"
-                                                             update="ranking" actionListener="#{displayShowcaseBean.saveRating()}"/>
+                                                             update="ranking,:dialogform" actionListener="#{displayShowcaseBean.saveRating()}"/>
                                         </h:panelGrid>
                                     </p:fieldset>
                                 </h:panelGrid>

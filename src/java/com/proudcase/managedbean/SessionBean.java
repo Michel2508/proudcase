@@ -52,6 +52,7 @@ public class SessionBean implements Serializable {
 
     private Locale userLocale;
     private List<LangCategorieBean> localeCategorieList;
+    private boolean showGlobalInfoDialog;
     
     public SessionBean() {
     }
@@ -155,7 +156,19 @@ public class SessionBean implements Serializable {
         return visibleList;
 
     }
+    
+    public void switchOffGlobalInfoDialog() {
+        this.showGlobalInfoDialog = false;
+    }
 
+    public boolean isShowGlobalInfoDialog() {
+        return showGlobalInfoDialog;
+    }
+
+    public void setShowGlobalInfoDialog(boolean showGlobalInfoDialog) {
+        this.showGlobalInfoDialog = showGlobalInfoDialog;
+    }
+    
     public List<LangCategorieBean> getLocaleCategorieList() {
         return localeCategorieList;
     }

@@ -355,6 +355,13 @@ public class DisplayShowcaseBean implements Serializable {
 
         // calculate again the ratings 
         calculateRating();
+        
+        // add a success message of the rating giver
+        String outputMessage = PropertyReader.getMessageResourceString(fCtx.getApplication()
+                    .getMessageBundle(), "feedbackadded", null, sessionBean
+                    .getUserLocale());
+        fCtx.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, outputMessage, null));
+        sessionBean.setShowGlobalInfoDialog(true);
     }
 
     public ShowcaseBean getDisplayShowcase() {
