@@ -4,6 +4,7 @@ import com.proudcase.constants.ENavigation;
 import com.proudcase.filehandling.PropertyReader;
 import com.proudcase.persistence.LangCategorieBean;
 import java.io.Serializable;
+import java.util.Locale;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
@@ -47,6 +48,7 @@ public class MenuControllerBean implements Serializable {
     private SessionBean sessionBean;
     
     transient private MenuModel menuModel;
+    transient private Locale menuLocale;
     
     // static information
     private static final String IMAGELIB = "images";
@@ -448,7 +450,14 @@ public class MenuControllerBean implements Serializable {
     }
 
     public MenuModel getMenuModel() {
-        generateMenuModel();
+        // Check if the language was changed
+        if (menuLocale == null || !menuLocale.equals(sessionBean.getUserLocale())) {
+            // language was changed -> generate a new menu in the new language
+            generateMenuModel();
+            
+            // save the state
+            menuLocale = sessionBean.getUserLocale();
+        }
 
         return menuModel;
     }
