@@ -48,13 +48,17 @@ public class RegistrationBean implements Serializable {
 
     @ManagedProperty(value = "#{sessionBean}")
     private SessionBean sessionBean;
+    
     private UserBean newUser =
             new UserBean();
-    transient private UserManager userManager =
+    
+    transient private final UserManager userManager =
             ManagerFactory.createUserManager();
+    
     private static final String REGISTERPARAM = "/register.xhtml?registerid=";
     private static final CharSequence ATCHAR = "@";
     private static final CharSequence DOT = ".";
+    
     private String passwordAgain;
     private String registerId;
     private int redirectCount = 3;
@@ -109,7 +113,7 @@ public class RegistrationBean implements Serializable {
         fCtx.addMessage(null, fMessage);
     }
 
-    public String register() throws ExceptionLogger {
+    public void register() throws ExceptionLogger {
         FacesContext fCtx = FacesContext.getCurrentInstance();
 
         // get the current user locale and save it
@@ -141,7 +145,7 @@ public class RegistrationBean implements Serializable {
         // something is missing here, print that the user
         if (somethingMissing) {
             fCtx.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, errorMsg, locationMessage));
-            return "";
+            return;
         }
         
         // remove whitespaces from the username
@@ -158,7 +162,7 @@ public class RegistrationBean implements Serializable {
             locationMessage = PropertyReader.getMessageResourceString(
                     fCtx.getApplication().getMessageBundle(), "username_inuse", null, sessionBean.getUserLocale());
             fCtx.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, errorMsg, locationMessage));
-            return "";
+            return;
         }
         
         // We like to save the firstname, lastname and the nickname in a specific format
@@ -191,7 +195,7 @@ public class RegistrationBean implements Serializable {
             locationMessage = PropertyReader.getMessageResourceString(
                     fCtx.getApplication().getMessageBundle(), "nickname_inuse", null, sessionBean.getUserLocale());
             fCtx.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, errorMsg, locationMessage));
-            return "";
+            return;
         }
 
         // email is the username and we also like to save this email in lower case
@@ -236,8 +240,6 @@ public class RegistrationBean implements Serializable {
 
         // remove the old crap
         newUser = new UserBean();
-
-        return "";
     }
 
     public void redirectCounter() throws ExceptionLogger {

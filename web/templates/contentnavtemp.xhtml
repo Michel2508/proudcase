@@ -14,21 +14,21 @@
                             <p:inputText styleClass="inputHeightLarge" id="nickname"
                                          value="#{registrationBean.newUser.displayname}"/>
                             <p:watermark for="nickname" value="#{msg.inputnickname}"/>
-                            
+
                             <p:inputText styleClass="inputHeightLarge" id="emailReg"
                                          value="#{registrationBean.newUser.username}"/>
                             <p:watermark for="emailReg" value="#{msg.inputemail}"/>
-                            
+
                             <p:password styleClass="inputHeightLarge" id="passwordReg" feedback="true"
                                         value="#{registrationBean.newUser.password}"/>
                             <p:watermark for="passwordReg" value="#{msg.inputpassword}"/>
-                            
+
                             <p:password styleClass="inputHeightLarge" id="passwordagain"
-                                         feedback="false" value="#{registrationBean.passwordAgain}"/>
+                                        feedback="false" value="#{registrationBean.passwordAgain}"/>
                             <p:watermark for="passwordagain" value="#{msg.inputpasswordagain}"/>
-                            
+
                             <h:commandButton id="submit" value="#{msg.register}" style="width: 150px;"
-                                             action="#{registrationBean.register()}" styleClass="btn btn-primary"/>
+                                             actionListener="#{registrationBean.register()}" styleClass="btn btn-primary"/>
                         </h:panelGrid>
                     </p:panel>
 
@@ -80,13 +80,34 @@
                         </h:outputLink>
                     </p:panel>
 
-                    <p:dialog widgetVar="submitDialog" modal="true" closable="false"
-                              draggable="false" showEffect="explode" hideEffect="explode"
-                              resizable="false" styleClass="dialog"
-                              visible="#{registrationBean.showDialog}">
-                        <p:messages showDetail="true" autoUpdate="false"/>
-                        <p:commandButton value="#{msg.okay_button}" oncomplete="submitDialog.hide();"
-                                         ajax="true" actionListener="#{registrationBean.switchShowDialog()}"/>
+                    <!-- Registration success message -->
+                    <p:dialog widgetVar="registrationSuccess" modal="true" closable="true" 
+                              draggable="true" showEffect="explode" resizable="true" 
+                              styleClass="dialog" maximizable="false" minimizable="false"
+                              visible="#{registrationBean.showDialog}" dynamic="false">
+                        <h:panelGroup layout="block" rendered="#{authenticationBean.loggedIn}">
+                            <h:panelGrid columns="2" cellpadding="5">
+                                <h:graphicImage library="images" name="register_comic.png" 
+                                                width="140" height="105" styleClass="ieRemoveBorder"/>
+
+                                <h:column>
+                                    <p:messages showDetail="true" autoUpdate="false" closable="true" redisplay="true"/>
+                                </h:column>
+                            </h:panelGrid>
+                            <p:separator styleClass="separator"/>
+                            <h:panelGrid columns="2" cellpadding="10">
+                                <h:commandButton value="#{msg.register_createshowcase}" styleClass="btn btn-primary" style="width: 300px;height: 40px;"
+                                                 action="#{navigationBean.navigateToNewShowcase()}" onclick="registrationSuccess.hide();"
+                                                 actionListener="#{registrationBean.switchShowDialog()}"/>
+                                <p:commandButton value="#{msg.cancel_button}" onclick="registrationSuccess.hide();" 
+                                                 actionListener="#{registrationBean.switchShowDialog()}"/>
+                            </h:panelGrid>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" rendered="#{authenticationBean.loggedIn == false}">
+                            <p:messages showDetail="true" autoUpdate="false" closable="true" redisplay="true"/>
+                            <p:commandButton value="#{msg.okay_button}" actionListener="#{registrationBean.switchShowDialog()}"
+                                             ajax="false"/>
+                        </h:panelGroup>
                     </p:dialog>
                 </h:panelGroup>
             </h:panelGroup>
