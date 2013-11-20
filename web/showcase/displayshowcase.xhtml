@@ -83,7 +83,7 @@
                                        var="showcasetext" styleClass="tabViewMargin">
 
                                 <p:tab title="#{sessionBean.localeAsString(showcasetext.lang)}">
-                                    <h:panelGrid columns="2" columnClasses="alignTopAndCenter" cellpadding="5">
+                                    <h:panelGrid columns="2" columnClasses="alignTopAndCenter,alignTopAndCenter" cellpadding="5">
                                         <h:column>
                                             <h:outputLink value="#{navigationBean.navigateToProfileView()}?id=#{displayShowcaseBean.displayShowcase.userAccount.id.toString()}">
                                                 <h:panelGrid columns="1" cellpadding="2" columnClasses="centerPosition" style="margin: auto;">
