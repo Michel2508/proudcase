@@ -74,7 +74,7 @@ public class DisplayShowcaseBean implements Serializable {
     private int showcaseRanking = 0;
     private int userRating = 0;
     private int numberOfRatings = 0;
-
+    
     public void loadShowcase() {
         // parameter is shit
         if (showcaseID == null || !ObjectId.isValid(showcaseID)) {
@@ -185,6 +185,9 @@ public class DisplayShowcaseBean implements Serializable {
 
         // calculate the average rating of this showcase
         calculateRating();
+        
+        // increase the visitor counter
+        showcaseManager.increaseVisitorCounter(displayShowcase.getId());
     }
 
     public String getShowcaseTitle() {

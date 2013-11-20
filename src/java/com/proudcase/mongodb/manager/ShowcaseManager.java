@@ -282,4 +282,17 @@ public class ShowcaseManager extends BasicDAO<ShowcaseBean, ObjectId> {
         // execute opdate operation
         ds.update(query, ops);
     }
+    
+    public void increaseVisitorCounter(ObjectId showcaseID) {
+        // Query
+        Query<ShowcaseBean> query = ds.createQuery(ShowcaseBean.class)
+                .field(Mapper.ID_KEY).equal(showcaseID);
+        
+        // increase
+        UpdateOperations<ShowcaseBean> ops = ds.createUpdateOperations(ShowcaseBean.class)
+                .inc("visitorCounter");
+        
+        // execute
+        ds.update(query, ops);
+    }
 }

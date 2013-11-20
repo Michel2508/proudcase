@@ -119,7 +119,7 @@
                                                displayOnly="false" style="width: 100%;" />
                             </p:panel>
 
-                            <p:panel header="#{msg.juryboard_title}" styleClass="tabViewMargin">
+                            <!--<p:panel header="#{msg.juryboard_title}" styleClass="tabViewMargin">
                                 <p:dataGrid id="juryFeedbackGrid" var="feedback" columns="1" rows="5" 
                                             value="#{displayShowcaseBean.juryFeedbackList}" 
                                             paginator="false" lazy="false" emptyMessage="#{msg.nojuryfeedback}">
@@ -147,10 +147,12 @@
                                         <p:spacer height="100"/>
                                     </p:panel>
                                 </p:dataGrid>
-                            </p:panel>
+                            </p:panel>-->
 
                             <p:panel id="ranking" header="#{msg.rankandrating}" rendered="#{authenticationBean.normalUser}">
                                 <h:panelGrid columns="1">
+                                    <h:outputText value="#{msg.numbervisitors} #{displayShowcaseBean.displayShowcase.visitorCounter}"/>
+                                    <p:spacer height="10"/>
                                     <h:outputText value="#{msg.numberofratings} #{displayShowcaseBean.numberOfRatings}"/>
                                     <p:spacer height="10"/>
                                     <h:outputText value="#{msg.currentrating}"/>
@@ -170,7 +172,7 @@
                                 </h:panelGrid>
                             </p:panel>
 
-                            <p:panel header="#{msg.juryboard_title}" rendered="#{authenticationBean.juryMember}" id="juryPanel">
+                            <!--<p:panel header="#{msg.juryboard_title}" rendered="#{authenticationBean.juryMember}" id="juryPanel">
                                 <h:panelGrid columns="1">
                                     <h:outputText value="#{msg.giveyourrating}"/>
                                     <p:rating id="giveYourRatingJury" value="#{displayShowcaseBean.juryFeedback.rating}"
@@ -183,7 +185,7 @@
                                     <p:commandButton value="#{msg.sendfeedback}" styleClass="largebutton"
                                                      actionListener="#{displayShowcaseBean.saveFeedback()}" oncomplete="giveFeedbackDialog.show()"/>
                                 </h:panelGrid>
-                            </p:panel>
+                            </p:panel>-->
                         </h:panelGroup>
 
                         <h:panelGroup layout="block" styleClass="content" rendered="#{!displayShowcaseBean.hasPermission}">
@@ -194,14 +196,14 @@
                     </h:panelGroup>
 
                     <!-- give feedback output -->
-                    <p:dialog widgetVar="giveFeedbackDialog" modal="true" closable="false" 
+                    <!--<p:dialog widgetVar="giveFeedbackDialog" modal="true" closable="false" 
                               draggable="true" showEffect="explode" hideEffect="explode"
                               resizable="true" styleClass="dialog" maximizable="true" minimizable="true"
                               visible="#{displayShowcaseBean.showFeedbackDialog}">
                         <p:messages showDetail="false" autoUpdate="true" closable="true" redisplay="true"/>
                         <p:commandButton value="#{msg.okay_button}" oncomplete="giveFeedbackDialog.hide();" update="juryFeedbackStatusPanel,juryFeedbackGrid"
                                          ajax="true" actionListener="#{displayShowcaseBean.toggleFeedbackDialogOff()}"/>
-                    </p:dialog>
+                    </p:dialog>-->
                 </h:form>
             </ui:define>
 

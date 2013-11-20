@@ -45,6 +45,7 @@ public class ShowcaseBean implements Serializable {
     private Date lastedited;
     private boolean showcasepublic;
     private boolean approved = false;
+    private long visitorCounter;
     
     @Reference
     private UserBean userAccount;
@@ -68,21 +69,6 @@ public class ShowcaseBean implements Serializable {
     private List<FileBean> fileList;
     
     public ShowcaseBean() {
-    }
-
-    public ShowcaseBean(ObjectId id, ObjectId categorieid, EVisibility visibility, Date createdate, Date lastedited, boolean showcasepublic, UserBean userAccount, List<ImageBean> imageList, List<JuryFeedbackBean> juryFeedbackList, List<ShowcaseRankingBean> showcaseRankings, List<ShowcaseTextBean> showcaseTexts, List<VideoLinkBean> videoLinks) {
-        this.id = id;
-        this.categorieid = categorieid;
-        this.visibility = visibility;
-        this.createdate = createdate;
-        this.lastedited = lastedited;
-        this.showcasepublic = showcasepublic;
-        this.userAccount = userAccount;
-        this.imageList = imageList;
-        this.juryFeedbackList = juryFeedbackList;
-        this.showcaseRankings = showcaseRankings;
-        this.showcaseTexts = showcaseTexts;
-        this.videoLinks = videoLinks;
     }
 
     @PrePersist
@@ -201,5 +187,13 @@ public class ShowcaseBean implements Serializable {
 
     public void setFileList(List<FileBean> fileList) {
         this.fileList = fileList;
+    }
+
+    public long getVisitorCounter() {
+        return visitorCounter;
+    }
+
+    public void setVisitorCounter(long visitorCounter) {
+        this.visitorCounter = visitorCounter;
     }
 }
