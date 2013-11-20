@@ -25,6 +25,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.event.PhaseId;
 import javax.faces.model.SelectItem;
 import org.bson.types.ObjectId;
 import org.primefaces.event.DragDropEvent;
@@ -248,6 +249,7 @@ public class NewShowcaseBean implements Serializable {
 
         String label;
         FacesContext fCtx = FacesContext.getCurrentInstance();
+        boolean skipToDone = false;
 
         // add the info for addmedia
         switch (event.getNewStep()) {
@@ -256,13 +258,18 @@ public class NewShowcaseBean implements Serializable {
                 fCtx.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", label));
                 break;
             case "sortmedia":
-                label = PropertyReader.getMessageResourceString(fCtx.getApplication().getMessageBundle(), "sortinfo", null, sessionBean.getUserLocale());
-                fCtx.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", label));
+                // do we have media to sort?
+                if (imageList.isEmpty()) {
+                    skipToDone = true;
+                } else {
+                    label = PropertyReader.getMessageResourceString(fCtx.getApplication().getMessageBundle(), "sortinfo", null, sessionBean.getUserLocale());
+                    fCtx.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", label));
+                }
                 break;
         }
 
         // we are at the last step
-        if (event.getNewStep().equals("done")) {
+        if (event.getNewStep().equals("done") || skipToDone) {
             // some validation for sorting the images
             for (ImageBean singleImage : imageList) {
                 if (singleImage.getOrderNumber() == null || singleImage.getOrderNumber() == 0) {
@@ -291,6 +298,11 @@ public class NewShowcaseBean implements Serializable {
 
             // save the showcase in the database
             saveShowcase();
+        }
+        
+        // we skip to the done step
+        if (skipToDone) {
+            return "done";
         }
 
         return event.getNewStep();
