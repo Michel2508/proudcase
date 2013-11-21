@@ -9,8 +9,7 @@
         <h:form id="dockForm" enctype="multipart/form-data" styleClass="dockHref">
             <p:dock rendered="#{authenticationBean.loggedIn}">
                 <p:menuitem value="#{msg.newsimg}" icon="/resources/images/proudcase.png" url="#{constantsBean.NEWSCENTER}"/>
-                <p:menuitem value="#{msg.juryboard}" icon="/resources/images/juryboard.png" url="#{constantsBean.JURYBOARD}" 
-                            rendered="#{authenticationBean.juryMember}"/>
+                <p:menuitem value="#{msg.createshowcasedock}" icon="/resources/images/createshowcase.png" url="#{constantsBean.NEWSHOWCASE}"/>
                 <p:menuitem value="#{msg.messagesimg}" icon="/resources/images/message.png" url="#{constantsBean.MESSAGES}"/>
                 <p:menuitem value="#{msg.friendsimg}" icon="/resources/images/friends.png" url="#{constantsBean.FRIENDS}"/>
                 <p:menuitem value="#{msg.settingsimg}" icon="/resources/images/settings.png" url="#{constantsBean.PROFILESETTINGS}"/>

@@ -95,6 +95,10 @@ public class ConstantsBean {
         return ENavigation.CONTEXT.toString() + ENavigation.JURYBOARD.toString();
     }
     
+    public String getNEWSHOWCASE() {
+        return ENavigation.CONTEXT.toString() + ENavigation.NEWSHOWCASE.toString();
+    }
+    
     public String getTIMEZONE() {
         TimeZone currentTimeZone = TimeZone.getDefault();
         return currentTimeZone.getID();
