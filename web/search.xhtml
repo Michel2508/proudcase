@@ -53,7 +53,7 @@
                                             {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
                                     <p:fieldset toggleable="true" legend="#{searchResult.showcaseTitle}">
                                         <h:outputLink value="#{constantsBean.DISPLAYSHOWCASE}#{searchResult.showcaseID}">
-                                            <h:panelGrid columns="2" cellpadding="10" columnClasses="alignTopAndCenter">
+                                            <h:panelGrid columns="2" cellpadding="10" columnClasses="alignTopAndCenter,alignTopAndCenter">
                                                 <h:graphicImage value="/resource/images/#{searchResult.frontImage.relativeimagepath}"
                                                                 width="#{imageScaleBean.width(searchResult.frontImage, 150)}"
                                                                 height="#{imageScaleBean.height(searchResult.frontImage, 150)}"

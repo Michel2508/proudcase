@@ -25,13 +25,9 @@
                 <h:form id="content" prependId="false">
                     <h:panelGroup layout="block" styleClass="grid_9">
                         <h:panelGroup layout="block" styleClass="content">
-                            <p:panel header="#{msg.error}" rendered="#{!profileViewBean.rightsToLook}">
-                                <h2><h:outputLabel value="#{msg.norights}"/></h2>
-                            </p:panel>
-
                             <h:panelGroup layout="block" rendered="#{authenticationBean.loggedIn}">
                                 <p:panel header="#{msg.profil_title} - #{profileViewBean.givenUser.toString()}"
-                                         rendered="#{profileViewBean.rightsToLook}">
+                                         rendered="#{profileViewBean.rightsToLook}" styleClass="tabViewMargin">
                                     <h:panelGrid columns="2" cellpadding="15" columnClasses="panelGridCol,settingsBorder">
                                         <h:column>
                                             <p:fieldset>
@@ -134,6 +130,31 @@
                                     </h:panelGrid>
                                 </p:panel>
                             </h:panelGroup>
+
+                            <p:dataGrid id="userShowcaseOverview" var="showcase" columns="1" rows="20" value="#{profileViewBean.showcaseViewList}"
+                                        paginator="true" lazy="true" rowsPerPageTemplate="15,20,30"
+                                        emptyMessage="#{msg.nocontent}" 
+                                        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} 
+                                        {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
+                                <f:facet name="header">
+                                    <h:outputText value="#{msg.showcaseoverview}"/>
+                                </f:facet>
+                                
+                                <p:fieldset toggleable="true" legend="#{showcase.showcaseTitle}">
+                                    <h:outputLink value="#{constantsBean.DISPLAYSHOWCASE}#{showcase.showcaseID}">
+                                        <h:panelGrid columns="2" cellpadding="10" columnClasses="alignTopAndCenter,alignTopAndCenter">
+                                            <h:graphicImage value="/resource/images/#{showcase.frontImage.relativeimagepath}"
+                                                            width="#{imageScaleBean.width(showcase.frontImage, 150)}"
+                                                            height="#{imageScaleBean.height(showcase.frontImage, 150)}"
+                                                            title="#{showcase.frontImage.imageName}" styleClass="ieRemoveBorder"
+                                                            rendered="#{showcase.frontImage != null}"/>
+                                            <h:graphicImage library="images" name="proudcase_logo.png" width="150" height="150"
+                                                            rendered="#{showcase.frontImage == null}" styleClass="ieRemoveBorder"/>
+                                            <h:outputText value="#{showcase.showcaseText}"/>
+                                        </h:panelGrid>
+                                    </h:outputLink>
+                                </p:fieldset>
+                            </p:dataGrid>
                         </h:panelGroup>
                     </h:panelGroup>
                 </h:form>

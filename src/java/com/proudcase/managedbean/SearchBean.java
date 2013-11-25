@@ -6,7 +6,7 @@ import com.proudcase.mongodb.manager.ManagerFactory;
 import com.proudcase.mongodb.manager.ShowcaseManager;
 import com.proudcase.persistence.CategorieBean;
 import com.proudcase.persistence.LangCategorieBean;
-import com.proudcase.view.IndexShowcaseViewBean;
+import com.proudcase.view.ShowcaseViewBean;
 import com.proudcase.view.LazySearchModel;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -57,8 +57,8 @@ public class SearchBean implements Serializable {
     private String inputSearch;
     private List<SelectItem> categorieList = new ArrayList<>();;
     private String currentSelection;
-    private LazyDataModel<IndexShowcaseViewBean> lazySearchResultList;
-    transient private ShowcaseManager showcaseManager
+    private LazyDataModel<ShowcaseViewBean> lazySearchResultList;
+    private final transient ShowcaseManager showcaseManager
             = ManagerFactory.createShowcaseManager();
 
     public SearchBean() {
@@ -127,7 +127,7 @@ public class SearchBean implements Serializable {
         this.sessionBean = sessionBean;
     }
 
-    public LazyDataModel<IndexShowcaseViewBean> getLazySearchResultList() {
+    public LazyDataModel<ShowcaseViewBean> getLazySearchResultList() {
         return lazySearchResultList;
     }
 

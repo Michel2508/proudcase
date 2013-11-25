@@ -5,7 +5,6 @@ import com.google.code.morphia.dao.BasicDAO;
 import com.google.code.morphia.query.Query;
 import com.proudcase.persistence.CategorieBean;
 import java.util.List;
-import java.util.Locale;
 import org.bson.types.ObjectId;
 
 /**

@@ -28,17 +28,17 @@ import org.bson.types.ObjectId;
  *
  * @Encoding: UTF-8
  */
-public class IndexShowcaseViewBean implements Serializable {
+public class ShowcaseViewBean implements Serializable {
     
     private ObjectId showcaseID;
     private String showcaseTitle;
     private String showcaseText;
     private ImageBean frontImage;
 
-    public IndexShowcaseViewBean() {
+    public ShowcaseViewBean() {
     }
 
-    public IndexShowcaseViewBean(ObjectId showcaseID, String showcaseTitle, String showcaseText, ImageBean frontImage) {
+    public ShowcaseViewBean(ObjectId showcaseID, String showcaseTitle, String showcaseText, ImageBean frontImage) {
         this.showcaseID = showcaseID;
         this.showcaseTitle = showcaseTitle;
         this.showcaseText = showcaseText;

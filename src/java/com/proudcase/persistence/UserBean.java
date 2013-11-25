@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import org.bson.types.ObjectId;
 
 /**
@@ -117,6 +118,25 @@ public class UserBean implements Serializable {
         return nameToDisplay;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 71 * hash + Objects.hashCode(this.id);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final UserBean other = (UserBean) obj;
+        return Objects.equals(this.id, other.id);
+    }
+    
     public ObjectId getId() {
         return id;
     }

@@ -4,10 +4,10 @@ import com.proudcase.mongodb.manager.ManagerFactory;
 import com.proudcase.mongodb.manager.ShowcaseManager;
 import com.proudcase.persistence.ShowcaseBean;
 import com.proudcase.persistence.ShowcaseTextBean;
-import com.proudcase.view.IndexShowcaseViewBean;
+import com.proudcase.util.LanguageTranslationUtil;
+import com.proudcase.util.ShowcaseViewTranslator;
+import com.proudcase.view.ShowcaseViewBean;
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Locale;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -44,9 +44,9 @@ public class TopShowcaseBean implements Serializable {
     @ManagedProperty(value="#{sessionBean}")
     private SessionBean sessionBean;
 
-    transient private ShowcaseManager showcaseManager =
+    private final transient ShowcaseManager showcaseManager =
             ManagerFactory.createShowcaseManager();
-    private IndexShowcaseViewBean topShowcaseView;
+    private ShowcaseViewBean topShowcaseView;
 
     public TopShowcaseBean() {
     }
@@ -61,61 +61,18 @@ public class TopShowcaseBean implements Serializable {
             return;
         }
 
-        // convert showcase to our view object
-        topShowcaseView = new IndexShowcaseViewBean();
-        topShowcaseView.setShowcaseID(topShowcase.getId());
-
         // check if we can find the text and title in a language that fits to
         // the users language
-        ShowcaseTextBean langShowcase = getSpecifiedText(topShowcase);
+        ShowcaseTextBean langShowcase = LanguageTranslationUtil.getSpecifiedText(topShowcase, sessionBean.getUserLocale());
 
         // found something
         if (langShowcase != null) {
-            topShowcaseView.setShowcaseTitle(langShowcase.getTitle());
-            topShowcaseView.setShowcaseText(langShowcase.getExplaintext());
-        }
-
-        // do we have pictures for the showcase?
-        if (topShowcase.getImageList() != null && !topShowcase.getImageList().isEmpty()) {
-            // sort the images
-            Collections.sort(topShowcase.getImageList());
-            
-            // save the first image (frontimage) to our view object
-            topShowcaseView.setFrontImage(topShowcase.getImageList().get(0));
+            // Convert two objects to one view obj
+            topShowcaseView = ShowcaseViewTranslator.convertShowcaseToShowcaseView(topShowcase, langShowcase, false);
         }
     }
     
-    // this method returns the ShowcaseText object
-    // for the client language
-    private ShowcaseTextBean getSpecifiedText(ShowcaseBean givenShowcase) {
-        // get the language
-        Locale clientLanguage = sessionBean.getUserLocale();
-        
-        // now we have to check if this showcase has this language supported
-        for (ShowcaseTextBean singleShowcaseText : givenShowcase.getShowcaseTexts()) {
-            if (singleShowcaseText.getLang().equals(clientLanguage)) {
-                // we found the right text. Return the object
-                return singleShowcaseText;
-            }
-        }
-
-        // if we are here then the default language isn't supported
-        // so let us check if the owner of the showcase has english support
-        for (ShowcaseTextBean singleShowcaseText : givenShowcase.getShowcaseTexts()) {
-            if (singleShowcaseText.getLang().equals(Locale.ENGLISH)) {
-                return singleShowcaseText;
-            }
-        }
-
-        // Well. If we are here then english isn't supported nor the default
-        // language from the client.
-        if (!givenShowcase.getShowcaseTexts().isEmpty()) {
-            return givenShowcase.getShowcaseTexts().get(0);
-        }
-        return null;
-    }
-
-    public IndexShowcaseViewBean getTopShowcaseView() {
+    public ShowcaseViewBean getTopShowcaseView() {
         return topShowcaseView;
     }
 

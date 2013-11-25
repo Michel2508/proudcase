@@ -1,12 +1,13 @@
 package com.proudcase.view;
 
-import com.proudcase.constants.Constants;
 import com.proudcase.managedbean.SessionBean;
 import com.proudcase.mongodb.manager.JuryFeedbackManager;
 import com.proudcase.mongodb.manager.ShowcaseManager;
 import com.proudcase.persistence.ShowcaseBean;
 import com.proudcase.persistence.ShowcaseTextBean;
 import com.proudcase.persistence.UserBean;
+import com.proudcase.util.LanguageTranslationUtil;
+import com.proudcase.util.ShowcaseViewTranslator;
 import java.util.*;
 import org.bson.types.ObjectId;
 import org.primefaces.model.LazyDataModel;
@@ -36,12 +37,12 @@ import org.primefaces.model.SortOrder;
  *
  * @Encoding: UTF-8
  */
-public class LazyJuryBoardModel extends LazyDataModel<IndexShowcaseViewBean> {
+public class LazyJuryBoardModel extends LazyDataModel<ShowcaseViewBean> {
 
-    transient private ShowcaseManager showcaseManager;
-    transient private JuryFeedbackManager juryFeedbackManager;
-    transient private SessionBean sessionBean;
-    private UserBean loggedUser;
+    private final transient ShowcaseManager showcaseManager;
+    private final transient JuryFeedbackManager juryFeedbackManager;
+    private final transient SessionBean sessionBean;
+    private final UserBean loggedUser;
 
     public LazyJuryBoardModel(ShowcaseManager showcaseManager, JuryFeedbackManager juryFeedbackManager, SessionBean sessionBean, UserBean loggedUser) {
         this.showcaseManager = showcaseManager;
@@ -51,7 +52,7 @@ public class LazyJuryBoardModel extends LazyDataModel<IndexShowcaseViewBean> {
     }
 
     @Override
-    public List<IndexShowcaseViewBean> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+    public List<ShowcaseViewBean> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
         // get a list of all showcases which the user has already rated
         List<ObjectId> alreadyRatedList = juryFeedbackManager.getAlreadyRatedShowcasesByUser(loggedUser);
         
@@ -62,79 +63,26 @@ public class LazyJuryBoardModel extends LazyDataModel<IndexShowcaseViewBean> {
         List<ShowcaseBean> unratedShowcases = showcaseManager.getPagingAllShowcasesNotRatedByAlreadyRatedList(alreadyRatedList, first, pageSize);
 
         // our new view list
-        List<IndexShowcaseViewBean> showcaseViewList = new ArrayList<>();
+        List<ShowcaseViewBean> showcaseViewList = new ArrayList<>();
 
         // iterate through all showcases and convert them to a view object
         for (ShowcaseBean singleShowcase : unratedShowcases) {
-            // Create a new view object
-            IndexShowcaseViewBean viewObject = new IndexShowcaseViewBean();
-            viewObject.setShowcaseID(singleShowcase.getId());
-
             // check if we can find the text and title in a language that fits to
             // the users language
-            ShowcaseTextBean langShowcase = getSpecifiedText(singleShowcase);
+            ShowcaseTextBean langShowcase = LanguageTranslationUtil.getSpecifiedText(singleShowcase, sessionBean.getUserLocale());
 
             // found something
             if (langShowcase != null) {
-                viewObject.setShowcaseTitle(langShowcase.getTitle());
-
-                // let us reduce the amount of characters on the explaintext
-                String temp = langShowcase.getExplaintext();
-                if (temp.length() > Constants.MAXCHARSEXPLAINTEXT) {
-                    temp = langShowcase.getExplaintext().
-                            substring(0, Constants.MAXCHARSEXPLAINTEXT);
-                }
-
-                // remove any html tag
-                temp = temp.replaceAll("<[^>]*>", "");
-
-                viewObject.setShowcaseText(temp);
-            }
-
-            // do we have pictures for the showcase?
-            if (singleShowcase.getImageList() != null && !singleShowcase.getImageList().isEmpty()) {
-                // sort the images
-                Collections.sort(singleShowcase.getImageList());
+                // Convert both objs to one view object
+                ShowcaseViewBean viewObject = ShowcaseViewTranslator.convertShowcaseToShowcaseView(singleShowcase, langShowcase, true);
                 
-                // save the first image (frontimage) to our view object
-                viewObject.setFrontImage(singleShowcase.getImageList().get(0));
+                // add this obj to our list
+                showcaseViewList.add(viewObject);
             }
 
-            // add this obj to our list
-            showcaseViewList.add(viewObject);
         }
 
         // return the result
         return showcaseViewList;
-    }
-
-    // this method returns the ShowcaseText object
-    // for the client language
-    private ShowcaseTextBean getSpecifiedText(ShowcaseBean givenShowcase) {
-        // get the language
-        Locale clientLanguage = sessionBean.getUserLocale();
-
-        // now we have to check if this showcase has this language supported
-        for (ShowcaseTextBean singleShowcaseText : givenShowcase.getShowcaseTexts()) {
-            if (singleShowcaseText.getLang().equals(clientLanguage)) {
-                // we found the right text. Return the object
-                return singleShowcaseText;
-            }
-        }
-
-        // if we are here then the default language isn't supported
-        // so let us check if the owner of the showcase has english support
-        for (ShowcaseTextBean singleShowcaseText : givenShowcase.getShowcaseTexts()) {
-            if (singleShowcaseText.getLang().equals(Locale.ENGLISH)) {
-                return singleShowcaseText;
-            }
-        }
-
-        // Well. If we are here then english isn't supported nor the default
-        // language from the client.
-        if (!givenShowcase.getShowcaseTexts().isEmpty()) {
-            return givenShowcase.getShowcaseTexts().get(0);
-        }
-        return null;
     }
 }

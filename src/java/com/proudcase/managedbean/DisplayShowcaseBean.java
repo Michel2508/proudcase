@@ -9,6 +9,7 @@ import com.proudcase.mongodb.manager.ShowcaseManager;
 import com.proudcase.mongodb.manager.UserManager;
 import com.proudcase.persistence.*;
 import com.proudcase.util.LanguageTranslationUtil;
+import com.proudcase.util.UserRightEstimate;
 import com.proudcase.visibility.EVisibility;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class DisplayShowcaseBean implements Serializable {
     
     private ShowcaseBean displayShowcase;
     private String showcaseID;
-    private boolean hasPermission = true;
+    private boolean hasPermission = false;
     
     private List<VideoLinkBean> videoLinkList;
     private List<ShowcaseTextBean> showcaseTextList;
@@ -92,37 +93,9 @@ public class DisplayShowcaseBean implements Serializable {
         // Get the informations from the user
         FacesContext fCtx = FacesContext.getCurrentInstance();
         UserBean loggedUser = (UserBean) fCtx.getExternalContext().getSessionMap().get(Constants.AUTH_KEY);
-
-        // small extra check for security
-        if (displayShowcase.getVisibility() != EVisibility.all && loggedUser == null) {
-            // the showcase is not public and the user is not logged in - no access
-            hasPermission = false;
-            return;
-        }
-
-        // Check if everyone can see this showcase && the user is not the owner
-        if (displayShowcase.getVisibility() != EVisibility.all
-                && !displayShowcase.getUserAccount().getId().equals(loggedUser.getId())) {
-            // Check if the user is a friend
-            if (!userManager.isFriend(displayShowcase.getUserAccount(), loggedUser)) {
-                // friend of friend enabled?
-                if (displayShowcase.getVisibility() == EVisibility.friendsfriends) {
-                    // is a friend of a friend?
-                    if (!userManager.isFriendOfFriend(displayShowcase.getUserAccount(), loggedUser)) {
-                        // permission denied!
-                        hasPermission = false;
-                    }
-                } else {
-                    // user is not a friend and visibility is set to friends only. No Permission!
-                    hasPermission = false;
-                }
-            }
-
-            // check if only the owner can see this showcase
-            if (hasPermission && displayShowcase.getVisibility() == EVisibility.onlyme) {
-                hasPermission = false;
-            }
-        }
+        
+        // Check if the user has rights to see this showcase
+        hasPermission = UserRightEstimate.userHasRights(loggedUser, displayShowcase.getUserAccount(), displayShowcase.getVisibility());
 
         // No permission? No need to load the data from db
         if (!hasPermission) {

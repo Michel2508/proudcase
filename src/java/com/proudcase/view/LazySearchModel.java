@@ -1,10 +1,11 @@
 package com.proudcase.view;
 
-import com.proudcase.constants.Constants;
 import com.proudcase.managedbean.SessionBean;
 import com.proudcase.mongodb.manager.ShowcaseManager;
 import com.proudcase.persistence.ShowcaseBean;
 import com.proudcase.persistence.ShowcaseTextBean;
+import com.proudcase.util.LanguageTranslationUtil;
+import com.proudcase.util.ShowcaseViewTranslator;
 import java.util.*;
 import org.bson.types.ObjectId;
 import org.primefaces.model.LazyDataModel;
@@ -34,12 +35,12 @@ import org.primefaces.model.SortOrder;
  *
  * @Encoding: UTF-8
  */
-public class LazySearchModel extends LazyDataModel<IndexShowcaseViewBean> {
+public class LazySearchModel extends LazyDataModel<ShowcaseViewBean> {
 
-    transient private ShowcaseManager showcaseManager;
-    transient private SessionBean sessionBean;
-    private String inputSearch;
-    private ObjectId categorie;
+    private final transient ShowcaseManager showcaseManager;
+    private final transient SessionBean sessionBean;
+    private final String inputSearch;
+    private final ObjectId categorie;
 
     public LazySearchModel(ShowcaseManager showcaseManager, String inputSearch, SessionBean sessionBean, ObjectId categorie) {
         this.showcaseManager = showcaseManager;
@@ -49,7 +50,7 @@ public class LazySearchModel extends LazyDataModel<IndexShowcaseViewBean> {
     }
 
     @Override
-    public List<IndexShowcaseViewBean> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+    public List<ShowcaseViewBean> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
         // searching with null is not possible
         if (inputSearch == null) {
             return new ArrayList<>();
@@ -62,79 +63,25 @@ public class LazySearchModel extends LazyDataModel<IndexShowcaseViewBean> {
         List<ShowcaseBean> searchResults = showcaseManager.getPagingShowcasesByKeywordAndCat(inputSearch, categorie, first, pageSize);
 
         // our new view list
-        List<IndexShowcaseViewBean> resultViewList = new ArrayList<>();
+        List<ShowcaseViewBean> resultViewList = new ArrayList<>();
 
         // iterate through all results and convert them to a view object
         for (ShowcaseBean singleShowcase : searchResults) {
-            // Create a new view object
-            IndexShowcaseViewBean viewObject = new IndexShowcaseViewBean();
-            viewObject.setShowcaseID(singleShowcase.getId());
-
             // check if we can find the text and title in a language that fits to
             // the users language
-            ShowcaseTextBean langShowcase = getSpecifiedText(singleShowcase);
+            ShowcaseTextBean langShowcase = LanguageTranslationUtil.getSpecifiedText(singleShowcase, sessionBean.getUserLocale());
 
             // found something
             if (langShowcase != null) {
-                viewObject.setShowcaseTitle(langShowcase.getTitle());
-
-                // let us reduce the amount of characters on the explaintext
-                String temp = langShowcase.getExplaintext();
-                if (temp.length() > Constants.MAXCHARSEXPLAINTEXT) {
-                    temp = langShowcase.getExplaintext().
-                            substring(0, Constants.MAXCHARSEXPLAINTEXT);
-                }
-
-                // remove any html tag
-                temp = temp.replaceAll("<[^>]*>", "");
-
-                viewObject.setShowcaseText(temp);
-            }
-
-            // do we have pictures for the showcase?
-            if (singleShowcase.getImageList() != null && !singleShowcase.getImageList().isEmpty()) {
-                // sort the images
-                Collections.sort(singleShowcase.getImageList());
+                // convert it to a view obj
+                ShowcaseViewBean viewObject = ShowcaseViewTranslator.convertShowcaseToShowcaseView(singleShowcase, langShowcase, true);
                 
-                // save the first image (frontimage) to our view object
-                viewObject.setFrontImage(singleShowcase.getImageList().get(0));
+                // add to our list
+                resultViewList.add(viewObject);
             }
-
-            // add this obj to our list
-            resultViewList.add(viewObject);
         }
 
         // return the result
         return resultViewList;
-    }
-
-    // this method returns the ShowcaseText object
-    // for the client language
-    private ShowcaseTextBean getSpecifiedText(ShowcaseBean givenShowcase) {
-        // get the language
-        Locale clientLanguage = sessionBean.getUserLocale();
-
-        // now we have to check if this showcase has this language supported
-        for (ShowcaseTextBean singleShowcaseText : givenShowcase.getShowcaseTexts()) {
-            if (singleShowcaseText.getLang().equals(clientLanguage)) {
-                // we found the right text. Return the object
-                return singleShowcaseText;
-            }
-        }
-
-        // if we are here then the default language isn't supported
-        // so let us check if the owner of the showcase has english support
-        for (ShowcaseTextBean singleShowcaseText : givenShowcase.getShowcaseTexts()) {
-            if (singleShowcaseText.getLang().equals(Locale.ENGLISH)) {
-                return singleShowcaseText;
-            }
-        }
-
-        // Well. If we are here then english isn't supported nor the default
-        // language from the client.
-        if (!givenShowcase.getShowcaseTexts().isEmpty()) {
-            return givenShowcase.getShowcaseTexts().get(0);
-        }
-        return null;
     }
 }

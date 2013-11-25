@@ -185,13 +185,7 @@ public class UserManager extends BasicDAO<UserBean, ObjectId> {
 
         // yes, do it please
         result = ds.updateFirst(query, ops);
-
-        // let us check what happened
-        if (result == null || result.getUpdatedCount() == 0) {
-            return false;
-        } else {
-            return true;
-        }
+        return result != null && result.getUpdatedCount() != 0;
     }
 
     public boolean isFriend(UserBean user, UserBean friend) {

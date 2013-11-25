@@ -23,7 +23,7 @@ import com.proudcase.mongodb.manager.ManagerFactory;
 import com.proudcase.mongodb.manager.UserManager;
 import com.proudcase.persistence.ImageBean;
 import com.proudcase.persistence.UserBean;
-import com.proudcase.visibility.EVisibility;
+import com.proudcase.util.UserRightEstimate;
 import java.io.*;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -171,33 +171,12 @@ public class FileServlet extends HttpServlet {
 
                 // we got something?
                 if (imageFromDB != null && imageFromDB.getId() != null) {
-                    // first of all let us check what kind of rule is set to the image
-                    if (imageFromDB.getSecurityRule().equals(EVisibility.all)) {
-                        hasAccessToImage = true;
-                    }
-
-                    // is the user logged in?
-                    if (!hasAccessToImage && loggedUser != null) {
-                        // check if the user who wants to see this image is the owner
-                        if (imageFromDB.getOwnerOfImage().equals(loggedUser.getId())) {
-                            hasAccessToImage = true;
-                        }
-                    }
-
-                    // if we are here then we need more information
+                    // Retrieve the owner of the image
                     UserManager userManager = ManagerFactory.createUserManager();
                     UserBean ownerOfImage = userManager.get(imageFromDB.getOwnerOfImage());
-                    if (!hasAccessToImage && !imageFromDB.getSecurityRule().equals(EVisibility.onlyme) && loggedUser != null) {
-                        // is this user a friend
-                        if (userManager.isFriend(ownerOfImage, loggedUser)) {
-                            hasAccessToImage = true;
-                        } else if (imageFromDB.getSecurityRule().equals(EVisibility.friendsfriends)) {
-                            // is this user a friend of a friend?
-                            if (userManager.isFriendOfFriend(ownerOfImage, loggedUser)) {
-                                hasAccessToImage = true;
-                            }
-                        }
-                    }
+
+                    // Check if the user has access
+                    hasAccessToImage = UserRightEstimate.userHasRights(loggedUser, ownerOfImage, imageFromDB.getSecurityRule());
                 }
 
                 // has this user now access to the image?
@@ -209,7 +188,7 @@ public class FileServlet extends HttpServlet {
         } else if (requestURI.contains(Constants.VIDEOFOLDER) || requestURI.contains(Constants.VIDEOTEMPFOLDER)) {
             // It includes the video or the videotemp folder 
             // so it must be a video or the thumbnail image!
-            
+
             // URL-decode the file name (might contain spaces and on) and prepare file object.
             file = new File(basePath + "/" + Constants.VIDEOFOLDER, URLDecoder.decode(requestedFile, "UTF-8"));
 
@@ -221,7 +200,7 @@ public class FileServlet extends HttpServlet {
         } else if (requestURI.contains(Constants.FILEFOLDER) || requestURI.contains(Constants.FILETEMPFOLDER)) {
             // It includes the files or the filetemp folder 
             // so it must be a file!
-            
+
             // URL-decode the file name (might contain spaces and on) and prepare file object.
             file = new File(basePath + "/" + Constants.FILEFOLDER, URLDecoder.decode(requestedFile, "UTF-8"));
 
@@ -236,7 +215,7 @@ public class FileServlet extends HttpServlet {
         if (file == null || !file.isFile()) {
             return;
         }
-        
+
         // Prepare some variables. The ETag is an unique identifier of the file.
         String fileName = file.getName();
         long length = file.length();

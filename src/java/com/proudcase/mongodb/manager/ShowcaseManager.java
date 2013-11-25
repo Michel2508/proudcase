@@ -227,6 +227,18 @@ public class ShowcaseManager extends BasicDAO<ShowcaseBean, ObjectId> {
         // return as list
         return query.asList();
     }
+    
+    public List<ShowcaseBean> getAllPublicShowcasesByUser(UserBean user) {
+        // Query
+        Query<ShowcaseBean> query = ds.createQuery(ShowcaseBean.class)
+                .field("userAccount").equal(user);
+        
+        // only public showcases
+        query.field("showcasepublic").equal(true);
+
+        // return as list
+        return query.asList();
+    }
 
     public List<ShowcaseBean> getAllShowcasesNotRatedByUserAndAlreadyRatedList(UserBean user, List<ObjectId> alreadyRatedList) {
         // Query

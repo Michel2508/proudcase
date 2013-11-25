@@ -6,11 +6,9 @@ import com.proudcase.mongodb.manager.JuryFeedbackManager;
 import com.proudcase.mongodb.manager.ManagerFactory;
 import com.proudcase.mongodb.manager.ShowcaseManager;
 import com.proudcase.persistence.UserBean;
-import com.proudcase.view.IndexShowcaseViewBean;
+import com.proudcase.view.ShowcaseViewBean;
 import com.proudcase.view.LazyJuryBoardModel;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
@@ -47,12 +45,12 @@ public class JuryBoardBean implements Serializable {
     @ManagedProperty(value="#{sessionBean}")
     private SessionBean sessionBean;
     
-    transient private ShowcaseManager showcaseManager =
+    private final transient ShowcaseManager showcaseManager =
             ManagerFactory.createShowcaseManager();
-    transient private JuryFeedbackManager juryFeedbackManager =
+    private final transient JuryFeedbackManager juryFeedbackManager =
             ManagerFactory.createJuryFeedbackManager();
     
-    private LazyDataModel<IndexShowcaseViewBean> lazyJuryBoardModel;
+    private LazyDataModel<ShowcaseViewBean> lazyJuryBoardModel;
     
     public void init() {
         FacesContext fCtx = FacesContext.getCurrentInstance();
@@ -67,11 +65,11 @@ public class JuryBoardBean implements Serializable {
         lazyJuryBoardModel = new LazyJuryBoardModel(showcaseManager, juryFeedbackManager, sessionBean, loggedUser);
     }
 
-    public LazyDataModel<IndexShowcaseViewBean> getLazyJuryBoardModel() {
+    public LazyDataModel<ShowcaseViewBean> getLazyJuryBoardModel() {
         return lazyJuryBoardModel;
     }
 
-    public void setLazyJuryBoardModel(LazyDataModel<IndexShowcaseViewBean> lazyJuryBoardModel) {
+    public void setLazyJuryBoardModel(LazyDataModel<ShowcaseViewBean> lazyJuryBoardModel) {
         this.lazyJuryBoardModel = lazyJuryBoardModel;
     }
 

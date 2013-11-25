@@ -2,9 +2,19 @@ package com.proudcase.managedbean;
 
 import com.proudcase.constants.Constants;
 import com.proudcase.mongodb.manager.ManagerFactory;
+import com.proudcase.mongodb.manager.ShowcaseManager;
 import com.proudcase.mongodb.manager.UserManager;
+import com.proudcase.persistence.ShowcaseBean;
+import com.proudcase.persistence.ShowcaseTextBean;
 import com.proudcase.persistence.UserBean;
+import com.proudcase.util.LanguageTranslationUtil;
+import com.proudcase.util.ShowcaseViewTranslator;
+import com.proudcase.util.UserRightEstimate;
+import com.proudcase.view.ShowcaseViewBean;
+import com.proudcase.visibility.EVisibility;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
@@ -44,17 +54,25 @@ public class ProfileViewBean implements Serializable {
     
     private UserBean givenUser =
             new UserBean();
-    transient private UserManager userManager = 
+    private final transient UserManager userManager = 
             ManagerFactory.createUserManager();
+    private final transient ShowcaseManager showcaseManager =
+            ManagerFactory.createShowcaseManager();
+    
     private String userID;
     private String icqurl;
+    private List<ShowcaseViewBean> showcaseViewList;
 
     public ProfileViewBean() {
     }
     
     public void init() {
-        // got we a true user?
-        if (userID != null) {
+        // retrieve the current user
+        FacesContext fCtx = FacesContext.getCurrentInstance();
+        UserBean loggedUser = (UserBean) fCtx.getExternalContext().getSessionMap().get(Constants.AUTH_KEY);
+        
+        // we got a real user?
+        if (userID != null && ObjectId.isValid(userID)) {
             givenUser = userManager.get(new ObjectId(userID));
         }
         
@@ -68,6 +86,31 @@ public class ProfileViewBean implements Serializable {
             // prepare the icq number to display it later in a nice way
             icqurl = Constants.ICQURL + givenUser.getIcqnumber() + Constants.ICQURL_END;
         }
+        
+        // Get all showcases from this user
+        List<ShowcaseBean> allShowcasesByUser = showcaseManager.getAllPublicShowcasesByUser(givenUser);
+        
+        // Initiate the view list
+        showcaseViewList = new ArrayList<>();
+        
+        // Iterate trough all showcases
+        for (ShowcaseBean singleShowcase : allShowcasesByUser) {
+            // Has this user the rights to see this showcase?
+            if (UserRightEstimate.userHasRights(loggedUser, givenUser, singleShowcase.getVisibility())) {
+                // the user has the rights to see this showcase.
+                // Get the right text object of the showcase
+                ShowcaseTextBean langShowcase = LanguageTranslationUtil.getSpecifiedText(singleShowcase, sessionBean.getUserLocale());
+                
+                // found something?
+                if (langShowcase != null) {
+                    // Convert two objects to one view object
+                    ShowcaseViewBean showcaseViewObj = ShowcaseViewTranslator.convertShowcaseToShowcaseView(singleShowcase, langShowcase, true);
+                    
+                    // add it to our view list
+                    showcaseViewList.add(showcaseViewObj);
+                } 
+            }
+        }
     }
     
     public boolean isRightsToLook() {
@@ -75,22 +118,8 @@ public class ProfileViewBean implements Serializable {
         FacesContext fCtx = FacesContext.getCurrentInstance();
         UserBean loggedUser = (UserBean) fCtx.getExternalContext().getSessionMap().get(Constants.AUTH_KEY);
         
-        if (loggedUser == null || loggedUser.getId() == null) {
-            return false;
-        }
-        if (givenUser == null || givenUser.getId() == null) {
-            return false;
-        }
-        
-        // check if both users are equal
-        if (loggedUser.getId().equals(givenUser.getId())) {
-            return true;
-        }
-        
-        // check if both are friends 
-        boolean isFriend = userManager.isFriend(loggedUser, givenUser);
-        return isFriend;
-        
+        // Check if the user has the rights to watch the requested resource
+        return UserRightEstimate.userHasRights(loggedUser, givenUser, EVisibility.friends);
     }
 
     public UserBean getGivenUser() {
@@ -119,5 +148,9 @@ public class ProfileViewBean implements Serializable {
 
     public void setSessionBean(SessionBean sessionBean) {
         this.sessionBean = sessionBean;
+    }
+
+    public List<ShowcaseViewBean> getShowcaseViewList() {
+        return showcaseViewList;
     }
 }

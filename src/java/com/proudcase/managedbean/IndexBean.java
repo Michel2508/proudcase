@@ -10,7 +10,8 @@ import com.proudcase.persistence.ShowcaseTextBean;
 import com.proudcase.persistence.UserBean;
 import com.proudcase.persistence.VideoLinkBean;
 import com.proudcase.util.LanguageTranslationUtil;
-import com.proudcase.view.IndexShowcaseViewBean;
+import com.proudcase.util.ShowcaseViewTranslator;
+import com.proudcase.view.ShowcaseViewBean;
 import com.proudcase.view.ShowcaseVideoViewBean;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -51,11 +52,13 @@ public class IndexBean implements Serializable {
 
     @ManagedProperty(value = "#{sessionBean}")
     private SessionBean sessionBean;
+    
     private final transient ShowcaseManager showcaseManager =
             ManagerFactory.createShowcaseManager();
     private final transient UserManager userManager =
             ManagerFactory.createUserManager();
-    private final List<IndexShowcaseViewBean> topTenShowcases = new ArrayList<>();
+    
+    private final List<ShowcaseViewBean> topTenShowcases = new ArrayList<>();
     private final List<ShowcaseVideoViewBean> topTenVideoShowcases = new ArrayList<>();
     private List<UserBean> topUsersList;
     private String inputQuery;
@@ -117,31 +120,18 @@ public class IndexBean implements Serializable {
 
         // Iterate through all showcases
         for (ShowcaseBean singleShowcase : topTenShowcasesFromDB) {
-            // convert every showcase to our view object
-            IndexShowcaseViewBean indexShowcaseView = new IndexShowcaseViewBean();
-            indexShowcaseView.setShowcaseID(singleShowcase.getId());
-
             // check if we can find the text and title in a language that fits to
             // the users language
             ShowcaseTextBean langShowcase = LanguageTranslationUtil.getSpecifiedText(singleShowcase, sessionBean.getUserLocale());
 
             // found something
             if (langShowcase != null) {
-                indexShowcaseView.setShowcaseTitle(langShowcase.getTitle());
-                indexShowcaseView.setShowcaseText(langShowcase.getExplaintext());
+                // Convert two objects to one view obj
+                ShowcaseViewBean indexShowcaseView = ShowcaseViewTranslator.convertShowcaseToShowcaseView(singleShowcase, langShowcase, false);
+                
+                // add the showcase view to our array
+                topTenShowcases.add(indexShowcaseView);
             }
-
-            // do we have pictures for the showcase?
-            if (singleShowcase.getImageList() != null && !singleShowcase.getImageList().isEmpty()) {
-                // sort the images
-                Collections.sort(singleShowcase.getImageList());
-
-                // save the first image (frontimage) to our view object
-                indexShowcaseView.setFrontImage(singleShowcase.getImageList().get(0));
-            }
-
-            // add the showcase view to our array
-            topTenShowcases.add(indexShowcaseView);
         }
     }
 
@@ -160,7 +150,7 @@ public class IndexBean implements Serializable {
         return topTenShowcases != null && topTenShowcases.size() > 0;
     }
 
-    public List<IndexShowcaseViewBean> getTopTenShowcases() {
+    public List<ShowcaseViewBean> getTopTenShowcases() {
         return topTenShowcases;
     }
 
