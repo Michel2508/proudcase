@@ -25,7 +25,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.event.PhaseId;
 import javax.faces.model.SelectItem;
 import org.bson.types.ObjectId;
 import org.primefaces.event.DragDropEvent;
